@@ -1,4 +1,4 @@
-[![build](https://github.com/NEIA-Robotics-9644/2026-Robot-Code/actions/workflows/main.yml/badge.svg)](https://github.com/NEIA-Robotics-9644/2026-Robot-Code/actions/workflows/main.yml)
+[![CI](https://github.com/NEIA-Robotics-9644/2026-Robot-Code/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/NEIA-Robotics-9644/2026-Robot-Code/actions/workflows/main.yml)
 ![Static Badge](https://img.shields.io/badge/FRC-Team_9644-cb007b?logo=first&labelColor=gray&link=https%3A%2F%2Fwww.thebluealliance.com%2Fteam%2F9644)
 ![Static Badge](https://img.shields.io/badge/WPI-Lib-%234d4848?style=flat-square&labelColor=8c150d)
 ![Static Badge](https://img.shields.io/badge/Photon-Vision-ffffff?style=flat-square&labelColor=006492)
