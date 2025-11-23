@@ -6,4 +6,6 @@
 ![Static Badge](https://img.shields.io/badge/Advantage-Kit-fff3d9?style=flat-square&labelColor=fec007)
 
 # 2026-Robot-Code
-2026 REBUILT Code Base
+2026 REBUILT&trade; Code Base
+
+<img src="assets/logo.png" width="50%" height="50%">
