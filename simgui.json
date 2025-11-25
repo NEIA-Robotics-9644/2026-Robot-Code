@@ -3,10 +3,13 @@
     "types": {
       "/AdvantageKit/RealOutputs/Alerts": "Alerts",
       "/AdvantageKit/RealOutputs/PathPlanner": "Alerts",
+      "/AdvantageKit/RealOutputs/PhotonAlerts": "Alerts",
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Alerts": "Alerts",
       "/SmartDashboard/Auto Choices": "String Chooser",
-      "/SmartDashboard/PathPlanner": "Alerts"
+      "/SmartDashboard/PathPlanner": "Alerts",
+      "/SmartDashboard/PhotonAlerts": "Alerts",
+      "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d"
     }
   },
   "NetworkTables Info": {

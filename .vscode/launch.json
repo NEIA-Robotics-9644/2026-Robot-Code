@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "WPILib Sim (Corrected Classpath)",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "frc.robot.Main",
+      "projectName": "2026-Robot-Code",
+      "vmArgs": "-Djava.library.path=${workspaceFolder}/build/jni/release -DHALSIM_EXTENSIONS=${workspaceFolder}/build/jni/release/libhalsim_gui.dylib",
+      "classPaths": [
+        "${workspaceFolder}/build/classes/java/main",
+        "${workspaceFolder}/build/resources/main",
+        "${workspaceFolder}/build/dependencies/*"
+      ]
+    }
+  ]
+}

@@ -3,11 +3,16 @@ plugins {
     id "edu.wpi.first.GradleRIO" version "2025.3.1"
     id "com.peterabeles.gversion" version "1.10"
     id "com.diffplug.spotless" version "6.12.0"
+    id "io.freefair.lombok" version "8.6"
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
 }
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
@@ -72,7 +77,7 @@ task(replayWatch, type: JavaExec) {
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 4.
 dependencies {
-    annotationProcessor wpi.java.deps.wpilibAnnotations()
+    //annotationProcessor wpi.java.deps.wpilibAnnotations() - removing due to conflicts with AdvantageKit annotations
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
 
@@ -95,6 +100,12 @@ dependencies {
 
     def akitJson = new groovy.json.JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
     annotationProcessor "org.littletonrobotics.akit:akit-autolog:$akitJson.version"
+
+    compileOnly("org.projectlombok:lombok:1.18.42")
+    annotationProcessor("org.projectlombok:lombok:1.18.42")
+
+    testCompileOnly("org.projectlombok:lombok:1.18.42")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
 }
 
 test {

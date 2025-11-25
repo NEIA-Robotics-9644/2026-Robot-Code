@@ -10,6 +10,9 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,6 +27,11 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -36,8 +44,20 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
 
+  private final Vision vision;
+
+  private final Alert driverDisconnected =
+      new Alert("Driver controller disconnected (port 0).", AlertType.kWarning);
+  private final Alert operatorDisconnected =
+      new Alert("Operator controller disconnected (port 1).", AlertType.kWarning);
+  private final Alert noAutoAlert =
+      new Alert("Please select an auto routine!!! 😳", AlertType.kError);
+
+  private Command noAuto = Commands.none();
+
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController driverCon = new CommandXboxController(0);
+  private final CommandXboxController operatorCon = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -55,21 +75,17 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
-
-        // The ModuleIOTalonFXS implementation provides an example implementation for
-        // TalonFXS controller connected to a CANdi with a PWM encoder. The implementations
-        // of ModuleIOTalonFX, ModuleIOTalonFXS, and ModuleIOSpark (from the Spark swerve
-        // template) can be freely intermixed to support alternative hardware arrangements.
-        // Please see the AdvantageKit template documentation for more information:
-        // https://docs.advantagekit.org/getting-started/template-projects/talonfx-swerve-template#custom-module-implementations
-        //
-        // drive =
-        //     new Drive(
-        //         new GyroIOPigeon2(),
-        //         new ModuleIOTalonFXS(TunerConstants.FrontLeft),
-        //         new ModuleIOTalonFXS(TunerConstants.FrontRight),
-        //         new ModuleIOTalonFXS(TunerConstants.BackLeft),
-        //         new ModuleIOTalonFXS(TunerConstants.BackRight));
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOPhotonVision(
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0),
+                new VisionIOPhotonVision(
+                    VisionConstants.camera1Name, VisionConstants.robotToCamera1),
+                new VisionIOPhotonVision(
+                    VisionConstants.camera2Name, VisionConstants.robotToCamera2),
+                new VisionIOPhotonVision(
+                    VisionConstants.camera3Name, VisionConstants.robotToCamera3));
         break;
 
       case SIM:
@@ -81,6 +97,17 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose),
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.camera2Name, VisionConstants.robotToCamera2, drive::getPose),
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.camera3Name, VisionConstants.robotToCamera3, drive::getPose));
         break;
 
       default:
@@ -92,11 +119,20 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIO() {},
+                new VisionIO() {},
+                new VisionIO() {},
+                new VisionIO() {});
         break;
     }
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+
+    autoChooser.addDefaultOption("No Auto!", noAuto);
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -129,25 +165,25 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -driverCon.getLeftY(),
+            () -> -driverCon.getLeftX(),
+            () -> -driverCon.getRightX()));
 
     // Lock to 0° when A button is held
-    controller
+    driverCon
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
+                () -> -driverCon.getLeftY(),
+                () -> -driverCon.getLeftX(),
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driverCon.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
-    controller
+    driverCon
         .b()
         .onTrue(
             Commands.runOnce(
@@ -165,5 +201,15 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  public void updateAlerts() {
+    // Controller disconnected alerts
+    driverDisconnected.set(!DriverStation.isJoystickConnected(driverCon.getHID().getPort()));
+    operatorDisconnected.set(!DriverStation.isJoystickConnected(operatorCon.getHID().getPort()));
+
+    // Auto alert
+    noAutoAlert.set(
+        DriverStation.isAutonomous() && !DriverStation.isEnabled() && autoChooser.get() == noAuto);
   }
 }

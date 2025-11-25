@@ -1,4 +1,10 @@
 {
-  "java.configuration.updateBuildConfiguration": "interactive",
-  "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable"
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.configuration.autoBuild": "off",
+  "java.compile.nullAnalysis.mode": "disabled",
+  "java.errors.incompleteClasspath.severity": "ignore",
+  "java.project.outputPath": "build/classes/java/main",
+  "java.import.gradle.enabled": true,
+  "java.import.gradle.wrapper.enabled": true,
+  "java.buildship.enabled": false
 }
