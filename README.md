@@ -9,4 +9,17 @@
 # 2026-Robot-Code
 2026 REBUILT&trade; Code Base
 
-<img src="assets/logo.png" width="50%" height="50%">
+<p align="center">
+  <img src="assets/logo.png" width="50%" height="50%">
+</p>
+
+## Repository Rules
+The ```main``` branch is protected.
+Do not commit or push directly to ```main```.
+Before starting work:
+Pull the latest updates to ```main```, then create a new branch and name your branch clearly. For example:  
+```feature/drive-code```  
+```bugfix/button-not-working```  
+```docs/update-readme```  
+
+Once your work is complete, open a new Pull Request
