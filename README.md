@@ -1,10 +1,10 @@
 [![CI](https://github.com/NEIA-Robotics-9644/2026-Robot-Code/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/NEIA-Robotics-9644/2026-Robot-Code/actions/workflows/main.yml)
 ![Static Badge](https://img.shields.io/badge/FRC-Team_9644-cb007b?logo=first&labelColor=gray&link=https%3A%2F%2Fwww.thebluealliance.com%2Fteam%2F9644)
-![Static Badge](https://img.shields.io/badge/WPI-Lib-%234d4848?style=flat-square&labelColor=8c150d)
+<!-- ![Static Badge](https://img.shields.io/badge/WPI-Lib-%234d4848?style=flat-square&labelColor=8c150d)
 ![Static Badge](https://img.shields.io/badge/Photon-Vision-ffffff?style=flat-square&labelColor=006492)
 ![Static Badge](https://img.shields.io/badge/Path-Planner-ffffff?style=flat-square&labelColor=%232c3aad)
 ![Static Badge](https://img.shields.io/badge/Advantage-Scope-dee3ff?style=flat-square&labelColor=0027e6)
-![Static Badge](https://img.shields.io/badge/Advantage-Kit-fff3d9?style=flat-square&labelColor=fec007)
+![Static Badge](https://img.shields.io/badge/Advantage-Kit-fff3d9?style=flat-square&labelColor=fec007) -->
 
 # 2026-Robot-Code
 2026 REBUILT&trade; Code Base
@@ -13,13 +13,20 @@
   <img src="assets/logo.png" width="50%" height="50%">
 </p>
 
-## Repository Rules
+## Repository and Contribution Rules
 The ```main``` branch is protected.
-Do not commit or push directly to ```main```.
+Do not attempt to commit or push directly to ```main```.
 Before starting work:
 Pull the latest updates to ```main```, then create a new branch and name your branch clearly. For example:  
-```feature/drive-code```  
-```bugfix/button-not-working```  
-```docs/update-readme```  
+```subsystem-arm-pid-tuning```  
+```bugfix-xbox-utton-not-working```  
+```docs-update-readme```  
 
-Once your work is complete, open a new Pull Request
+Once your work is complete, open a new Pull Request and check against this list:
+- Add vishnu09bharath as a reviewer. 
+  - Optionally, request the `software-leads` team to review. All pull requests must be approved by only vishnu09bharath, but feedback/improvement suggestions may be delegated to other software leads.
+- Code has thorough documentation in the form of comments, or where necessary, in the ```README```. 
+- All public methods include method descriptions for intellisense.
+- The latest commit passes all build checks.
+- The code passes the [FRC 190 Code Standards](https://team-190.github.io/190-Robot-Code-Standards/ROBOTSTATE_STANDARDS) for the relevant type (subsystem, command, etc.) and all global standards.
+- Code inspired by other teams/examples is credited for future reference.
