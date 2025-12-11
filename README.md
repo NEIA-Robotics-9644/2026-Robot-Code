@@ -17,15 +17,15 @@
 The ```main``` branch is protected.
 Do not attempt to commit or push directly to ```main```.
 Before starting work:
-Pull the latest updates to ```main```, then create a new branch and name your branch clearly. For example:  
-```subsystem-arm-pid-tuning```  
-```bugfix-xbox-utton-not-working```  
-```docs-update-readme```  
+Pull the latest updates to ```main```, then create a new branch and name your branch clearly. For example:
+```subsystem-arm-pid-tuning```
+```bugfix-xbox-utton-not-working```
+```docs-update-readme```
 
 Once your work is complete, open a new Pull Request and check against this list:
-- Add vishnu09bharath as a reviewer. 
+- Add vishnu09bharath as a reviewer.
   - Optionally, request the `software-leads` team to review. All pull requests must be approved by only vishnu09bharath, but feedback/improvement suggestions may be delegated to other software leads.
-- Code has thorough documentation in the form of comments, or where necessary, in the ```README```. 
+- Code has thorough documentation in the form of comments, or where necessary, in the ```README```.
 - All public methods include method descriptions for intellisense.
 - The code passes the [FRC 190 Code Standards](https://team-190.github.io/190-Robot-Code-Standards/ROBOTSTATE_STANDARDS) for the relevant type (subsystem, command, etc.) and all global standards.
 - Code inspired by other teams/examples is credited for future reference.
