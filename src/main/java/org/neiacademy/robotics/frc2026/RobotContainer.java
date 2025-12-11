@@ -28,6 +28,7 @@ import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIOPigeon2;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIO;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOSim;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOTalonFX;
+import org.neiacademy.robotics.frc2026.subsystems.led.LEDSubsystem;
 import org.neiacademy.robotics.frc2026.subsystems.vision.Vision;
 import org.neiacademy.robotics.frc2026.subsystems.vision.VisionConstants;
 import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIO;
@@ -42,6 +43,9 @@ import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVisionSim
  */
 public class RobotContainer {
   // Subsystems
+
+  private final LEDSubsystem led;
+
   private final Drive drive;
 
   private final Vision vision;
@@ -67,6 +71,7 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
+        led = new LEDSubsystem(9);
         // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and a CANcoder
         drive =
             new Drive(
@@ -90,6 +95,7 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
+        led = null;
         drive =
             new Drive(
                 new GyroIO() {},
@@ -112,6 +118,7 @@ public class RobotContainer {
 
       default:
         // Replayed robot, disable IO implementations
+        led = null;
         drive =
             new Drive(
                 new GyroIO() {},
