@@ -1,4 +1,4 @@
-package org.neiacademy.robotics.frc2026.subsystems.led;
+package org.neiacademy.robotics.frc2026.subsystems.misc.LED;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;

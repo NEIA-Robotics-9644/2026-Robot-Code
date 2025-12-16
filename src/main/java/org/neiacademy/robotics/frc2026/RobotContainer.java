@@ -28,7 +28,11 @@ import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIOPigeon2;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIO;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOSim;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOTalonFX;
-import org.neiacademy.robotics.frc2026.subsystems.led.LEDSubsystem;
+import org.neiacademy.robotics.frc2026.subsystems.misc.LED.LEDSubsystem;
+import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCAN;
+import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCANIO;
+import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCANIOReal;
+import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCANIOSim;
 import org.neiacademy.robotics.frc2026.subsystems.vision.Vision;
 import org.neiacademy.robotics.frc2026.subsystems.vision.VisionConstants;
 import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIO;
@@ -49,6 +53,8 @@ public class RobotContainer {
   private final Drive drive;
 
   private final Vision vision;
+
+  private final TestLaserCAN testlaserCAN;
 
   private final Alert driverDisconnected =
       new Alert("Driver controller disconnected (port 0).", AlertType.kWarning);
@@ -91,6 +97,7 @@ public class RobotContainer {
                     VisionConstants.camera2Name, VisionConstants.robotToCamera2),
                 new VisionIOPhotonVision(
                     VisionConstants.camera3Name, VisionConstants.robotToCamera3));
+        testlaserCAN = new TestLaserCAN(new TestLaserCANIOReal());
         break;
 
       case SIM:
@@ -114,6 +121,7 @@ public class RobotContainer {
                     VisionConstants.camera2Name, VisionConstants.robotToCamera2, drive::getPose),
                 new VisionIOPhotonVisionSim(
                     VisionConstants.camera3Name, VisionConstants.robotToCamera3, drive::getPose));
+        testlaserCAN = new TestLaserCAN(new TestLaserCANIOSim());
         break;
 
       default:
@@ -133,6 +141,7 @@ public class RobotContainer {
                 new VisionIO() {},
                 new VisionIO() {},
                 new VisionIO() {});
+        testlaserCAN = new TestLaserCAN(new TestLaserCANIO() {});
         break;
     }
 
