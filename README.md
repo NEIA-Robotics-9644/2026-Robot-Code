@@ -33,9 +33,11 @@ Once your work is complete, open a new Pull Request and check against this list:
 - All merge conflicts are resolved.
 
 ### During Competitions
-All competitions, whether pre-season, season, or off-season, will be given their own branch designated with the event code and year. Ex: ```event_MAWOR2025```. These branches are unprotected and have no rulesets associated with them. All code deployed to the competition robot will be sourced from this designated branch. This allows any member to push code without requiring a pull request, allowing for faster, hassle-free changes to robot code. After each competition, the branch will be merged with ```main``` without squashing commits, given it is in a working state.
+All competitions, whether pre-season, season, or off-season, will be given their own branch designated with the event code and year. Ex: ```event_MAWOR2025```. These branches are unprotected and have no rulesets associated with them. All code deployed to the competition robot will be sourced from this designated branch. This allows any member to push code without requiring a pull request, allowing for faster, hassle-free changes to robot code. After each competition, the branch will be merged with ```main``` without squashing commits, given it is in a working state.  
+
+Note: The prefix ```event``` will ensure that any code deployed to the robot will be committed to the branch (see [build.gradle](https://github.com/NEIA-Robotics-9644/2026-Robot-Code/blob/d5408845ff7be9e6b541cbb27b5af825ab436651/build.gradle#L156-L186)). This allows for deterministic log replay in AdvantageScope, detailed [here](https://docs.advantagekit.org/getting-started/replay-watch), given that we know what code was running on the robot at anytime by extracting the commit hash from the log file metadata.
 
 ### Additional Notes
 
 #### Package Structure
-The codebase follows a clean separation between robot-specific code (`org.neiacademy.robotics.frc2025.*`) and reusable library code (`org.neiacademy.robotics.lib.*`). The library packages provide abstractions and utilities that could be reused across different robot projects.
+The codebase follows a clean separation between robot-specific code (`org.neiacademy.robotics.frc2025.*`) and reusable library code (`org.neiacademy.robotics.lib.*`). The library packages provide abstractions and utilities that could be reused across different robot projects. This structure is **_heavily_** inspired by Team 3467: Windham Windup. See their [W8 Library](https://github.com/WHS-FRC-3467/W8-Library/tree/dev) for more details.
