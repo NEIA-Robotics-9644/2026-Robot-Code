@@ -11,7 +11,7 @@ public class TestLaserCANConstants {
       new GenericLaserCANSubsystemConstants();
 
   static {
-    kSubSysConstants.kName = "TestLaserCAN";
+    kSubSysConstants.kName = "Laser40Good";
     kSubSysConstants.laserCANDeviceId = Constants.kLASER_CAN_ID;
     kSubSysConstants.rangingMode = RangingMode.SHORT;
     kSubSysConstants.regionOfInterest = new RegionOfInterest(8, 8, 16, 4);

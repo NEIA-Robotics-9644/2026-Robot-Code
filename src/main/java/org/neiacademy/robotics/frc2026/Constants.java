@@ -25,7 +25,7 @@ public final class Constants {
   public static final CANDeviceID kPDH_CAN_ID = new CANDeviceID(0);
   public static final CANDeviceID kRIO_CAN_ID = new CANDeviceID(1);
 
-  public static final CANDeviceID kLASER_CAN_ID = new CANDeviceID(35);
+  public static final CANDeviceID kLASER_CAN_ID = new CANDeviceID(40);
 
   public static enum Mode {
     /** Running on a real robot. */

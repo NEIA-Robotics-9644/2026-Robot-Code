@@ -29,6 +29,8 @@ import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIO;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOSim;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOTalonFX;
 import org.neiacademy.robotics.frc2026.subsystems.misc.LED.LEDSubsystem;
+import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffect;
+import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffectIOReal;
 import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCAN;
 import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCANIO;
 import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCANIOReal;
@@ -56,6 +58,8 @@ public class RobotContainer {
 
   private final TestLaserCAN testlaserCAN;
 
+  private final TestHallEffect testhalleffect;
+
   private final Alert driverDisconnected =
       new Alert("Driver controller disconnected (port 0).", AlertType.kWarning);
   private final Alert operatorDisconnected =
@@ -78,6 +82,7 @@ public class RobotContainer {
       case REAL:
         // Real robot, instantiate hardware IO implementations
         led = new LEDSubsystem(9);
+        testhalleffect = new TestHallEffect(new TestHallEffectIOReal());
         // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and a CANcoder
         drive =
             new Drive(
@@ -122,11 +127,13 @@ public class RobotContainer {
                 new VisionIOPhotonVisionSim(
                     VisionConstants.camera3Name, VisionConstants.robotToCamera3, drive::getPose));
         testlaserCAN = new TestLaserCAN(new TestLaserCANIOSim());
+        testhalleffect = null;
         break;
 
       default:
         // Replayed robot, disable IO implementations
         led = null;
+        testhalleffect = null;
         drive =
             new Drive(
                 new GyroIO() {},
