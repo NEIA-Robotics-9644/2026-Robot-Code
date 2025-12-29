@@ -10,8 +10,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
-import org.neiacademy.robotics.frc2026.subsystems.misc.GenericLaserCANSubsystem.GenericLaserCANSubsystem;
-import org.neiacademy.robotics.frc2026.subsystems.misc.GenericLaserCANSubsystem.GenericLaserCANSubsystem.DistanceState;
+import org.neiacademy.robotics.lib.genericIO.GenericLaserCANSubsystem.GenericLaserCANSubsystem;
+import org.neiacademy.robotics.lib.genericIO.GenericLaserCANSubsystem.GenericLaserCANSubsystem.DistanceState;
 
 public class TestLaserCAN extends GenericLaserCANSubsystem<TestLaserCAN.State> {
 

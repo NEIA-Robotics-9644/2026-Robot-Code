@@ -4,7 +4,7 @@ import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
 import au.grapplerobotics.interfaces.LaserCanInterface.RegionOfInterest;
 import au.grapplerobotics.interfaces.LaserCanInterface.TimingBudget;
 import org.neiacademy.robotics.frc2026.Constants;
-import org.neiacademy.robotics.frc2026.subsystems.misc.GenericLaserCANSubsystem.GenericLaserCANSubsystemConstants;
+import org.neiacademy.robotics.lib.genericIO.GenericLaserCANSubsystem.GenericLaserCANSubsystemConstants;
 
 public class TestLaserCANConstants {
   public static final GenericLaserCANSubsystemConstants kSubSysConstants =

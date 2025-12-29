@@ -1,4 +1,4 @@
-package org.neiacademy.robotics.frc2026.subsystems.misc.GenericLaserCANSubsystem;
+package org.neiacademy.robotics.lib.genericIO.GenericLaserCANSubsystem;
 
 import static edu.wpi.first.units.Units.*;
 

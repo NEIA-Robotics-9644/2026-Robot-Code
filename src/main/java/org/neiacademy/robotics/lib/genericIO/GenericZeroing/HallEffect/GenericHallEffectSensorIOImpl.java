@@ -1,4 +1,4 @@
-package org.neiacademy.robotics.frc2026.subsystems.misc.GenericZeroing.HallEffect;
+package org.neiacademy.robotics.lib.genericIO.GenericZeroing.HallEffect;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 
