@@ -12,18 +12,33 @@ public class GenericHallEffectSensorSubsystem extends SubsystemBase {
 
   private final String name;
 
+  private String parentSubsystemLogger = null;
+
   public GenericHallEffectSensorSubsystem(String name, GenericHallEffectSensorIO io) {
     this.inputs = new HallEffectSensorIOInputsAutoLogged();
     this.name = name;
     this.io = io;
   }
 
+  public GenericHallEffectSensorSubsystem(
+      String name, GenericHallEffectSensorIO io, String parentSubsystemLogger) {
+    this.inputs = new HallEffectSensorIOInputsAutoLogged();
+    this.name = name;
+    this.io = io;
+    this.parentSubsystemLogger = parentSubsystemLogger;
+  }
+
   @Override
   public void periodic() {
     io.updateInputs(inputs);
 
-    Logger.processInputs("HallEffectSensors/" + name, inputs);
-    Logger.recordOutput("HallEffectSensors/" + name + "/Triggered", inputs.triggered);
+    if (parentSubsystemLogger != null) {
+      Logger.processInputs(parentSubsystemLogger + "/" + name, inputs);
+      Logger.recordOutput(parentSubsystemLogger + "/" + name + "/Triggered", inputs.triggered);
+    } else {
+      Logger.processInputs("HallEffectSensors/" + name, inputs);
+      Logger.recordOutput("HallEffectSensors/" + name + "/Triggered", inputs.triggered);
+    }
   }
 
   public boolean isTriggered() {
