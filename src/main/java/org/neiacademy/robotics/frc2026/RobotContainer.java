@@ -35,11 +35,6 @@ import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCAN;
 import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCANIO;
 import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCANIOReal;
 import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCANIOSim;
-import org.neiacademy.robotics.frc2026.subsystems.vision.Vision;
-import org.neiacademy.robotics.frc2026.subsystems.vision.VisionConstants;
-import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIO;
-import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVision;
-import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVisionSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -54,7 +49,7 @@ public class RobotContainer {
 
   private final Drive drive;
 
-  private final Vision vision;
+  //   private final Vision vision;
 
   private final TestLaserCAN testlaserCAN;
 
@@ -91,17 +86,17 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
-        vision =
-            new Vision(
-                drive::addVisionMeasurement,
-                new VisionIOPhotonVision(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0),
-                new VisionIOPhotonVision(
-                    VisionConstants.camera1Name, VisionConstants.robotToCamera1),
-                new VisionIOPhotonVision(
-                    VisionConstants.camera2Name, VisionConstants.robotToCamera2),
-                new VisionIOPhotonVision(
-                    VisionConstants.camera3Name, VisionConstants.robotToCamera3));
+        // vision =
+        //     new Vision(
+        //         drive::addVisionMeasurement,
+        //         new VisionIOPhotonVision(
+        //             VisionConstants.camera0Name, VisionConstants.robotToCamera0),
+        //         new VisionIOPhotonVision(
+        //             VisionConstants.camera1Name, VisionConstants.robotToCamera1),
+        //         new VisionIOPhotonVision(
+        //             VisionConstants.camera2Name, VisionConstants.robotToCamera2),
+        //         new VisionIOPhotonVision(
+        //             VisionConstants.camera3Name, VisionConstants.robotToCamera3));
         testlaserCAN = new TestLaserCAN(new TestLaserCANIOReal());
         break;
 
@@ -115,17 +110,18 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
-        vision =
-            new Vision(
-                drive::addVisionMeasurement,
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose),
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera2Name, VisionConstants.robotToCamera2, drive::getPose),
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera3Name, VisionConstants.robotToCamera3, drive::getPose));
+        // vision =
+        //     new Vision(
+        //         drive::addVisionMeasurement,
+        //         new VisionIOPhotonVisionSim(
+        //             VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
+        //         new VisionIOPhotonVisionSim(
+        //             VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose),
+        //         new VisionIOPhotonVisionSim(
+        //             VisionConstants.camera2Name, VisionConstants.robotToCamera2, drive::getPose),
+        //         new VisionIOPhotonVisionSim(
+        //             VisionConstants.camera3Name, VisionConstants.robotToCamera3,
+        // drive::getPose));
         testlaserCAN = new TestLaserCAN(new TestLaserCANIOSim());
         testhalleffect = null;
         break;
@@ -141,13 +137,13 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        vision =
-            new Vision(
-                drive::addVisionMeasurement,
-                new VisionIO() {},
-                new VisionIO() {},
-                new VisionIO() {},
-                new VisionIO() {});
+        // vision =
+        //     new Vision(
+        //         drive::addVisionMeasurement,
+        //         new VisionIO() {},
+        //         new VisionIO() {},
+        //         new VisionIO() {},
+        //         new VisionIO() {});
         testlaserCAN = new TestLaserCAN(new TestLaserCANIO() {});
         break;
     }

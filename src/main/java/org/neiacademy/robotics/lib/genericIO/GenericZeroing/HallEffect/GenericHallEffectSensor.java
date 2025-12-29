@@ -3,7 +3,7 @@ package org.neiacademy.robotics.lib.genericIO.GenericZeroing.HallEffect;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
-public class GenericHallEffectSensorSubsystem extends SubsystemBase {
+public class GenericHallEffectSensor extends SubsystemBase {
 
   private final GenericHallEffectSensorIO io;
 
@@ -14,13 +14,13 @@ public class GenericHallEffectSensorSubsystem extends SubsystemBase {
 
   private String parentSubsystemLogger = null;
 
-  public GenericHallEffectSensorSubsystem(String name, GenericHallEffectSensorIO io) {
+  public GenericHallEffectSensor(String name, GenericHallEffectSensorIO io) {
     this.inputs = new HallEffectSensorIOInputsAutoLogged();
     this.name = name;
     this.io = io;
   }
 
-  public GenericHallEffectSensorSubsystem(
+  public GenericHallEffectSensor(
       String name, GenericHallEffectSensorIO io, String parentSubsystemLogger) {
     this.inputs = new HallEffectSensorIOInputsAutoLogged();
     this.name = name;

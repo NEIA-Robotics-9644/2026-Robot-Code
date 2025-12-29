@@ -1,8 +1,8 @@
 package org.neiacademy.robotics.frc2026.subsystems.test.HallEffect;
 
-import org.neiacademy.robotics.lib.genericIO.GenericZeroing.HallEffect.GenericHallEffectSensorSubsystem;
+import org.neiacademy.robotics.lib.genericIO.GenericZeroing.HallEffect.GenericHallEffectSensor;
 
-public class TestHallEffect extends GenericHallEffectSensorSubsystem {
+public class TestHallEffect extends GenericHallEffectSensor {
 
   public TestHallEffect(TestHallEffectIO io) {
     super("testhall", io);
