@@ -15,14 +15,16 @@ public class GenericHallEffectSensorIOImpl implements GenericHallEffectSensorIO 
 
   private final DigitalInput input;
   private final TriggerType triggerType;
+  private String name;
 
   /**
    * @param dioPort DIO port the hall effect sensor is plugged into
    * @param triggerType Whether the sensor is active-high or active-low
    */
-  public GenericHallEffectSensorIOImpl(int dioPort, TriggerType triggerType) {
-    this.input = new DigitalInput(dioPort);
-    this.triggerType = triggerType;
+  public GenericHallEffectSensorIOImpl(GenericHallEffectSensorConstants constants, boolean isSim) {
+    name = constants.kName;
+    this.input = new DigitalInput(constants.kDIOport);
+    this.triggerType = constants.ktriggerType;
   }
 
   @Override
