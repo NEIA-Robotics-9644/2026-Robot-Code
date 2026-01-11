@@ -28,12 +28,13 @@ import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIOPigeon2;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIO;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOSim;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOTalonFX;
-import org.neiacademy.robotics.frc2026.subsystems.led.LEDSubsystem;
-import org.neiacademy.robotics.frc2026.subsystems.vision.Vision;
-import org.neiacademy.robotics.frc2026.subsystems.vision.VisionConstants;
-import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIO;
-import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVision;
-import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVisionSim;
+import org.neiacademy.robotics.frc2026.subsystems.misc.LED.LEDSubsystem;
+import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffect;
+import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffectIOReal;
+import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCAN;
+import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCANIO;
+import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCANIOReal;
+import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCANIOSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -48,7 +49,11 @@ public class RobotContainer {
 
   private final Drive drive;
 
-  private final Vision vision;
+  //   private final Vision vision;
+
+  private final TestLaserCAN testlaserCAN;
+
+  private final TestHallEffect testhalleffect;
 
   private final Alert driverDisconnected =
       new Alert("Driver controller disconnected (port 0).", AlertType.kWarning);
@@ -72,6 +77,7 @@ public class RobotContainer {
       case REAL:
         // Real robot, instantiate hardware IO implementations
         led = new LEDSubsystem(9);
+        testhalleffect = new TestHallEffect(new TestHallEffectIOReal());
         // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and a CANcoder
         drive =
             new Drive(
@@ -80,17 +86,18 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
-        vision =
-            new Vision(
-                drive::addVisionMeasurement,
-                new VisionIOPhotonVision(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0),
-                new VisionIOPhotonVision(
-                    VisionConstants.camera1Name, VisionConstants.robotToCamera1),
-                new VisionIOPhotonVision(
-                    VisionConstants.camera2Name, VisionConstants.robotToCamera2),
-                new VisionIOPhotonVision(
-                    VisionConstants.camera3Name, VisionConstants.robotToCamera3));
+        // vision =
+        //     new Vision(
+        //         drive::addVisionMeasurement,
+        //         new VisionIOPhotonVision(
+        //             VisionConstants.camera0Name, VisionConstants.robotToCamera0),
+        //         new VisionIOPhotonVision(
+        //             VisionConstants.camera1Name, VisionConstants.robotToCamera1),
+        //         new VisionIOPhotonVision(
+        //             VisionConstants.camera2Name, VisionConstants.robotToCamera2),
+        //         new VisionIOPhotonVision(
+        //             VisionConstants.camera3Name, VisionConstants.robotToCamera3));
+        testlaserCAN = new TestLaserCAN(new TestLaserCANIOReal());
         break;
 
       case SIM:
@@ -103,22 +110,26 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
-        vision =
-            new Vision(
-                drive::addVisionMeasurement,
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose),
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera2Name, VisionConstants.robotToCamera2, drive::getPose),
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera3Name, VisionConstants.robotToCamera3, drive::getPose));
+        // vision =
+        //     new Vision(
+        //         drive::addVisionMeasurement,
+        //         new VisionIOPhotonVisionSim(
+        //             VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
+        //         new VisionIOPhotonVisionSim(
+        //             VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose),
+        //         new VisionIOPhotonVisionSim(
+        //             VisionConstants.camera2Name, VisionConstants.robotToCamera2, drive::getPose),
+        //         new VisionIOPhotonVisionSim(
+        //             VisionConstants.camera3Name, VisionConstants.robotToCamera3,
+        // drive::getPose));
+        testlaserCAN = new TestLaserCAN(new TestLaserCANIOSim());
+        testhalleffect = null;
         break;
 
       default:
         // Replayed robot, disable IO implementations
         led = null;
+        testhalleffect = null;
         drive =
             new Drive(
                 new GyroIO() {},
@@ -126,13 +137,14 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        vision =
-            new Vision(
-                drive::addVisionMeasurement,
-                new VisionIO() {},
-                new VisionIO() {},
-                new VisionIO() {},
-                new VisionIO() {});
+        // vision =
+        //     new Vision(
+        //         drive::addVisionMeasurement,
+        //         new VisionIO() {},
+        //         new VisionIO() {},
+        //         new VisionIO() {},
+        //         new VisionIO() {});
+        testlaserCAN = new TestLaserCAN(new TestLaserCANIO() {});
         break;
     }
 

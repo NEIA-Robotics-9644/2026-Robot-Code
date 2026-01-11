@@ -7,6 +7,7 @@
 
 package org.neiacademy.robotics.frc2026;
 
+import au.grapplerobotics.CanBridge;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
@@ -34,6 +35,9 @@ public class Robot extends LoggedRobot {
   private RobotContainer robotContainer;
 
   public Robot() {
+
+    CanBridge.runTCP(); // Used for configuring LaserCANs
+
     // Record metadata
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
@@ -59,7 +63,7 @@ public class Robot extends LoggedRobot {
         Logger.addDataReceiver(new WPILOGWriter());
         Logger.addDataReceiver(new NT4Publisher());
         LoggedPowerDistribution.getInstance(
-            Constants.kPDH_CAN_ID, ModuleType.kRev); // check PDH CAN ID
+            Constants.kPDH_CAN_ID.getDeviceNumber(), ModuleType.kRev); // check PDH CAN ID
         break;
 
       case SIM:
