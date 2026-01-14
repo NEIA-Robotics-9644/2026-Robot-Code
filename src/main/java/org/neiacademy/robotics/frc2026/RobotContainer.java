@@ -29,6 +29,7 @@ import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIO;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOSim;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOTalonFX;
 import org.neiacademy.robotics.frc2026.subsystems.misc.LED.LEDSubsystem;
+import org.neiacademy.robotics.frc2026.subsystems.superstructure.Superstructure;
 import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffect;
 import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffectIOReal;
 import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCAN;
@@ -48,6 +49,8 @@ public class RobotContainer {
   private final LEDSubsystem led;
 
   private final Drive drive;
+
+  private final Superstructure superstructure;
 
   //   private final Vision vision;
 
@@ -98,6 +101,9 @@ public class RobotContainer {
         //         new VisionIOPhotonVision(
         //             VisionConstants.camera3Name, VisionConstants.robotToCamera3));
         testlaserCAN = new TestLaserCAN(new TestLaserCANIOReal());
+
+        superstructure = new Superstructure();
+
         break;
 
       case SIM:
@@ -124,6 +130,9 @@ public class RobotContainer {
         // drive::getPose));
         testlaserCAN = new TestLaserCAN(new TestLaserCANIOSim());
         testhalleffect = null;
+
+        superstructure = new Superstructure();
+
         break;
 
       default:
@@ -145,6 +154,9 @@ public class RobotContainer {
         //         new VisionIO() {},
         //         new VisionIO() {});
         testlaserCAN = new TestLaserCAN(new TestLaserCANIO() {});
+
+        superstructure = new Superstructure();
+
         break;
     }
 
@@ -211,6 +223,30 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+
+    operatorCon
+        .povLeft()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        superstructure
+                            .getPhaseShiftTracker()
+                            .setPhaseShiftUsingCurrentAlliance(true))
+                .ignoringDisable(true));
+
+    operatorCon
+        .povRight()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        superstructure
+                            .getPhaseShiftTracker()
+                            .setPhaseShiftUsingCurrentAlliance(false))
+                .ignoringDisable(true));
+
+    operatorCon
+        .povUp()
+        .onTrue(Commands.runOnce(() -> superstructure.doKeyPointTracking()).ignoringDisable(true));
   }
 
   /**
