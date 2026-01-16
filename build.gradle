@@ -153,6 +153,31 @@ gversion {
     indent       = "  "
 }
 
+// // Generate git graph SVG before build/deploy
+// def gitGraphGenerator = file("assets/git-graph-gen.py")
+
+// tasks.register("generateGitGraph") {
+//     doLast {
+//         if (!gitGraphGenerator.exists()) {
+//             println "git-graph-generator not found, skipping"
+//             return
+//         }
+//         exec {
+//             workingDir projectDir
+//             executable "python3"
+//             args gitGraphGenerator.absolutePath
+//         }
+//     }
+// }
+
+// tasks.named("build") {
+//     dependsOn("generateGitGraph")
+// }
+
+// tasks.matching { it.name.toLowerCase().contains("deploy") }.configureEach {
+//     dependsOn("generateGitGraph")
+// }
+
 // Create commit with working changes on event branches
 task(eventDeploy) {
     doLast {

@@ -68,6 +68,25 @@ def main():
     )
     main_commits = branch_commits.get("main", set())
 
+    branch_spans = {}
+    if "main" in branches:
+        for b in branches:
+            if b == "main":
+                continue
+            try:
+                merge_base = git(repo_root, "merge-base", "main", b)
+            except subprocess.CalledProcessError:
+                merge_base = ""
+            if merge_base:
+                span_commits = set(
+                    git(repo_root, "rev-list", b, f"^{merge_base}").splitlines()
+                )
+            else:
+                span_commits = set(git(repo_root, "rev-list", b).splitlines())
+            branch_spans[b] = span_commits
+    else:
+        branch_spans = {b: branch_commits[b] for b in branches if b != "main"}
+
     lane_index = {b: i for i, b in enumerate(lane_order)}
     distance_cache = {}
 
@@ -80,16 +99,16 @@ def main():
     def choose_branch(sha):
         if sha in main_first_parent:
             return "main"
-        candidates = [b for b in branches if b != "main" and sha in branch_commits.get(b, set())]
+        candidates = [b for b in branches if b != "main" and sha in branch_spans.get(b, set())]
         if candidates:
             candidates.sort(key=lambda b: (distance_to_tip(b, sha), lane_index.get(b, 0), b))
             return candidates[0]
         if sha in main_commits:
             return "main"
-        if current in branch_commits and sha in branch_commits[current]:
+        if current in branch_spans and sha in branch_spans[current]:
             return current
         for b in lane_order:
-            if sha in branch_commits.get(b, set()):
+            if sha in branch_spans.get(b, set()):
                 return b
         return lane_order[0] if lane_order else "main"
 
