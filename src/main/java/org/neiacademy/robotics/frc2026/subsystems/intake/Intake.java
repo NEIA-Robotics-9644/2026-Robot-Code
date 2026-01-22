@@ -15,17 +15,17 @@ public class Intake extends SubsystemBase{
     private final IntakeIO wheel;
     private final IntakeIO pivot;
     private final PIDController pivotFeedback= new PIDController(0, 0, 0);
-    private LoggedTunableNumber pivotP = new LoggedTunableNumber("Pivot/P", 0.1);
-    private LoggedTunableNumber pivotI = new LoggedTunableNumber("Pivot/I", 0.0);
-    private LoggedTunableNumber pivotD = new LoggedTunableNumber("Pivot/P", 0.0);
-    private LoggedTunableNumber pivotG = new LoggedTunableNumber("Pivot/G", 0.1);
+    private LoggedTunableNumber KP = new LoggedTunableNumber("Pivot/P", 0.1);
+    private LoggedTunableNumber KI = new LoggedTunableNumber("Pivot/I", 0.0);
+    private LoggedTunableNumber KD = new LoggedTunableNumber("Pivot/P", 0.0);
+    //private LoggedTunableNumber pivotG = new LoggedTunableNumber("Pivot/G", 0.1);
 
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
     public Intake(IntakeIO wheel, IntakeIO pivot) {
         this.wheel = wheel;
         this.pivot = pivot;
-        pivotFeedback.setPID(pivotP.get(), pivotI.get(), pivotD.get());
+        pivotFeedback.setPID(KP.get(), KI.get(), KD.get());
     }
     
     public void periodic() {
@@ -49,11 +49,11 @@ public class Intake extends SubsystemBase{
         var command =
             Commands.runEnd(
                 () -> {
-                    pivotFeedback.setPID(pivotP.get(), pivotI.get(), pivotD.get());
+                    pivotFeedback.setPID(KP.get(), KI.get(), KD.get());
                     var output = 
                         pivotFeedback.calculate(
                             pivot.getPositionRads(), angle.getAsDouble()
-                    )+ pivotG.get();
+                    );
 
                     setPivotVelocity(output);
                 },
