@@ -41,3 +41,7 @@ Note: The prefix ```event``` will ensure that any code deployed to the robot wil
 
 #### Package Structure
 The codebase follows a clean separation between robot-specific code (`org.neiacademy.robotics.frc2025.*`) and reusable library code (`org.neiacademy.robotics.lib.*`). The library packages provide abstractions and utilities that could be reused across different robot projects. This structure is **_heavily_** inspired by Team 3467: Windham Windup. See their [W8 Library](https://github.com/WHS-FRC-3467/W8-Library/tree/dev) for more details.
+
+<!-- <p align="center">
+  <img src="assets/git-graph.svg" width="40%" height="40%">
+</p> -->

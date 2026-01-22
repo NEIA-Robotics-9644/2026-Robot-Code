@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2025.3.1"
+    id "edu.wpi.first.GradleRIO" version "2026.1.1"
     id "com.peterabeles.gversion" version "1.10"
     id "com.diffplug.spotless" version "6.12.0"
     id "io.freefair.lombok" version "8.6"
@@ -152,6 +152,31 @@ gversion {
     timeZone     = "America/New_York"
     indent       = "  "
 }
+
+// // Generate git graph SVG before build/deploy
+// def gitGraphGenerator = file("assets/git-graph-gen.py")
+
+// tasks.register("generateGitGraph") {
+//     doLast {
+//         if (!gitGraphGenerator.exists()) {
+//             println "git-graph-generator not found, skipping"
+//             return
+//         }
+//         exec {
+//             workingDir projectDir
+//             executable "python3"
+//             args gitGraphGenerator.absolutePath
+//         }
+//     }
+// }
+
+// tasks.named("build") {
+//     dependsOn("generateGitGraph")
+// }
+
+// tasks.matching { it.name.toLowerCase().contains("deploy") }.configureEach {
+//     dependsOn("generateGitGraph")
+// }
 
 // Create commit with working changes on event branches
 task(eventDeploy) {
