@@ -11,14 +11,14 @@
       "style": "0",
       "userScale": "2",
       "width": "1280",
-      "xpos": "351",
-      "ypos": "168"
+      "xpos": "330",
+      "ypos": "183"
     }
   },
   "Window": {
     "###FMS": {
       "Collapsed": "0",
-      "Pos": "5,540",
+      "Pos": "36,496",
       "Size": "283,140"
     },
     "###Joysticks": {

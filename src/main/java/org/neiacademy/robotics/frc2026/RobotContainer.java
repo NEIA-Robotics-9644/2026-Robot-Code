@@ -17,21 +17,17 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
-import java.time.format.SignStyle;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
-import org.neiacademy.robotics.frc2026.generated.TunerConstants;
 import org.neiacademy.robotics.frc2026.subsystems.drive.Drive;
 import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIO;
 import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIOPigeon2;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIO;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOSim;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOTalonFX;
+import org.neiacademy.robotics.frc2026.subsystems.drive.generated.TunerConstants;
 import org.neiacademy.robotics.frc2026.subsystems.misc.LED.LEDSubsystem;
 import org.neiacademy.robotics.frc2026.subsystems.superstructure.Superstructure;
 import org.neiacademy.robotics.frc2026.subsystems.superstructure.Superstructure.TrackingTarget;
@@ -251,42 +247,34 @@ public class RobotContainer {
 
     driverCon
         .povUp()
-        .onTrue(Commands.runOnce(() -> superstructure.doKeyPointTracking())
-            .ignoringDisable(true));
-    
+        .onTrue(Commands.runOnce(() -> superstructure.doKeyPointTracking()).ignoringDisable(true));
+
     driverCon
         .povDown()
-        .onTrue(Commands.runOnce(() -> superstructure.doManualTrackingTargets())
-            .ignoringDisable(true));
-
+        .onTrue(
+            Commands.runOnce(() -> superstructure.doManualTrackingTargets()).ignoringDisable(true));
 
     driverCon
         .povLeft()
         .onTrue(
             Commands.either(
-                Commands.runOnce(
-                    () -> superstructure.setTrackingTargetManual(TrackingTarget.TOP),
-                    superstructure
-            ),
-                Commands.none(),
-                superstructure::isDoManualTargetTracking
-            )
-            .ignoringDisable(true)
-        );
+                    Commands.runOnce(
+                        () -> superstructure.setTrackingTargetManual(TrackingTarget.TOP),
+                        superstructure),
+                    Commands.none(),
+                    superstructure::isDoManualTargetTracking)
+                .ignoringDisable(true));
 
     driverCon
         .povRight()
         .onTrue(
             Commands.either(
-                Commands.runOnce(
-                    () -> superstructure.setTrackingTargetManual(TrackingTarget.BOTTOM),
-                    superstructure
-            ),
-                Commands.none(),
-                superstructure::isDoManualTargetTracking
-            )
-            .ignoringDisable(true)
-        );
+                    Commands.runOnce(
+                        () -> superstructure.setTrackingTargetManual(TrackingTarget.BOTTOM),
+                        superstructure),
+                    Commands.none(),
+                    superstructure::isDoManualTargetTracking)
+                .ignoringDisable(true));
   }
 
   /**

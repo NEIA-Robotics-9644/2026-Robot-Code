@@ -47,7 +47,7 @@ import org.littletonrobotics.junction.Logger;
 import org.neiacademy.robotics.frc2026.Constants;
 import org.neiacademy.robotics.frc2026.Constants.Mode;
 import org.neiacademy.robotics.frc2026.GlobalRobotState;
-import org.neiacademy.robotics.frc2026.generated.TunerConstants;
+import org.neiacademy.robotics.frc2026.subsystems.drive.generated.TunerConstants;
 import org.neiacademy.robotics.frc2026.util.LocalADStarAK;
 
 public class Drive extends SubsystemBase {

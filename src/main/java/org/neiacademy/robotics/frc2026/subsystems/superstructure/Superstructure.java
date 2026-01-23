@@ -1,20 +1,17 @@
 package org.neiacademy.robotics.frc2026.subsystems.superstructure;
 
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.neiacademy.robotics.frc2026.FieldConstants.KeyFieldPoints;
-import org.neiacademy.robotics.frc2026.GlobalRobotState;
-
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import lombok.Getter;
 import lombok.Setter;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.neiacademy.robotics.frc2026.FieldConstants.KeyFieldPoints;
+import org.neiacademy.robotics.frc2026.GlobalRobotState;
 
 public class Superstructure extends SubsystemBase {
 
-  @Getter @Setter
-  private SuperstructurePhaseShiftTracker phaseShiftTracker = new SuperstructurePhaseShiftTracker();
+  @Getter @Setter private PhaseShiftTracker phaseShiftTracker = new PhaseShiftTracker();
 
   @AutoLogOutput @Getter @Setter private TrackingTarget trackingTarget = TrackingTarget.BLUE_HUB;
 
@@ -45,8 +42,7 @@ public class Superstructure extends SubsystemBase {
       Translation2d passingTop = KeyFieldPoints.ALLIANCE_PASSING_POINT_TOP.get(alliance);
       Translation2d passingBottom = KeyFieldPoints.ALLIANCE_PASSING_POINT_BOTTOM.get(alliance);
 
-
-      if(doManualTargetTracking){
+      if (doManualTargetTracking) {
         if ((alliance == Alliance.Red && pose.getX() >= zoneLineX)
             || (alliance == Alliance.Blue && pose.getX() <= zoneLineX)) {
 
@@ -55,12 +51,10 @@ public class Superstructure extends SubsystemBase {
             trackingTarget =
                 (alliance == Alliance.Red) ? TrackingTarget.RED_HUB : TrackingTarget.BLUE_HUB;
             trackingTargetCoordinates = hub;
-          } 
-          else {
+          } else {
             trackingTarget = TrackingTarget.NONE;
           }
-        } 
-        else {
+        } else {
 
           boolean topHalf = pose.getY() <= KeyFieldPoints.FIELD_CENTER.getY();
 
@@ -70,8 +64,7 @@ public class Superstructure extends SubsystemBase {
                     ? TrackingTarget.RED_ALLIANCE_ZONE_TOP
                     : TrackingTarget.RED_ALLIANCE_ZONE_BOTTOM;
             trackingTargetCoordinates = topHalf ? passingTop : passingBottom;
-          } 
-          else {
+          } else {
             trackingTarget =
                 topHalf
                     ? TrackingTarget.BLUE_ALLIANCE_ZONE_TOP
@@ -94,19 +87,20 @@ public class Superstructure extends SubsystemBase {
     doManualTargetTracking = !doManualTargetTracking;
   }
 
-  public void setTrackingTargetManual(TrackingTarget target){
+  public void setTrackingTargetManual(TrackingTarget target) {
     var alliance = GlobalRobotState.getInstance().getAlliance();
-    if(target == TrackingTarget.TOP){
-      target = alliance == Alliance.Red ? 
-        TrackingTarget.RED_ALLIANCE_ZONE_TOP : TrackingTarget.BLUE_ALLIANCE_ZONE_TOP;
-    }
-    else if(target == TrackingTarget.BOTTOM){
-      target = alliance == Alliance.Red ? 
-        TrackingTarget.RED_ALLIANCE_ZONE_BOTTOM : TrackingTarget.BLUE_ALLIANCE_ZONE_BOTTOM;
-    }
-    else if(target == TrackingTarget.HUB){
-      target = alliance == Alliance.Red ? 
-        TrackingTarget.RED_HUB : TrackingTarget.BLUE_HUB;
+    if (target == TrackingTarget.TOP) {
+      target =
+          alliance == Alliance.Red
+              ? TrackingTarget.RED_ALLIANCE_ZONE_TOP
+              : TrackingTarget.BLUE_ALLIANCE_ZONE_TOP;
+    } else if (target == TrackingTarget.BOTTOM) {
+      target =
+          alliance == Alliance.Red
+              ? TrackingTarget.RED_ALLIANCE_ZONE_BOTTOM
+              : TrackingTarget.BLUE_ALLIANCE_ZONE_BOTTOM;
+    } else if (target == TrackingTarget.HUB) {
+      target = alliance == Alliance.Red ? TrackingTarget.RED_HUB : TrackingTarget.BLUE_HUB;
     }
   }
 

@@ -35,7 +35,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import java.util.Queue;
-import org.neiacademy.robotics.frc2026.generated.TunerConstants;
+import org.neiacademy.robotics.frc2026.subsystems.drive.generated.TunerConstants;
 
 /**
  * Module IO implementation for Talon FX drive motor controller, Talon FX turn motor controller, and

@@ -1,4 +1,4 @@
-package org.neiacademy.robotics.frc2026.generated;
+package org.neiacademy.robotics.frc2026.subsystems.drive.generated;
 
 import static edu.wpi.first.units.Units.*;
 

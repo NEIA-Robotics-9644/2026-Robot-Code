@@ -4,21 +4,22 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import lombok.Getter;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.neiacademy.robotics.frc2026.GlobalRobotState;
 
-public class SuperstructurePhaseShiftTracker {
+public class PhaseShiftTracker {
 
-  @Getter private Alliance phaseShiftHubStartingAlliance;
+  @AutoLogOutput @Getter private Alliance phaseShiftHubStartingAlliance;
 
-  @Getter private Alliance currentActiveAlliance;
+  @AutoLogOutput @Getter private Alliance currentActiveAlliance;
 
-  @Getter private Phase currentPhase = Phase.AUTO;
+  @AutoLogOutput @Getter private Phase currentPhase = Phase.AUTO;
 
   private double phaseStart;
 
-  @Getter private int alliancePhaseIndex = 0;
+  @AutoLogOutput @Getter private int alliancePhaseIndex = 0;
 
-  public SuperstructurePhaseShiftTracker() {
+  public PhaseShiftTracker() {
     this.phaseStart = Timer.getFPGATimestamp();
   }
 
