@@ -26,7 +26,7 @@ public class PhaseShiftTracker {
   public void periodic() {
     switch (currentPhase) {
       case AUTO -> {
-        if (RobotState.isTeleop()) {
+        if (RobotState.isAutonomous()) {
           alliancePhaseIndex = 0;
           currentPhase = Phase.TRANSITION;
           phaseStart = Timer.getFPGATimestamp();
