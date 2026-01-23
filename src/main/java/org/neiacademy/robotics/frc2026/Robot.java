@@ -123,6 +123,7 @@ public class Robot extends LoggedRobot {
     Threads.setCurrentThreadPriority(false, 10);
 
     // Robot container periodic methods
+    robotContainer.updateMatchState();
     robotContainer.updateAlerts();
   }
 

@@ -74,6 +74,7 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+  private final LoggedDashboardChooser<MatchOverride> matchStateChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -165,6 +166,11 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     autoChooser.addDefaultOption("No Auto!", noAuto);
+
+    matchStateChooser = new LoggedDashboardChooser<>("Match State Override");
+    matchStateChooser.addDefaultOption("Auto (FMS attached)", MatchOverride.AUTO_FMS);
+    matchStateChooser.addOption("Force Match", MatchOverride.FORCE_MATCH);
+    matchStateChooser.addOption("Force Not Match", MatchOverride.FORCE_NOT_MATCH);
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -286,6 +292,24 @@ public class RobotContainer {
     return autoChooser.get();
   }
 
+  /**
+   * Refreshes global match/alliance state using the dashboard override and FMS status.
+   *
+   * <p>When the override is set to auto, it relies on {@link DriverStation#isFMSAttached()} to
+   * detect a real match; otherwise operators can force match or non-match for off-field testing.
+   * The current alliance from the driver station is applied whenever available.
+   *
+   * <p>Primarily used for PhaseShiftTracker
+   */
+  public void updateMatchState() {
+    MatchOverride selection = matchStateChooser.get();
+    boolean isMatchDetected =
+        selection == MatchOverride.FORCE_MATCH
+            || (selection == MatchOverride.AUTO_FMS && DriverStation.isFMSAttached());
+    GlobalRobotState.getInstance().setMatch(isMatchDetected);
+    DriverStation.getAlliance().ifPresent(GlobalRobotState.getInstance()::setAlliance);
+  }
+
   public void updateAlerts() {
     // Controller disconnected alerts
     driverDisconnected.set(!DriverStation.isJoystickConnected(driverCon.getHID().getPort()));
@@ -294,5 +318,12 @@ public class RobotContainer {
     // Auto alert
     noAutoAlert.set(
         DriverStation.isAutonomous() && !DriverStation.isEnabled() && autoChooser.get() == noAuto);
+  }
+
+  /** ENUMS */
+  private enum MatchOverride {
+    AUTO_FMS,
+    FORCE_MATCH,
+    FORCE_NOT_MATCH
   }
 }

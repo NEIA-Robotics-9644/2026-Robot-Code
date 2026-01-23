@@ -7,6 +7,7 @@
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Alerts": "Alerts",
       "/SmartDashboard/Auto Choices": "String Chooser",
+      "/SmartDashboard/Match State Override": "String Chooser",
       "/SmartDashboard/PathPlanner": "Alerts",
       "/SmartDashboard/PhotonAlerts": "Alerts",
       "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d"
