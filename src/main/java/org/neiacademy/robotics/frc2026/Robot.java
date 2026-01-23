@@ -11,6 +11,7 @@ import au.grapplerobotics.CanBridge;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -141,6 +142,16 @@ public class Robot extends LoggedRobot {
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
       autonomousCommand.schedule();
+    }
+
+    if (DriverStation.isFMSAttached()) {
+      GlobalRobotState.getInstance().setMatch(true);
+
+      DriverStation.getAlliance()
+          .ifPresent(
+              alliance -> {
+                GlobalRobotState.getInstance().setAlliance(alliance);
+              });
     }
   }
 

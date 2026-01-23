@@ -22,6 +22,12 @@ public final class Constants {
   public static final Mode simMode = Mode.SIM;
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
+  public static boolean disableHAL = false;
+
+  public static void disableHAL() {
+    disableHAL = true;
+  }
+
   public static final CANDeviceID kPDH_CAN_ID = new CANDeviceID(0);
   public static final CANDeviceID kRIO_CAN_ID = new CANDeviceID(1);
 

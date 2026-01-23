@@ -17,8 +17,12 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
+import java.time.format.SignStyle;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
 import org.neiacademy.robotics.frc2026.generated.TunerConstants;
@@ -29,6 +33,8 @@ import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIO;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOSim;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOTalonFX;
 import org.neiacademy.robotics.frc2026.subsystems.misc.LED.LEDSubsystem;
+import org.neiacademy.robotics.frc2026.subsystems.superstructure.Superstructure;
+import org.neiacademy.robotics.frc2026.subsystems.superstructure.Superstructure.TrackingTarget;
 import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffect;
 import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffectIOReal;
 import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCAN;
@@ -49,7 +55,7 @@ public class RobotContainer {
 
   private final Drive drive;
 
-  // private final Intake intake
+  private final Superstructure superstructure;
 
   //   private final Vision vision;
 
@@ -100,6 +106,9 @@ public class RobotContainer {
         //         new VisionIOPhotonVision(
         //             VisionConstants.camera3Name, VisionConstants.robotToCamera3));
         testlaserCAN = new TestLaserCAN(new TestLaserCANIOReal());
+
+        superstructure = new Superstructure();
+
         break;
 
       case SIM:
@@ -126,6 +135,9 @@ public class RobotContainer {
         // drive::getPose));
         testlaserCAN = new TestLaserCAN(new TestLaserCANIOSim());
         testhalleffect = null;
+
+        superstructure = new Superstructure();
+
         break;
 
       default:
@@ -147,6 +159,9 @@ public class RobotContainer {
         //         new VisionIO() {},
         //         new VisionIO() {});
         testlaserCAN = new TestLaserCAN(new TestLaserCANIO() {});
+
+        superstructure = new Superstructure();
+
         break;
     }
 
@@ -213,6 +228,65 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+
+    operatorCon
+        .povLeft()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        superstructure
+                            .getPhaseShiftTracker()
+                            .setPhaseShiftUsingCurrentAlliance(true))
+                .ignoringDisable(true));
+
+    operatorCon
+        .povRight()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        superstructure
+                            .getPhaseShiftTracker()
+                            .setPhaseShiftUsingCurrentAlliance(false))
+                .ignoringDisable(true));
+
+    driverCon
+        .povUp()
+        .onTrue(Commands.runOnce(() -> superstructure.doKeyPointTracking())
+            .ignoringDisable(true));
+    
+    driverCon
+        .povDown()
+        .onTrue(Commands.runOnce(() -> superstructure.doManualTrackingTargets())
+            .ignoringDisable(true));
+
+
+    driverCon
+        .povLeft()
+        .onTrue(
+            Commands.either(
+                Commands.runOnce(
+                    () -> superstructure.setTrackingTargetManual(TrackingTarget.TOP),
+                    superstructure
+            ),
+                Commands.none(),
+                superstructure::isDoManualTargetTracking
+            )
+            .ignoringDisable(true)
+        );
+
+    driverCon
+        .povRight()
+        .onTrue(
+            Commands.either(
+                Commands.runOnce(
+                    () -> superstructure.setTrackingTargetManual(TrackingTarget.BOTTOM),
+                    superstructure
+            ),
+                Commands.none(),
+                superstructure::isDoManualTargetTracking
+            )
+            .ignoringDisable(true)
+        );
   }
 
   /**

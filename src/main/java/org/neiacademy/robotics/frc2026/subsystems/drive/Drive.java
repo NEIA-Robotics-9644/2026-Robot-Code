@@ -46,6 +46,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.neiacademy.robotics.frc2026.Constants;
 import org.neiacademy.robotics.frc2026.Constants.Mode;
+import org.neiacademy.robotics.frc2026.GlobalRobotState;
 import org.neiacademy.robotics.frc2026.generated.TunerConstants;
 import org.neiacademy.robotics.frc2026.util.LocalADStarAK;
 
@@ -206,6 +207,9 @@ public class Drive extends SubsystemBase {
       // Apply update
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
+
+    // move this elsewhere at some point
+    GlobalRobotState.getInstance().setEstimatedPose(getPose());
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
