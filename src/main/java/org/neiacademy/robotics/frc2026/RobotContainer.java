@@ -98,7 +98,9 @@ public class RobotContainer {
         //         new VisionIOPhotonVision(
         //             VisionConstants.camera2Name, VisionConstants.robotToCamera2),
         //         new VisionIOPhotonVision(
-        //             VisionConstants.camera3Name, VisionConstants.robotToCamera3));
+        //             VisionConstants.camera3Name, VisionConstants.robotToCamera3),
+        //         new VisionIOPhotonVision(
+        //             VisionConstants.camera4Name, VisionConstants.robotToCamera4));
         testlaserCAN = new TestLaserCAN(new TestLaserCANIOReal());
         break;
 
@@ -122,7 +124,9 @@ public class RobotContainer {
         //         new VisionIOPhotonVisionSim(
         //             VisionConstants.camera2Name, VisionConstants.robotToCamera2, drive::getPose),
         //         new VisionIOPhotonVisionSim(
-        //             VisionConstants.camera3Name, VisionConstants.robotToCamera3,
+        //             VisionConstants.camera3Name, VisionConstants.robotToCamera3, drive::getPose),
+        //         new VisionIOPhotonVisionSim(
+        //             VisionConstants.camera4Name, VisionConstants.robotToCamera4,
         // drive::getPose));
         testlaserCAN = new TestLaserCAN(new TestLaserCANIOSim());
         testhalleffect = null;
@@ -142,6 +146,7 @@ public class RobotContainer {
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
+        //         new VisionIO() {},
         //         new VisionIO() {},
         //         new VisionIO() {},
         //         new VisionIO() {},
