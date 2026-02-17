@@ -28,6 +28,10 @@ import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIOPigeon2;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIO;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOSim;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOTalonFX;
+import org.neiacademy.robotics.frc2026.subsystems.indexer.Indexer;
+import org.neiacademy.robotics.frc2026.subsystems.indexer.IndexerIO;
+import org.neiacademy.robotics.frc2026.subsystems.indexer.IndexerIOSim;
+import org.neiacademy.robotics.frc2026.subsystems.indexer.IndexerIOTalonFX;
 import org.neiacademy.robotics.frc2026.subsystems.misc.LED.LEDSubsystem;
 import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffect;
 import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffectIOReal;
@@ -48,6 +52,8 @@ public class RobotContainer {
   private final LEDSubsystem led;
 
   private final Drive drive;
+
+  private final Indexer indexer;
 
   // private final Intake intake
 
@@ -88,6 +94,10 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
+
+        //set CAN later
+        indexer =
+            new Indexer(new IndexerIOTalonFX(0, false));
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
@@ -112,6 +122,9 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
+        
+        indexer =
+                new Indexer(new IndexerIOSim());
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
@@ -139,6 +152,10 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+        
+        indexer =
+            new Indexer(new IndexerIO() {});
+            
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
