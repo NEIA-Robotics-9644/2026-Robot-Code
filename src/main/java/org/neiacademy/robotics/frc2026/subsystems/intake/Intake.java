@@ -37,7 +37,7 @@ public class Intake extends SubsystemBase{
         Logger.processInputs("Pivot", inputs);
     }
 
-    public void setWheelVelocity(double velocity) {
+    public void setVelocity(double velocity) {
         wheel.setVelocity(velocity);
     }
 
