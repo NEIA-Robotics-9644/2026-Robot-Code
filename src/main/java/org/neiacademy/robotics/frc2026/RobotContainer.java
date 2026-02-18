@@ -28,6 +28,10 @@ import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIOPigeon2;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIO;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOSim;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOTalonFX;
+import org.neiacademy.robotics.frc2026.subsystems.intake.Intake;
+import org.neiacademy.robotics.frc2026.subsystems.intake.IntakeIO;
+import org.neiacademy.robotics.frc2026.subsystems.intake.IntakeIOSim;
+import org.neiacademy.robotics.frc2026.subsystems.intake.IntakeIOTalonFX;
 import org.neiacademy.robotics.frc2026.subsystems.misc.LED.LEDSubsystem;
 import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffect;
 import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffectIOReal;
@@ -49,7 +53,7 @@ public class RobotContainer {
 
   private final Drive drive;
 
-  // private final Intake intake
+  private final Intake intake;
 
   //   private final Vision vision;
 
@@ -88,6 +92,10 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
+        intake =
+            new Intake(
+                new IntakeIOTalonFX(0,false),
+                new IntakeIOTalonFX(0,false));
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
@@ -112,6 +120,10 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
+        intake =
+            new Intake(
+                new IntakeIOSim(),
+                new IntakeIOSim());
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
@@ -139,6 +151,10 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+        intake =
+            new Intake(
+                new IntakeIO() {},
+                new IntakeIO() {});
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
