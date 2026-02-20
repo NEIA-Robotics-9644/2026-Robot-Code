@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
+import org.neiacademy.robotics.frc2026.commands.ShootWhenAtSpeedPercent;
 import org.neiacademy.robotics.frc2026.generated.TunerConstants;
 import org.neiacademy.robotics.frc2026.subsystems.drive.Drive;
 import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIO;
@@ -29,6 +30,12 @@ import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIO;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOSim;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOTalonFX;
 import org.neiacademy.robotics.frc2026.subsystems.misc.LED.LEDSubsystem;
+import org.neiacademy.robotics.frc2026.subsystems.shooter.Shooter;
+import org.neiacademy.robotics.frc2026.subsystems.shooter.Shooter.FlywheelSide;
+import org.neiacademy.robotics.frc2026.subsystems.shooter.wheels.FlywheelIOTalonFX;
+import org.neiacademy.robotics.frc2026.subsystems.shooter.wheels.Flywheel;
+import org.neiacademy.robotics.frc2026.subsystems.shooter.wheels.FlywheelIO;
+import org.neiacademy.robotics.frc2026.subsystems.shooter.wheels.FlywheelIOSim;
 import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffect;
 import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffectIOReal;
 import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCAN;
@@ -48,6 +55,8 @@ public class RobotContainer {
   private final LEDSubsystem led;
 
   private final Drive drive;
+
+  private final Shooter shooter;
 
   // private final Intake intake
 
@@ -88,6 +97,15 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
+
+        shooter =
+            new Shooter(
+                new Flywheel("Left Flywheel", new FlywheelIOTalonFX(0, false)),
+                new Flywheel("Right Flywheel", new FlywheelIOTalonFX(0, false)),
+                new Flywheel("Left Follower", new FlywheelIOTalonFX(0, false)),
+                new Flywheel("Right Follower", new FlywheelIOTalonFX(0, false)),
+                new Flywheel("Left Roller", new FlywheelIOTalonFX(0, false)),
+                new Flywheel("Right Roller", new FlywheelIOTalonFX(0, false)));
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
@@ -114,6 +132,15 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
+
+        shooter =
+            new Shooter(
+                new Flywheel("Left Flywheel", new FlywheelIOSim()),
+                new Flywheel("Right Flywheel", new FlywheelIOSim()),
+                new Flywheel("Left Follower", new FlywheelIOSim()),
+                new Flywheel("Right Follower", new FlywheelIOSim()),
+                new Flywheel("Left Roller", new FlywheelIOSim()),
+                new Flywheel("Right Roller", new FlywheelIOSim()));
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
@@ -143,6 +170,15 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+
+        shooter =
+            new Shooter(
+                new Flywheel("Left Flywheel", new FlywheelIO() {}),
+                new Flywheel("Right Flywheel", new FlywheelIO() {}),
+                new Flywheel("Left Follower", new FlywheelIO() {}),
+                new Flywheel("Right Follower", new FlywheelIO() {}),
+                new Flywheel("Left Roller", new FlywheelIO() {}),
+                new Flywheel("Right Roller", new FlywheelIO() {}));
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
@@ -218,6 +254,22 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+
+    operatorCon
+        .rightTrigger()
+        .onTrue(
+            Commands.runOnce(
+                    () -> {
+                            shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.LEFT_FLYWHEEL);
+                            shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.RIGHT_FLYWHEEL);
+                          }
+        ).ignoringDisable(true));
+
+    operatorCon
+        .rightBumper()
+        .onTrue(
+            new ShootWhenAtSpeedPercent(shooter, () -> 1.0, () -> 0.1, () -> 0.8, () -> 0.8)
+        );
   }
 
   /**

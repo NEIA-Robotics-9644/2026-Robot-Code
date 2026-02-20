@@ -2,8 +2,11 @@ package org.neiacademy.robotics.frc2026.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import lombok.Getter;
+
 import java.util.function.DoubleSupplier;
 import org.neiacademy.robotics.frc2026.subsystems.shooter.wheels.Flywheel;
+import org.neiacademy.robotics.frc2026.util.LoggedTunableNumber;
 
 public class Shooter extends SubsystemBase {
   // private final Hood leftHood;
@@ -16,6 +19,9 @@ public class Shooter extends SubsystemBase {
 
   private final Flywheel leftRollers;
   private final Flywheel rightRollers;
+
+   @Getter private static final LoggedTunableNumber flywheelSpeedPercent = 
+      new LoggedTunableNumber("Shooter/FlywheelSpeedPercent");
 
   public Shooter(
       /*Hood leftHood,
@@ -118,6 +124,21 @@ public class Shooter extends SubsystemBase {
       }
   }
 
+  public double getFlywheelVelocityPercent(FlywheelSide side){
+    switch (side) {
+      case LEFT_FLYWHEEL:
+        leftFlywheel.getVelocityPercentToGoal();
+      case RIGHT_FLYWHEEL:
+        rightFlywheel.getVelocityPercentToGoal();
+      case LEFT_ROLLERS:
+        leftRollers.getVelocityPercentToGoal();
+      case RIGHT_ROLLERS:
+        rightRollers.getVelocityPercentToGoal();
+      default:
+          throw new IllegalStateException(side + " is not an option for getFlywheelVelocityPercent.");
+    }
+  }
+  
   public enum HoodSide {
     LEFT_HOOD,
     RIGHT_HOOD
