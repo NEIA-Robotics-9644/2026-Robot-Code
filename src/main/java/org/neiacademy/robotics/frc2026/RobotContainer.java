@@ -32,6 +32,10 @@ import org.neiacademy.robotics.frc2026.subsystems.indexer.Indexer;
 import org.neiacademy.robotics.frc2026.subsystems.indexer.IndexerIO;
 import org.neiacademy.robotics.frc2026.subsystems.indexer.IndexerIOSim;
 import org.neiacademy.robotics.frc2026.subsystems.indexer.IndexerIOTalonFX;
+import org.neiacademy.robotics.frc2026.subsystems.intake.Intake;
+import org.neiacademy.robotics.frc2026.subsystems.intake.IntakeIO;
+import org.neiacademy.robotics.frc2026.subsystems.intake.IntakeIOSim;
+import org.neiacademy.robotics.frc2026.subsystems.intake.IntakeIOTalonFX;
 import org.neiacademy.robotics.frc2026.subsystems.misc.LED.LEDSubsystem;
 import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffect;
 import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffectIOReal;
@@ -53,6 +57,7 @@ public class RobotContainer {
 
   private final Drive drive;
 
+  private final Intake intake;
   private final Indexer indexer;
 
   // private final Intake intake
@@ -94,6 +99,7 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
+        intake = new Intake(new IntakeIOTalonFX(0, false), new IntakeIOTalonFX(0, false));
 
         // set CAN later
         indexer = new Indexer(new IndexerIOTalonFX(0, false));
@@ -121,6 +127,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
+        intake = new Intake(new IntakeIOSim(), new IntakeIOSim());
 
         indexer = new Indexer(new IndexerIOSim());
         // vision =
@@ -150,6 +157,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+        intake = new Intake(new IntakeIO() {}, new IntakeIO() {});
 
         indexer = new Indexer(new IndexerIO() {});
 

@@ -4,27 +4,28 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface IntakeIO {
   @AutoLog
-  static class IntakeIOInputs {
+  class IntakeIOInputs {
+    public boolean motorConnected = true;
+
     public double positionRads = 0.0;
-    public double velocityRadsPerSec = 0.0;
-    public double appliedVoltage = 0.0;
-    public double outputCurrentAmps = 0.0;
+    public double velocityRpm = 0.0;
+    public double appliedVolts = 0.0;
+    public double supplyCurrentAmps = 0.0;
+    public double torqueCurrentAmps = 0.0;
     public double tempCelsius = 0.0;
   }
 
   default void updateInputs(IntakeIOInputs inputs) {}
 
-  public default void setVelocity(double normalizedVelocity) {}
+  default void setVolts(double volts) {}
 
-  public default double getVelocityPercent() {
-    return 0.0;
-  }
+  default void setVelocity(double velocity, double feedForward) {}
 
-  public default void periodic() {}
+  default void setPID(double kP, double kI, double kD) {}
 
-  public default void setBrakeMode(boolean brake) {}
+  default void setPIDSetpoint(double angleInRads) {}
 
-  public default double getPositionRads() {
-    return 0.0;
-  }
+  default void setOutputPIDZero() {}
+
+  default void stop() {}
 }
