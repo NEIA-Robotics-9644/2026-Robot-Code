@@ -95,9 +95,8 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
 
-        //set CAN later
-        indexer =
-            new Indexer(new IndexerIOTalonFX(0, false));
+        // set CAN later
+        indexer = new Indexer(new IndexerIOTalonFX(0, false));
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
@@ -122,9 +121,8 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
-        
-        indexer =
-                new Indexer(new IndexerIOSim());
+
+        indexer = new Indexer(new IndexerIOSim());
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
@@ -152,10 +150,9 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        
-        indexer =
-            new Indexer(new IndexerIO() {});
-            
+
+        indexer = new Indexer(new IndexerIO() {});
+
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
