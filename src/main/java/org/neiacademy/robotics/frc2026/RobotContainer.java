@@ -92,10 +92,7 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
-        intake =
-            new Intake(
-                new IntakeIOTalonFX(0,false),
-                new IntakeIOTalonFX(0,false));
+        intake = new Intake(new IntakeIOTalonFX(0, false), new IntakeIOTalonFX(0, false));
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
@@ -120,10 +117,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
-        intake =
-            new Intake(
-                new IntakeIOSim(),
-                new IntakeIOSim());
+        intake = new Intake(new IntakeIOSim(), new IntakeIOSim());
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
@@ -151,10 +145,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        intake =
-            new Intake(
-                new IntakeIO() {},
-                new IntakeIO() {});
+        intake = new Intake(new IntakeIO() {}, new IntakeIO() {});
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,

@@ -8,9 +8,9 @@ import org.neiacademy.robotics.frc2026.subsystems.intake.Intake;
 public class IntakeCommands {
 
   public static Command runIntake(
-          Intake intake, DoubleSupplier normalizedVelocity, DoubleSupplier feedForward) {
-      return Commands.run(
-          () ->
-              intake.setWheelsVelocity(normalizedVelocity.getAsDouble(), feedForward.getAsDouble()));
+      Intake intake, DoubleSupplier normalizedVelocity, DoubleSupplier feedForward) {
+    return Commands.run(
+        () ->
+            intake.setWheelsVelocity(normalizedVelocity.getAsDouble(), feedForward.getAsDouble()));
   }
 }
