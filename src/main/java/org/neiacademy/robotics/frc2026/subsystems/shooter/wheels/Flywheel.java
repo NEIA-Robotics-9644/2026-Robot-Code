@@ -3,11 +3,12 @@ package org.neiacademy.robotics.frc2026.subsystems.shooter.wheels;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import java.util.function.DoubleSupplier;
+import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 public class Flywheel {
-  String name;
-  private final FlywheelIO flywheel;
+  @Getter String name;
+  @Getter private final FlywheelIO flywheel;
 
   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
 
@@ -21,12 +22,20 @@ public class Flywheel {
     Logger.processInputs(name, inputs);
   }
 
-  public Command setAngleRads(DoubleSupplier velocity) {
+  public Command setSpeedSetpoint(DoubleSupplier velocity) {
     return Commands.runEnd(
         () -> flywheel.setPIDSetpoint(velocity.getAsDouble()), () -> flywheel.setOutputPIDZero());
   }
 
-  public void setWheelsVelocity(double normalizedVelocity, double feedForward) {
+  public void setOutputPIDZero() {
+    flywheel.setOutputPIDZero();
+  }
+
+  public void setVelocity(double normalizedVelocity, double feedForward) {
     flywheel.setVelocity(normalizedVelocity, feedForward);
+  }
+
+  public void followFlywheel(Flywheel leader, boolean ignoreInvert) {
+    flywheel.followFlywheel(leader.getFlywheel(), false);
   }
 }

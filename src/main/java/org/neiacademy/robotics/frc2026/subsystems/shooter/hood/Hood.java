@@ -33,10 +33,13 @@ public class Hood extends SubsystemBase {
     Logger.processInputs(name, inputs);
   }
 
-  public Command setAngleRads(DoubleSupplier angleDegs) {
+  public Command setAngleDegrees(DoubleSupplier angleDegrees) {
     return Commands.runEnd(
         () -> {
-          double targetRotations = (MathUtil.clamp(angleDegs.getAsDouble(), minAngleDegs, maxAngleDegs) - hoodOffsetDegs) / 360;
+          double targetRotations =
+              (MathUtil.clamp(angleDegrees.getAsDouble(), minAngleDegs, maxAngleDegs)
+                      - hoodOffsetDegs)
+                  / 360;
           hood.setPIDSetpoint(targetRotations);
         },
         () -> hood.setOutputPIDZero());

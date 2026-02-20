@@ -27,5 +27,7 @@ public interface FlywheelIO {
 
   default void setOutputPIDZero() {}
 
+  default void followFlywheel(FlywheelIO leader, boolean ignoreInvert) {}
+
   default void stop() {}
 }
