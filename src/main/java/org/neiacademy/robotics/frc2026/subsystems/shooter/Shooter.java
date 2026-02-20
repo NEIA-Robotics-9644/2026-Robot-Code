@@ -2,9 +2,8 @@ package org.neiacademy.robotics.frc2026.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import lombok.Getter;
-
 import java.util.function.DoubleSupplier;
+import lombok.Getter;
 import org.neiacademy.robotics.frc2026.subsystems.shooter.wheels.Flywheel;
 import org.neiacademy.robotics.frc2026.util.LoggedTunableNumber;
 
@@ -20,7 +19,8 @@ public class Shooter extends SubsystemBase {
   private final Flywheel leftRollers;
   private final Flywheel rightRollers;
 
-   @Getter private static final LoggedTunableNumber flywheelSpeedPercent = 
+  @Getter
+  private static final LoggedTunableNumber flywheelSpeedPercent =
       new LoggedTunableNumber("Shooter/FlywheelSpeedPercent");
 
   public Shooter(
@@ -75,56 +75,55 @@ public class Shooter extends SubsystemBase {
 
   public void setFlywheelVelocity(
       double normalizedVelocity, double feedForward, FlywheelSide side) {
-      switch (side) {
-        case LEFT_FLYWHEEL:
-          leftFlywheel.setVelocity(normalizedVelocity, feedForward);
-        case RIGHT_FLYWHEEL:
-          rightFlywheel.setVelocity(normalizedVelocity, feedForward);
-        case LEFT_FOLLOWER:
-          leftFollower.setVelocity(normalizedVelocity, feedForward);
-        case RIGHT_FOLLOWER:
-          rightFollower.setVelocity(normalizedVelocity, feedForward);
-        case LEFT_ROLLERS:
-          leftRollers.setVelocity(normalizedVelocity, feedForward);
-        case RIGHT_ROLLERS:
-          rightRollers.setVelocity(normalizedVelocity, feedForward);
-        default:
-          throw new IllegalStateException(side + " is not an option for setFlywheelVelocity.");
-      }
+    switch (side) {
+      case LEFT_FLYWHEEL:
+        leftFlywheel.setVelocity(normalizedVelocity, feedForward);
+      case RIGHT_FLYWHEEL:
+        rightFlywheel.setVelocity(normalizedVelocity, feedForward);
+      case LEFT_FOLLOWER:
+        leftFollower.setVelocity(normalizedVelocity, feedForward);
+      case RIGHT_FOLLOWER:
+        rightFollower.setVelocity(normalizedVelocity, feedForward);
+      case LEFT_ROLLERS:
+        leftRollers.setVelocity(normalizedVelocity, feedForward);
+      case RIGHT_ROLLERS:
+        rightRollers.setVelocity(normalizedVelocity, feedForward);
+      default:
+        throw new IllegalStateException(side + " is not an option for setFlywheelVelocity.");
+    }
   }
 
-  public Command setFlywheelSpeedSetpoint(
-      DoubleSupplier normalizedVelocity, FlywheelSide side) {
-      switch (side) {
-        case LEFT_FLYWHEEL:
-          return leftFlywheel.setSpeedSetpoint(normalizedVelocity);
-        case RIGHT_FLYWHEEL:
-          return rightFlywheel.setSpeedSetpoint(normalizedVelocity);
-        case LEFT_ROLLERS:
-          return leftRollers.setSpeedSetpoint(normalizedVelocity);
-        case RIGHT_ROLLERS:
-          return rightRollers.setSpeedSetpoint(normalizedVelocity);
-        default:
-          throw new IllegalStateException(side + " is not an option for setFlywheelSpeedSetpoint.");
-      }
+  public Command setFlywheelSpeedSetpoint(DoubleSupplier normalizedVelocity, FlywheelSide side) {
+    switch (side) {
+      case LEFT_FLYWHEEL:
+        return leftFlywheel.setSpeedSetpoint(normalizedVelocity);
+      case RIGHT_FLYWHEEL:
+        return rightFlywheel.setSpeedSetpoint(normalizedVelocity);
+      case LEFT_ROLLERS:
+        return leftRollers.setSpeedSetpoint(normalizedVelocity);
+      case RIGHT_ROLLERS:
+        return rightRollers.setSpeedSetpoint(normalizedVelocity);
+      default:
+        throw new IllegalStateException(side + " is not an option for setFlywheelSpeedSetpoint.");
+    }
   }
-  
+
   public void setFlywheelOutputPIDZero(FlywheelSide side) {
-      switch (side) {
-        case LEFT_FLYWHEEL:
-          leftFlywheel.setOutputPIDZero();
-        case RIGHT_FLYWHEEL:
-          rightFlywheel.setOutputPIDZero();
-        case LEFT_ROLLERS:
-          leftRollers.setOutputPIDZero();
-        case RIGHT_ROLLERS:
-          rightRollers.setOutputPIDZero();
-        default:
-            throw new IllegalStateException(side + " is not an option for setFlywheelOutputPIDZero.");
-      }
+    switch (side) {
+      case LEFT_FLYWHEEL:
+        leftFlywheel.setOutputPIDZero();
+      case RIGHT_FLYWHEEL:
+        rightFlywheel.setOutputPIDZero();
+      case LEFT_ROLLERS:
+        leftRollers.setOutputPIDZero();
+      case RIGHT_ROLLERS:
+        rightRollers.setOutputPIDZero();
+      default:
+        throw new IllegalStateException(side + " is not an option for setFlywheelOutputPIDZero.");
+    }
   }
 
-  public double getFlywheelVelocityPercent(FlywheelSide side){
+  public double getFlywheelVelocityPercent(FlywheelSide side) {
     switch (side) {
       case LEFT_FLYWHEEL:
         leftFlywheel.getVelocityPercentToGoal();
@@ -135,10 +134,10 @@ public class Shooter extends SubsystemBase {
       case RIGHT_ROLLERS:
         rightRollers.getVelocityPercentToGoal();
       default:
-          throw new IllegalStateException(side + " is not an option for getFlywheelVelocityPercent.");
+        throw new IllegalStateException(side + " is not an option for getFlywheelVelocityPercent.");
     }
   }
-  
+
   public enum HoodSide {
     LEFT_HOOD,
     RIGHT_HOOD

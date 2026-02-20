@@ -5,9 +5,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import lombok.Getter;
-
 import java.util.function.DoubleSupplier;
+import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 import org.neiacademy.robotics.frc2026.util.LoggedTunableNumber;
 

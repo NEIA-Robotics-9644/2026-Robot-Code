@@ -32,10 +32,10 @@ import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOTalonFX;
 import org.neiacademy.robotics.frc2026.subsystems.misc.LED.LEDSubsystem;
 import org.neiacademy.robotics.frc2026.subsystems.shooter.Shooter;
 import org.neiacademy.robotics.frc2026.subsystems.shooter.Shooter.FlywheelSide;
-import org.neiacademy.robotics.frc2026.subsystems.shooter.wheels.FlywheelIOTalonFX;
 import org.neiacademy.robotics.frc2026.subsystems.shooter.wheels.Flywheel;
 import org.neiacademy.robotics.frc2026.subsystems.shooter.wheels.FlywheelIO;
 import org.neiacademy.robotics.frc2026.subsystems.shooter.wheels.FlywheelIOSim;
+import org.neiacademy.robotics.frc2026.subsystems.shooter.wheels.FlywheelIOTalonFX;
 import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffect;
 import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffectIOReal;
 import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCAN;
@@ -260,16 +260,14 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                     () -> {
-                            shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.LEFT_FLYWHEEL);
-                            shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.RIGHT_FLYWHEEL);
-                          }
-        ).ignoringDisable(true));
+                      shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.RIGHT_FLYWHEEL);
+                    })
+                .ignoringDisable(true));
 
     operatorCon
         .rightBumper()
-        .onTrue(
-            new ShootWhenAtSpeedPercent(shooter, () -> 1.0, () -> 0.1, () -> 0.8, () -> 0.8)
-        );
+        .onTrue(new ShootWhenAtSpeedPercent(shooter, () -> 1.0, () -> 0.1, () -> 0.8, () -> 0.8));
   }
 
   /**
