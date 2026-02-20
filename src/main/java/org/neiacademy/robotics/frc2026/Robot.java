@@ -22,6 +22,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.neiacademy.robotics.BuildConstants;
 import org.neiacademy.robotics.frc2026.generated.TunerConstants;
 
 /**
