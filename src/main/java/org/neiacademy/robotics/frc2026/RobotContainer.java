@@ -206,9 +206,9 @@ public class RobotContainer {
         "Shooter",
         Commands.runEnd(
             () -> {
-              shooter.setFlywheelVelocity(0.625, 11, FlywheelSide.LEFT_FLYWHEEL);
-              shooter.setFlywheelVelocity(0.625, 11, FlywheelSide.RIGHT_FLYWHEEL);
-              shooter.setFlywheelVelocity(0.625, 11, FlywheelSide.FEEDER);
+              shooter.setFlywheelVelocity(0.5, 11, FlywheelSide.LEFT_FLYWHEEL);
+              shooter.setFlywheelVelocity(0.5, 11, FlywheelSide.RIGHT_FLYWHEEL);
+              shooter.setFlywheelVelocity(0.5, 11, FlywheelSide.FEEDER);
             },
             () -> {
               shooter.setFlywheelVelocity(0, 11, FlywheelSide.LEFT_FLYWHEEL);
@@ -288,8 +288,8 @@ public class RobotContainer {
         .whileTrue(
             Commands.runEnd(
                     () -> {
-                      shooter.setFlywheelVelocity(0.625, 11, FlywheelSide.LEFT_FLYWHEEL);
-                      shooter.setFlywheelVelocity(0.625, 11, FlywheelSide.RIGHT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0.5, 11, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0.5, 11, FlywheelSide.RIGHT_FLYWHEEL);
                       shooter.setFlywheelVelocity(1, 11, FlywheelSide.FEEDER);
                     },
                     () -> {
@@ -331,8 +331,8 @@ public class RobotContainer {
                 IntakeCommands.runIntake(intake, () -> -0.22, () -> -11),
                 Commands.runEnd(
                     () -> {
-                      shooter.setFlywheelVelocity(-0.625, -11, FlywheelSide.LEFT_FLYWHEEL);
-                      shooter.setFlywheelVelocity(-0.625, -11, FlywheelSide.RIGHT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(-0.5, -11, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(-0.5, -11, FlywheelSide.RIGHT_FLYWHEEL);
                       shooter.setFlywheelVelocity(-1, -11, FlywheelSide.FEEDER);
                     },
                     () -> {
@@ -373,8 +373,8 @@ public class RobotContainer {
         .whileTrue(
             Commands.runEnd(
                     () -> {
-                      shooter.setFlywheelVelocity(0.625, 11, FlywheelSide.LEFT_FLYWHEEL);
-                      shooter.setFlywheelVelocity(0.625, 11, FlywheelSide.RIGHT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0.5, 11, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0.5, 11, FlywheelSide.RIGHT_FLYWHEEL);
                       shooter.setFlywheelVelocity(1, 11, FlywheelSide.FEEDER);
                     },
                     () -> {
