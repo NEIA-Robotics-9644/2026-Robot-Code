@@ -24,7 +24,6 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
 import org.neiacademy.robotics.frc2026.commands.IndexerCommands;
 import org.neiacademy.robotics.frc2026.commands.IntakeCommands;
-import org.neiacademy.robotics.frc2026.commands.ShootWhenAtSpeedPercent;
 import org.neiacademy.robotics.frc2026.generated.TunerConstants;
 import org.neiacademy.robotics.frc2026.subsystems.drive.Drive;
 import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIO;
@@ -267,50 +266,71 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    operatorCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 1.0, () -> 0.1));
+    operatorCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 1, () -> 0.1));
 
     operatorCon.leftBumper().whileTrue(IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 0.1));
 
-    operatorCon.x().onTrue(intake.setPivotAngle(() -> 0));
+    // operatorCon.x().onTrue(intake.setPivotAngle(() -> 0));
 
-    operatorCon.y().onTrue(intake.setPivotAngle(() -> 90));
+    // operatorCon.y().onTrue(intake.setPivotAngle(() -> 90));
+
+    operatorCon
+        .x()
+        .onTrue(
+            Commands.runEnd(
+                () -> {
+                  intake.setPivotVelocity(1, 0.1);
+                },
+                () -> {
+                  intake.setPivotVelocity(0, 0.1);
+                }));
+
+    operatorCon
+        .x()
+        .onTrue(
+            Commands.runEnd(
+                () -> {
+                  intake.setPivotVelocity(-1, 0.1);
+                },
+                () -> {
+                  intake.setPivotVelocity(0, 0.1);
+                }));
 
     /*operatorCon
-        .rightTrigger()
-        .whileTrue(
-            Commands.runEnd(
-                    () -> {
-                      shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.LEFT_FLYWHEEL);
-                      shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.RIGHT_FLYWHEEL);
-                    },
-                    () -> {
-                        shooter.setFlywheelSpeedSetpoint(() -> 0, FlywheelSide.LEFT_FLYWHEEL);
-                        shooter.setFlywheelSpeedSetpoint(() -> 0, FlywheelSide.RIGHT_FLYWHEEL);
-                        shooter.setFlywheelVelocity(0, 0.1, FlywheelSide.FEEDER);
-                    }
-                )
-                .ignoringDisable(true));*/
-        
+    .rightTrigger()
+    .whileTrue(
+        Commands.runEnd(
+                () -> {
+                  shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.LEFT_FLYWHEEL);
+                  shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.RIGHT_FLYWHEEL);
+                },
+                () -> {
+                    shooter.setFlywheelSpeedSetpoint(() -> 0, FlywheelSide.LEFT_FLYWHEEL);
+                    shooter.setFlywheelSpeedSetpoint(() -> 0, FlywheelSide.RIGHT_FLYWHEEL);
+                    shooter.setFlywheelVelocity(0, 0.1, FlywheelSide.FEEDER);
+                }
+            )
+            .ignoringDisable(true));*/
+
     operatorCon
         .rightTrigger()
         .whileTrue(
             Commands.runEnd(
                     () -> {
-                        shooter.setFlywheelVelocity(1, 0.1, FlywheelSide.LEFT_FLYWHEEL);
-                        shooter.setFlywheelVelocity(1, 0.1, FlywheelSide.RIGHT_FLYWHEEL);
-                        shooter.setFlywheelVelocity(1, 0.1, FlywheelSide.FEEDER);
+                      shooter.setFlywheelVelocity(1, 0.1, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(1, 0.1, FlywheelSide.RIGHT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(1, 0.1, FlywheelSide.FEEDER);
                     },
                     () -> {
-                        shooter.setFlywheelVelocity(0, 0.1, FlywheelSide.LEFT_FLYWHEEL);
-                        shooter.setFlywheelVelocity(0, 0.1, FlywheelSide.RIGHT_FLYWHEEL);
-                        shooter.setFlywheelVelocity(0, 0.1, FlywheelSide.FEEDER);
-                    }
-                )
+                      shooter.setFlywheelVelocity(0, 0.1, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0, 0.1, FlywheelSide.RIGHT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0, 0.1, FlywheelSide.FEEDER);
+                    })
                 .ignoringDisable(true));
 
     /*operatorCon
-        .rightBumper()
-        .whileTrue(new ShootWhenAtSpeedPercent(shooter, () -> 1.0, () -> 0.1, () -> 0.8, () -> 0.8));*/
+    .rightBumper()
+    .whileTrue(new ShootWhenAtSpeedPercent(shooter, () -> 1.0, () -> 0.1, () -> 0.8, () -> 0.8));*/
 
     operatorCon
         .povUp()

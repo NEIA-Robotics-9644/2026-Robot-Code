@@ -60,18 +60,11 @@ public class Shooter extends SubsystemBase {
   public void setFlywheelVelocity(
       double normalizedVelocity, double feedForward, FlywheelSide side) {
     switch (side) {
-      case LEFT_FLYWHEEL:
-        leftFlywheel.setVelocity(normalizedVelocity, feedForward);
-      case RIGHT_FLYWHEEL:
-        rightFlywheel.setVelocity(normalizedVelocity, feedForward);
-      case LEFT_FOLLOWER:
-        leftFollower.setVelocity(normalizedVelocity, feedForward);
-      case RIGHT_FOLLOWER:
-        rightFollower.setVelocity(normalizedVelocity, feedForward);
-      case FEEDER:
-        feeder.setVelocity(normalizedVelocity, feedForward);
-      default:
-        throw new IllegalStateException(side + " is not an option for setFlywheelVelocity.");
+      case LEFT_FLYWHEEL -> leftFlywheel.setVelocity(normalizedVelocity, feedForward);
+      case RIGHT_FLYWHEEL -> rightFlywheel.setVelocity(normalizedVelocity, feedForward);
+      case LEFT_FOLLOWER -> leftFollower.setVelocity(normalizedVelocity, feedForward);
+      case RIGHT_FOLLOWER -> rightFollower.setVelocity(normalizedVelocity, feedForward);
+      case FEEDER -> feeder.setVelocity(normalizedVelocity, feedForward);
     }
   }
 
@@ -90,14 +83,9 @@ public class Shooter extends SubsystemBase {
 
   public void setFlywheelOutputPIDZero(FlywheelSide side) {
     switch (side) {
-      case LEFT_FLYWHEEL:
-        leftFlywheel.setOutputPIDZero();
-      case RIGHT_FLYWHEEL:
-        rightFlywheel.setOutputPIDZero();
-      case FEEDER:
-        feeder.setOutputPIDZero();
-      default:
-        throw new IllegalStateException(side + " is not an option for setFlywheelOutputPIDZero.");
+      case LEFT_FLYWHEEL -> leftFlywheel.setOutputPIDZero();
+      case RIGHT_FLYWHEEL -> rightFlywheel.setOutputPIDZero();
+      case FEEDER -> feeder.setOutputPIDZero();
     }
   }
 
