@@ -1,10 +1,10 @@
-package org.neiacademy.robotics.frc2026.subsystems.intake;
+package org.neiacademy.robotics.frc2026.subsystems.indexer;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface IntakeIO {
+public interface IndexerIO {
   @AutoLog
-  class IntakeIOInputs {
+  class IndexerIOInputs {
     public boolean motorConnected = true;
 
     public double positionRads = 0.0;
@@ -15,7 +15,7 @@ public interface IntakeIO {
     public double tempCelsius = 0.0;
   }
 
-  default void updateInputs(IntakeIOInputs inputs) {}
+  default void updateInputs(IndexerIOInputs inputs) {}
 
   default void setVolts(double volts) {}
 

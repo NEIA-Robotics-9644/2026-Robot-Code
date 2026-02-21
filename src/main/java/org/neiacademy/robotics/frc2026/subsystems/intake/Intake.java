@@ -1,6 +1,7 @@
 package org.neiacademy.robotics.frc2026.subsystems.intake;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -10,55 +11,52 @@ import org.littletonrobotics.junction.Logger;
 import org.neiacademy.robotics.frc2026.util.LoggedTunableNumber;
 
 public class Intake extends SubsystemBase {
-  private final IntakeIO wheel;
+  private final IntakeIO wheels;
   private final IntakeIO pivot;
-  private final PIDController pivotFeedback = new PIDController(0, 0, 0);
-  private LoggedTunableNumber KP = new LoggedTunableNumber("Pivot/P", 0.1);
-  private LoggedTunableNumber KI = new LoggedTunableNumber("Pivot/I", 0.0);
-  private LoggedTunableNumber KD = new LoggedTunableNumber("Pivot/P", 0.0);
-  // private LoggedTunableNumber pivotG = new LoggedTunableNumber("Pivot/G", 0.1);
+
+  private static final double minAngleDegs = Units.degreesToRadians(15);
+  private static final double maxAngleDegs = Units.degreesToRadians(45);
+
+  private LoggedTunableNumber pivotOffsetDegrees =
+      new LoggedTunableNumber("Pivot/OffsetDegrees", 0.1);
+
+  private LoggedTunableNumber kP = new LoggedTunableNumber("Pivot/P", 0.1);
+  private LoggedTunableNumber kI = new LoggedTunableNumber("Pivot/I", 0.0);
+  private LoggedTunableNumber kD = new LoggedTunableNumber("Pivot/D", 0.0);
 
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
-  public Intake(IntakeIO wheel, IntakeIO pivot) {
-    this.wheel = wheel;
+  public Intake(IntakeIO wheels, IntakeIO pivot) {
+    this.wheels = wheels;
     this.pivot = pivot;
-    pivotFeedback.setPID(KP.get(), KI.get(), KD.get());
   }
 
   public void periodic() {
-    wheel.updateInputs(inputs);
-    wheel.periodic();
-    Logger.processInputs("IntakeWheel", inputs);
+    wheels.updateInputs(inputs);
+    Logger.processInputs("IntakeWheels", inputs);
     pivot.updateInputs(inputs);
-    pivot.periodic();
     Logger.processInputs("Pivot", inputs);
+
+    pivot.setPID(kP.get(), kI.get(), kD.get());
   }
 
-  public void setWheelVelocity(double velocity) {
-    wheel.setVelocity(velocity);
+  public void setWheelsVelocity(double velocity, double feedForward) {
+    wheels.setVelocity(velocity, feedForward);
   }
 
-  public void setPivotVelocity(double velocity) {
-    pivot.setVelocity(velocity);
+  public void setPivotVelocity(double normalizedVelocity, double feedForward) {
+    pivot.setVelocity(normalizedVelocity, feedForward);
   }
 
-  public Command pivotGoToAngle(DoubleSupplier angle) {
-    var command =
-        Commands.runEnd(
-                () -> {
-                  pivotFeedback.setPID(KP.get(), KI.get(), KD.get());
-                  var output =
-                      pivotFeedback.calculate(pivot.getPositionRads(), angle.getAsDouble());
-
-                  setPivotVelocity(output);
-                },
-                () -> {
-                  setPivotVelocity(0.00);
-                })
-            .withInterruptBehavior(InterruptionBehavior.kCancelSelf)
-            .withName("Pivot Setpoint Control");
-
-    return command;
+  public Command setPivotAngle(DoubleSupplier angleDegrees) {
+    return Commands.runEnd(
+        () -> {
+          double targetRotations =
+              (MathUtil.clamp(angleDegrees.getAsDouble(), minAngleDegs, maxAngleDegs)
+                      - pivotOffsetDegrees.get())
+                  / 360;
+          pivot.setPIDSetpoint(targetRotations);
+        },
+        () -> pivot.setOutputPIDZero());
   }
 }
