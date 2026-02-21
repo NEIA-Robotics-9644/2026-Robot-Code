@@ -9,7 +9,10 @@ public class IndexerCommands {
 
   public static Command runIndexer(
       Indexer indexer, DoubleSupplier normalizedVelocity, DoubleSupplier feedForward) {
-    return Commands.run(
-        () -> indexer.setVelocity(normalizedVelocity.getAsDouble(), feedForward.getAsDouble()));
+
+    return Commands.runEnd(
+        () -> indexer.setVelocity(normalizedVelocity.getAsDouble(), feedForward.getAsDouble()),
+        () -> indexer.setVelocity(0, 0),
+        indexer);
   }
 }

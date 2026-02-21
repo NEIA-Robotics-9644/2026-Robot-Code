@@ -9,8 +9,10 @@ public class IntakeCommands {
 
   public static Command runIntake(
       Intake intake, DoubleSupplier normalizedVelocity, DoubleSupplier feedForward) {
-    return Commands.run(
-        () ->
-            intake.setWheelsVelocity(normalizedVelocity.getAsDouble(), feedForward.getAsDouble()));
+
+    return Commands.runEnd(
+        () -> intake.setWheelsVelocity(normalizedVelocity.getAsDouble(), feedForward.getAsDouble()),
+        () -> intake.setWheelsVelocity(0, 0),
+        intake);
   }
 }
