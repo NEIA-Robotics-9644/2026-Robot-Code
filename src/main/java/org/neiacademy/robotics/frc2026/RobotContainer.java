@@ -105,8 +105,8 @@ public class RobotContainer {
 
         intake =
             new Intake(
-                new IntakeIOTalonFX(0, new CANBus("rio"), false),
-                new IntakeIOTalonFX(0, 0, new CANBus("rio"), false, false));
+                new IntakeIOTalonFX(0, new CANBus("Drive"), false),
+                new IntakeIOTalonFX(0, 0, new CANBus("Drive"), false, false));
 
         // set CAN later
         indexer = new Indexer(new IndexerIOTalonFX(30, new CANBus("rio"), false));
