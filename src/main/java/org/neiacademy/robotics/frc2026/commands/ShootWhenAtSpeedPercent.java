@@ -7,8 +7,8 @@ import org.neiacademy.robotics.frc2026.subsystems.shooter.Shooter.FlywheelSide;
 
 public class ShootWhenAtSpeedPercent extends Command {
   private final Shooter shooter;
-  private final DoubleSupplier rollerNormalizedVelocity;
-  private final DoubleSupplier rollerFeedForward;
+  private final DoubleSupplier feederNormalizedVelocity;
+  private final DoubleSupplier feederFeedForward;
   private final DoubleSupplier percentOffToOnThreshold;
   private final DoubleSupplier percentOnToOffThreshold;
 
@@ -17,14 +17,14 @@ public class ShootWhenAtSpeedPercent extends Command {
 
   public ShootWhenAtSpeedPercent(
       Shooter shooter,
-      DoubleSupplier rollerNormalizedVelocity,
-      DoubleSupplier rollerFeedForward,
+      DoubleSupplier feederNormalizedVelocity,
+      DoubleSupplier feederFeedForward,
       DoubleSupplier percentOffToOnThreshold,
       DoubleSupplier percentOnToOffThreshold) {
 
     this.shooter = shooter;
-    this.rollerNormalizedVelocity = rollerNormalizedVelocity;
-    this.rollerFeedForward = rollerFeedForward;
+    this.feederNormalizedVelocity = feederNormalizedVelocity;
+    this.feederFeedForward = feederFeedForward;
     this.percentOffToOnThreshold = percentOffToOnThreshold;
     this.percentOnToOffThreshold = percentOnToOffThreshold;
   }
@@ -37,8 +37,7 @@ public class ShootWhenAtSpeedPercent extends Command {
   @Override
   public void execute() {
     double leftFlywheelPerecentage = shooter.getFlywheelVelocityPercent(FlywheelSide.LEFT_FLYWHEEL);
-    double rightFlywheelPerecentage =
-        shooter.getFlywheelVelocityPercent(FlywheelSide.RIGHT_FLYWHEEL);
+    double rightFlywheelPerecentage = shooter.getFlywheelVelocityPercent(FlywheelSide.RIGHT_FLYWHEEL);
 
     if (leftFlywheelPerecentage > percentOffToOnThreshold.getAsDouble() && !leftFlywheelRunning) {
       leftFlywheelRunning = true;
@@ -56,28 +55,19 @@ public class ShootWhenAtSpeedPercent extends Command {
         Make sure not to override other commands that might be using the feeder wheel at the same time
         This is why we don't stop the feeder wheel even if the shooter wheels are off
     */
-    if (leftFlywheelRunning) {
+    if (leftFlywheelRunning && rightFlywheelRunning) {
       shooter.setFlywheelVelocity(
-          rollerNormalizedVelocity.getAsDouble(),
-          rollerFeedForward.getAsDouble(),
-          FlywheelSide.LEFT_ROLLERS);
+          feederNormalizedVelocity.getAsDouble(),
+          feederFeedForward.getAsDouble(),
+          FlywheelSide.FEEDER);
     } else {
-      shooter.setFlywheelVelocity(0, 0, FlywheelSide.LEFT_ROLLERS);
-    }
-
-    if (rightFlywheelRunning) {
-      shooter.setFlywheelVelocity(
-          rollerNormalizedVelocity.getAsDouble(),
-          rollerFeedForward.getAsDouble(),
-          FlywheelSide.RIGHT_ROLLERS);
-    } else {
-      shooter.setFlywheelVelocity(0, 0, FlywheelSide.RIGHT_ROLLERS);
+      shooter.setFlywheelVelocity(0, 0, FlywheelSide.FEEDER);
     }
   }
 
   @Override
   public void end(boolean interrupted) {
-    // System.out.println("ShootWhenAtSpeedPercent " + (interrupted ? "Interrupted" : "Ended"));
+    // System.out.println("ShootWhenAtSpeedPercent " + (intersrupted ? "Interrupted" : "Ended"));
   }
 
   @Override

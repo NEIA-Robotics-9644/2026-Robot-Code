@@ -101,12 +101,11 @@ public class RobotContainer {
 
         shooter =
             new Shooter(
-                new Flywheel("Left Flywheel", new FlywheelIOTalonFX(0, new CANBus("idk"), false)),
-                new Flywheel("Right Flywheel", new FlywheelIOTalonFX(0, new CANBus("idk"), false)),
-                new Flywheel("Left Follower", new FlywheelIOTalonFX(0, new CANBus("idk"), false)),
-                new Flywheel("Right Follower", new FlywheelIOTalonFX(0, new CANBus("idk"), false)),
-                new Flywheel("Left Roller", new FlywheelIOTalonFX(0, new CANBus("idk"), false)),
-                new Flywheel("Right Roller", new FlywheelIOTalonFX(0, new CANBus("idk"), false)));
+                new Flywheel("Left Flywheel", new FlywheelIOTalonFX(25, new CANBus("rio"), false)),
+                new Flywheel("Right Flywheel", new FlywheelIOTalonFX(21, new CANBus("rio"), false)),
+                new Flywheel("Left Follower", new FlywheelIOTalonFX(24, new CANBus("rio"), false)),
+                new Flywheel("Right Follower", new FlywheelIOTalonFX(22, new CANBus("rio"), false)),
+                new Flywheel("Feeder", new FlywheelIOTalonFX(20, new CANBus("rio"), false)));
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
@@ -140,8 +139,7 @@ public class RobotContainer {
                 new Flywheel("Right Flywheel", new FlywheelIOSim()),
                 new Flywheel("Left Follower", new FlywheelIOSim()),
                 new Flywheel("Right Follower", new FlywheelIOSim()),
-                new Flywheel("Left Roller", new FlywheelIOSim()),
-                new Flywheel("Right Roller", new FlywheelIOSim()));
+                new Flywheel("Feeder", new FlywheelIOSim()));
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
@@ -178,8 +176,7 @@ public class RobotContainer {
                 new Flywheel("Right Flywheel", new FlywheelIO() {}),
                 new Flywheel("Left Follower", new FlywheelIO() {}),
                 new Flywheel("Right Follower", new FlywheelIO() {}),
-                new Flywheel("Left Roller", new FlywheelIO() {}),
-                new Flywheel("Right Roller", new FlywheelIO() {}));
+                new Flywheel("Feeder", new FlywheelIO() {}));
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
