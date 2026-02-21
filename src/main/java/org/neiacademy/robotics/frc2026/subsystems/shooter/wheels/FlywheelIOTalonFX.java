@@ -33,6 +33,8 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   private final VelocityVoltage velocityControl = new VelocityVoltage(0).withUpdateFreqHz(0.0);
   private final NeutralOut neutralControl = new NeutralOut().withUpdateFreqHz(0.0);
 
+  private static final double MAX_RPS = 100.0;
+
   public FlywheelIOTalonFX(int id, CANBus canBus, boolean inverted) {
     motor = new TalonFX(id, canBus);
 
@@ -80,7 +82,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   @Override
   public void setVelocity(double velocity, double feedForward) {
-    motor.setControl(velocityControl.withVelocity(velocity).withFeedForward(feedForward));
+    motor.setControl(velocityControl.withVelocity(velocity * MAX_RPS).withFeedForward(feedForward));
   }
 
   @Override
