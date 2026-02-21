@@ -32,7 +32,7 @@ public class Hood extends SubsystemBase {
     kP = new LoggedTunableNumber(name + "/kP");
     kI = new LoggedTunableNumber(name + "/kI");
     kD = new LoggedTunableNumber(name + "/kD");
-    
+
     hood.setPID(kP.getAsDouble(), kI.getAsDouble(), kD.getAsDouble());
   }
 
