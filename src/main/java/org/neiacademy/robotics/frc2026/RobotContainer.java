@@ -241,6 +241,10 @@ public class RobotContainer {
     operatorCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 1.0, () -> 0.1));
 
     operatorCon.leftBumper().whileTrue(IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 0.1));
+
+    operatorCon.x().onTrue(intake.setPivotAngle(() -> 0));
+
+    operatorCon.y().onTrue(intake.setPivotAngle(() -> 90));
   }
 
   /**
