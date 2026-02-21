@@ -83,9 +83,17 @@ public class Shooter extends SubsystemBase {
 
   public void setFlywheelOutputPIDZero(FlywheelSide side) {
     switch (side) {
-      case LEFT_FLYWHEEL -> leftFlywheel.setOutputPIDZero();
-      case RIGHT_FLYWHEEL -> rightFlywheel.setOutputPIDZero();
-      case FEEDER -> feeder.setOutputPIDZero();
+      case LEFT_FLYWHEEL:
+        leftFlywheel.setOutputPIDZero();
+        break;
+      case RIGHT_FLYWHEEL:
+        rightFlywheel.setOutputPIDZero();
+        break;
+      case FEEDER:
+        feeder.setOutputPIDZero();
+        break;
+      default:
+        throw new IllegalStateException(side + " is not an option for setFlywheelOutputPIDZero.");
     }
   }
 

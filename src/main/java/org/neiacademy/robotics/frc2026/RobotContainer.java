@@ -122,7 +122,6 @@ public class RobotContainer {
                 new IntakeIOTalonFX(33, new CANBus("Drive"), false),
                 new IntakeIOTalonFX(32, 35, new CANBus("Drive"), false, false));
 
-        // set CAN later
         indexer = new Indexer(new IndexerIOTalonFX(30, new CANBus("rio"), false));
 
         shooter =
@@ -266,7 +265,7 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    operatorCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 1, () -> 11));
+    operatorCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 1.0, () -> 11));
 
     operatorCon.leftBumper().whileTrue(IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 11));
 
@@ -276,7 +275,7 @@ public class RobotContainer {
 
     operatorCon
         .x()
-        .onTrue(
+        .whileTrue(
             Commands.runEnd(
                 () -> {
                   intake.setPivotVelocity(1, 1);
@@ -287,10 +286,10 @@ public class RobotContainer {
 
     operatorCon
         .y()
-        .onTrue(
+        .whileTrue(
             Commands.runEnd(
                 () -> {
-                  intake.setPivotVelocity(-1, 1);
+                  intake.setPivotVelocity(-1, 4);
                 },
                 () -> {
                   intake.setPivotVelocity(0, 1);
