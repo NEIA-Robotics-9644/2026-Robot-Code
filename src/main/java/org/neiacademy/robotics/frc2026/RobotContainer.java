@@ -275,7 +275,7 @@ public class RobotContainer {
 
     operatorCon.y().onTrue(intake.setPivotAngle(() -> 90));
 
-    operatorCon
+    /*operatorCon
         .rightTrigger()
         .whileTrue(
             Commands.runEnd(
@@ -284,16 +284,33 @@ public class RobotContainer {
                       shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.RIGHT_FLYWHEEL);
                     },
                     () -> {
-                      shooter.setFlywheelSpeedSetpoint(() -> 0, FlywheelSide.LEFT_FLYWHEEL);
-                      shooter.setFlywheelSpeedSetpoint(() -> 0, FlywheelSide.RIGHT_FLYWHEEL);
-                      shooter.setFlywheelVelocity(0, 0.1, FlywheelSide.FEEDER);
-                    })
+                        shooter.setFlywheelSpeedSetpoint(() -> 0, FlywheelSide.LEFT_FLYWHEEL);
+                        shooter.setFlywheelSpeedSetpoint(() -> 0, FlywheelSide.RIGHT_FLYWHEEL);
+                        shooter.setFlywheelVelocity(0, 0.1, FlywheelSide.FEEDER);
+                    }
+                )
+                .ignoringDisable(true));*/
+        
+    operatorCon
+        .rightTrigger()
+        .whileTrue(
+            Commands.runEnd(
+                    () -> {
+                        shooter.setFlywheelVelocity(1, 0.1, FlywheelSide.LEFT_FLYWHEEL);
+                        shooter.setFlywheelVelocity(1, 0.1, FlywheelSide.RIGHT_FLYWHEEL);
+                        shooter.setFlywheelVelocity(1, 0.1, FlywheelSide.FEEDER);
+                    },
+                    () -> {
+                        shooter.setFlywheelVelocity(0, 0.1, FlywheelSide.LEFT_FLYWHEEL);
+                        shooter.setFlywheelVelocity(0, 0.1, FlywheelSide.RIGHT_FLYWHEEL);
+                        shooter.setFlywheelVelocity(0, 0.1, FlywheelSide.FEEDER);
+                    }
+                )
                 .ignoringDisable(true));
 
-    operatorCon
+    /*operatorCon
         .rightBumper()
-        .whileTrue(
-            new ShootWhenAtSpeedPercent(shooter, () -> 1.0, () -> 0.1, () -> 0.8, () -> 0.8));
+        .whileTrue(new ShootWhenAtSpeedPercent(shooter, () -> 1.0, () -> 0.1, () -> 0.8, () -> 0.8));*/
 
     operatorCon
         .povUp()
