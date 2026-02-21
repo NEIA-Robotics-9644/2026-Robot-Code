@@ -271,25 +271,29 @@ public class RobotContainer {
 
     operatorCon.leftBumper().whileTrue(IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 0.1));
 
-    operatorCon.leftBumper().whileTrue(IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 0.1));
-
     operatorCon.x().onTrue(intake.setPivotAngle(() -> 0));
 
     operatorCon.y().onTrue(intake.setPivotAngle(() -> 90));
 
     operatorCon
         .rightTrigger()
-        .onTrue(
-            Commands.runOnce(
+        .whileTrue(
+            Commands.runEnd(
                     () -> {
                       shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.LEFT_FLYWHEEL);
                       shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.RIGHT_FLYWHEEL);
-                    })
+                    },
+                    () -> {
+                        shooter.setFlywheelSpeedSetpoint(() -> 0, FlywheelSide.LEFT_FLYWHEEL);
+                        shooter.setFlywheelSpeedSetpoint(() -> 0, FlywheelSide.RIGHT_FLYWHEEL);
+                        shooter.setFlywheelVelocity(0, 0.1, FlywheelSide.FEEDER);
+                    }
+                )
                 .ignoringDisable(true));
 
     operatorCon
         .rightBumper()
-        .onTrue(new ShootWhenAtSpeedPercent(shooter, () -> 1.0, () -> 0.1, () -> 0.8, () -> 0.8));
+        .whileTrue(new ShootWhenAtSpeedPercent(shooter, () -> 1.0, () -> 0.1, () -> 0.8, () -> 0.8));
 
     operatorCon
         .povUp()
