@@ -42,7 +42,7 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   private static final double MAX_RPS = 5000.0;
 
-  public IntakeIOTalonFX(int id, CANBus canBus, boolean inverted) {
+  public IntakeIOTalonFX(int id, CANBus canBus, boolean inverted, boolean brakeMode) {
     motor = new TalonFX(id, canBus);
     cancoder = null;
     this.useCancoder = false;
@@ -51,7 +51,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     config.CurrentLimits.SupplyCurrentLimit = 60.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     config.MotorOutput.Inverted =
         inverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
 
@@ -70,7 +70,12 @@ public class IntakeIOTalonFX implements IntakeIO {
   }
 
   public IntakeIOTalonFX(
-      int id, int canId, CANBus canBus, boolean invertedMotor, boolean invertedCancoder) {
+      int id,
+      int canId,
+      CANBus canBus,
+      boolean invertedMotor,
+      boolean invertedCancoder,
+      boolean brakeMode) {
     motor = new TalonFX(id, canBus);
     cancoder = new CANcoder(canId);
     this.useCancoder = true;
@@ -79,7 +84,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     config.CurrentLimits.SupplyCurrentLimit = 60.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     config.MotorOutput.Inverted =
         invertedMotor ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
 

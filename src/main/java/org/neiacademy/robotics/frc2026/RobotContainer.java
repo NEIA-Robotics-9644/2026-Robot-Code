@@ -119,8 +119,8 @@ public class RobotContainer {
 
         intake =
             new Intake(
-                new IntakeIOTalonFX(33, new CANBus("Drive"), false),
-                new IntakeIOTalonFX(32, 35, new CANBus("Drive"), false, false));
+                new IntakeIOTalonFX(33, new CANBus("Drive"), false, false),
+                new IntakeIOTalonFX(32, 35, new CANBus("Drive"), false, false, true));
 
         indexer = new Indexer(new IndexerIOTalonFX(30, new CANBus("rio"), false));
 
@@ -265,7 +265,7 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    operatorCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 0.5, () -> 11));
+    operatorCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 0.35, () -> 11));
 
     operatorCon.leftBumper().whileTrue(IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 11));
 
