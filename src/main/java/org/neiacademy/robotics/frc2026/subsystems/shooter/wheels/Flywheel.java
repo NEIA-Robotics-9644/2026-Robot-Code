@@ -26,13 +26,13 @@ public class Flywheel {
     kP = new LoggedTunableNumber(name + "/kP");
     kI = new LoggedTunableNumber(name + "/kI");
     kD = new LoggedTunableNumber(name + "/kD");
-
-    flywheel.setPID(kP.getAsDouble(), kI.getAsDouble(), kD.getAsDouble());
   }
 
   public void periodic() {
     flywheel.updateInputs(inputs);
     Logger.processInputs(name, inputs);
+
+    flywheel.setPID(kP.getAsDouble(), kI.getAsDouble(), kD.getAsDouble());
   }
 
   public Command setSpeedSetpoint(DoubleSupplier velocity) {
