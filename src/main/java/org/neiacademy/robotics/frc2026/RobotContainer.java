@@ -7,6 +7,7 @@
 
 package org.neiacademy.robotics.frc2026;
 
+import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -100,12 +101,12 @@ public class RobotContainer {
 
         shooter =
             new Shooter(
-                new Flywheel("Left Flywheel", new FlywheelIOTalonFX(0, false)),
-                new Flywheel("Right Flywheel", new FlywheelIOTalonFX(0, false)),
-                new Flywheel("Left Follower", new FlywheelIOTalonFX(0, false)),
-                new Flywheel("Right Follower", new FlywheelIOTalonFX(0, false)),
-                new Flywheel("Left Roller", new FlywheelIOTalonFX(0, false)),
-                new Flywheel("Right Roller", new FlywheelIOTalonFX(0, false)));
+                new Flywheel("Left Flywheel", new FlywheelIOTalonFX(0, new CANBus("idk"), false)),
+                new Flywheel("Right Flywheel", new FlywheelIOTalonFX(0, new CANBus("idk"), false)),
+                new Flywheel("Left Follower", new FlywheelIOTalonFX(0, new CANBus("idk"), false)),
+                new Flywheel("Right Follower", new FlywheelIOTalonFX(0, new CANBus("idk"), false)),
+                new Flywheel("Left Roller", new FlywheelIOTalonFX(0, new CANBus("idk"), false)),
+                new Flywheel("Right Roller", new FlywheelIOTalonFX(0, new CANBus("idk"), false)));
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,

@@ -1,6 +1,7 @@
 package org.neiacademy.robotics.frc2026.subsystems.shooter.wheels;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -32,8 +33,8 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   private final VelocityVoltage velocityControl = new VelocityVoltage(0).withUpdateFreqHz(0.0);
   private final NeutralOut neutralControl = new NeutralOut().withUpdateFreqHz(0.0);
 
-  public FlywheelIOTalonFX(int id, boolean inverted) {
-    motor = new TalonFX(id);
+  public FlywheelIOTalonFX(int id, CANBus canBus, boolean inverted) {
+    motor = new TalonFX(id, canBus);
 
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 60.0;
