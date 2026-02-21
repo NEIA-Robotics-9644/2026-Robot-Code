@@ -21,7 +21,6 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber flywheelSpeedPercent =
       new LoggedTunableNumber("Shooter/FlywheelSpeedPercent");
 
-
   public Shooter(
       /*Hood leftHood,
       Hood rightHood,*/

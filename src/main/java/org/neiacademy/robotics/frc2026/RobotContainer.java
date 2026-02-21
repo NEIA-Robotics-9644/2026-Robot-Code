@@ -119,7 +119,6 @@ public class RobotContainer {
 
         // set CAN later
         indexer = new Indexer(new IndexerIOTalonFX(30, new CANBus("rio"), false));
-        indexer = new Indexer(new IndexerIOTalonFX(0, false));
 
         shooter =
             new Shooter(
@@ -197,7 +196,6 @@ public class RobotContainer {
         intake = new Intake(new IntakeIO() {}, new IntakeIO() {});
 
         indexer = new Indexer(new IndexerIO() {});
-
 
         shooter =
             new Shooter(
