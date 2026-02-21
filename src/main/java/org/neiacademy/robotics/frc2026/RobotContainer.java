@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
+import org.neiacademy.robotics.frc2026.commands.IndexerCommands;
+import org.neiacademy.robotics.frc2026.commands.IntakeCommands;
 import org.neiacademy.robotics.frc2026.commands.ShootWhenAtSpeedPercent;
 import org.neiacademy.robotics.frc2026.generated.TunerConstants;
 import org.neiacademy.robotics.frc2026.subsystems.drive.Drive;
@@ -109,10 +111,14 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
-        intake = new Intake(new IntakeIOTalonFX(0, false), new IntakeIOTalonFX(0, false));
+
+        intake =
+            new Intake(
+                new IntakeIOTalonFX(0, new CANBus("Drive"), false),
+                new IntakeIOTalonFX(0, 0, new CANBus("Drive"), false, false));
 
         // set CAN later
-        indexer = new Indexer(new IndexerIOTalonFX(0, false));
+        indexer = new Indexer(new IndexerIOTalonFX(30, new CANBus("rio"), false));
 
         shooter =
             new Shooter(
@@ -190,7 +196,6 @@ public class RobotContainer {
         intake = new Intake(new IntakeIO() {}, new IntakeIO() {});
 
         indexer = new Indexer(new IndexerIO() {});
-
 
         shooter =
             new Shooter(
@@ -274,6 +279,13 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+    operatorCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 1.0, () -> 0.1));
+
+    operatorCon.leftBumper().whileTrue(IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 0.1));
+
+    operatorCon.x().onTrue(intake.setPivotAngle(() -> 0));
+
+    operatorCon.y().onTrue(intake.setPivotAngle(() -> 90));
 
     operatorCon
         .rightTrigger()

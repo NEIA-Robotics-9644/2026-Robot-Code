@@ -6,6 +6,7 @@ public interface IntakeIO {
   @AutoLog
   class IntakeIOInputs {
     public boolean motorConnected = true;
+    public boolean cancoderConnected = false;
 
     public double positionRads = 0.0;
     public double velocityRpm = 0.0;
