@@ -9,6 +9,7 @@ package org.neiacademy.robotics.frc2026;
 
 import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Alert;
@@ -201,6 +202,23 @@ public class RobotContainer {
         break;
     }
 
+    NamedCommands.registerCommand(
+        "Shooter",
+        Commands.runEnd(
+            () -> {
+              shooter.setFlywheelVelocity(1, 11, FlywheelSide.LEFT_FLYWHEEL);
+              shooter.setFlywheelVelocity(1, 11, FlywheelSide.RIGHT_FLYWHEEL);
+              shooter.setFlywheelVelocity(1, 11, FlywheelSide.FEEDER);
+            },
+            () -> {
+              shooter.setFlywheelVelocity(0, 11, FlywheelSide.LEFT_FLYWHEEL);
+              shooter.setFlywheelVelocity(0, 11, FlywheelSide.RIGHT_FLYWHEEL);
+              shooter.setFlywheelVelocity(0, 11, FlywheelSide.FEEDER);
+            }));
+
+    NamedCommands.registerCommand(
+        "Indexer", IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 11));
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -345,7 +363,6 @@ public class RobotContainer {
                 () ->
                     intake.setPivotAngle(() -> Math.toDegrees(intake.getPivotPIDSetpoint()) - 1)));
   }
-
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
