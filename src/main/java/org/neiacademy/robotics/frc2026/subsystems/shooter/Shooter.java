@@ -104,11 +104,11 @@ public class Shooter extends SubsystemBase {
   public double getFlywheelVelocityPercent(FlywheelSide side) {
     switch (side) {
       case LEFT_FLYWHEEL:
-        leftFlywheel.getVelocityPercentToGoal();
+        return leftFlywheel.getVelocityPercentToGoal();
       case RIGHT_FLYWHEEL:
-        rightFlywheel.getVelocityPercentToGoal();
+        return rightFlywheel.getVelocityPercentToGoal();
       case FEEDER:
-        feeder.getVelocityPercentToGoal();
+        return feeder.getVelocityPercentToGoal();
       default:
         throw new IllegalStateException(side + " is not an option for getFlywheelVelocityPercent.");
     }
