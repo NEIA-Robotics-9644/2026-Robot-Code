@@ -40,7 +40,7 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   private double pidSetpointRads;
 
-  private static final double MAX_RPS = 100.0;
+  private static final double MAX_RPS = 5000.0;
 
   public IntakeIOTalonFX(int id, CANBus canBus, boolean inverted) {
     motor = new TalonFX(id, canBus);
