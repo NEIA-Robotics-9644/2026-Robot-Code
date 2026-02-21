@@ -73,7 +73,7 @@ public class RobotContainer {
   private final Drive drive;
 
   private final Intake intake;
-  
+
   private final Indexer indexer;
 
   private final Shooter shooter;
@@ -315,12 +315,16 @@ public class RobotContainer {
     operatorCon
         .povUp()
         .onTrue(
-            Commands.runOnce(() -> intake.setPivotAngle(() -> Math.toDegrees(intake.getPivotPIDSetpoint()) + 1)));
-            
+            Commands.runOnce(
+                () ->
+                    intake.setPivotAngle(() -> Math.toDegrees(intake.getPivotPIDSetpoint()) + 1)));
+
     operatorCon
         .povUp()
         .onTrue(
-            Commands.runOnce(() -> intake.setPivotAngle(() -> Math.toDegrees(intake.getPivotPIDSetpoint()) - 1)));
+            Commands.runOnce(
+                () ->
+                    intake.setPivotAngle(() -> Math.toDegrees(intake.getPivotPIDSetpoint()) - 1)));
   }
 
   /**

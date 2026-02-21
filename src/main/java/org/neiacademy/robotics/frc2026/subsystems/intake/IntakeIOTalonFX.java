@@ -162,8 +162,8 @@ public class IntakeIOTalonFX implements IntakeIO {
     motor.setControl(new DutyCycleOut(0));
   }
 
-  @Override 
-  public double getPIDSetpoint(){
+  @Override
+  public double getPIDSetpoint() {
     return pidSetpointRads;
   }
 
