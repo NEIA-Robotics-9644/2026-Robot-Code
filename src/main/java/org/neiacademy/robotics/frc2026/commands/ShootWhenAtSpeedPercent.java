@@ -38,7 +38,8 @@ public class ShootWhenAtSpeedPercent extends Command {
   public void execute() {
     double leftFlywheelPerecentage = shooter.getFlywheelVelocityPercent(FlywheelSide.LEFT_FLYWHEEL);
 
-    double rightFlywheelPerecentage = shooter.getFlywheelVelocityPercent(FlywheelSide.RIGHT_FLYWHEEL);
+    double rightFlywheelPerecentage =
+        shooter.getFlywheelVelocityPercent(FlywheelSide.RIGHT_FLYWHEEL);
 
     if (leftFlywheelPerecentage > percentOffToOnThreshold.getAsDouble() && !leftFlywheelRunning) {
       leftFlywheelRunning = true;
