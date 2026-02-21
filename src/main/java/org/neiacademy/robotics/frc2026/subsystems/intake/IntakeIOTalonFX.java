@@ -40,6 +40,8 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   private double pidSetpointRads;
 
+  private static final double MAX_RPS = 100.0;
+
   public IntakeIOTalonFX(int id, CANBus canBus, boolean inverted) {
     motor = new TalonFX(id, canBus);
     cancoder = null;
@@ -140,7 +142,7 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   @Override
   public void setVelocity(double velocity, double feedForward) {
-    motor.setControl(velocityControl.withVelocity(velocity).withFeedForward(feedForward));
+    motor.setControl(velocityControl.withVelocity(velocity * MAX_RPS).withFeedForward(feedForward));
   }
 
   @Override
