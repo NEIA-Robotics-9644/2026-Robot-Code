@@ -53,6 +53,11 @@ import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCAN;
 import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCANIO;
 import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCANIOReal;
 import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCANIOSim;
+import org.neiacademy.robotics.frc2026.subsystems.vision.Vision;
+import org.neiacademy.robotics.frc2026.subsystems.vision.VisionConstants;
+import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIO;
+import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVision;
+import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVisionSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -74,7 +79,7 @@ public class RobotContainer {
 
   // private final Intake intake
 
-  //   private final Vision vision;
+  private final Vision vision;
 
   private final TestLaserCAN testlaserCAN;
 
@@ -127,19 +132,14 @@ public class RobotContainer {
                 new Flywheel("Left Follower", new FlywheelIOTalonFX(24, new CANBus("rio"), false)),
                 new Flywheel("Right Follower", new FlywheelIOTalonFX(22, new CANBus("rio"), false)),
                 new Flywheel("Feeder", new FlywheelIOTalonFX(20, new CANBus("rio"), false)));
-        // vision =
-        //     new Vision(
-        //         drive::addVisionMeasurement,
-        //         new VisionIOPhotonVision(
-        //             VisionConstants.camera0Name, VisionConstants.robotToCamera0),
-        //         new VisionIOPhotonVision(
-        //             VisionConstants.camera1Name, VisionConstants.robotToCamera1),
-        //         new VisionIOPhotonVision(
-        //             VisionConstants.camera2Name, VisionConstants.robotToCamera2),
-        //         new VisionIOPhotonVision(
-        //             VisionConstants.camera3Name, VisionConstants.robotToCamera3),
-        //         new VisionIOPhotonVision(
-        //             VisionConstants.camera4Name, VisionConstants.robotToCamera4));
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOPhotonVision(
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0),
+                new VisionIOPhotonVision(
+                    VisionConstants.camera1Name, VisionConstants.robotToCamera1));
+
         testlaserCAN = new TestLaserCAN(new TestLaserCANIOReal());
         break;
 
@@ -164,20 +164,13 @@ public class RobotContainer {
                 new Flywheel("Left Follower", new FlywheelIOSim()),
                 new Flywheel("Right Follower", new FlywheelIOSim()),
                 new Flywheel("Feeder", new FlywheelIOSim()));
-        // vision =
-        //     new Vision(
-        //         drive::addVisionMeasurement,
-        //         new VisionIOPhotonVisionSim(
-        //             VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
-        //         new VisionIOPhotonVisionSim(
-        //             VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose),
-        //         new VisionIOPhotonVisionSim(
-        //             VisionConstants.camera2Name, VisionConstants.robotToCamera2, drive::getPose),
-        //         new VisionIOPhotonVisionSim(
-        //             VisionConstants.camera3Name, VisionConstants.robotToCamera3, drive::getPose),
-        //         new VisionIOPhotonVisionSim(
-        //             VisionConstants.camera4Name, VisionConstants.robotToCamera4,
-        // drive::getPose));
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose));
         testlaserCAN = new TestLaserCAN(new TestLaserCANIOSim());
         testhalleffect = null;
         break;
@@ -204,14 +197,7 @@ public class RobotContainer {
                 new Flywheel("Left Follower", new FlywheelIO() {}),
                 new Flywheel("Right Follower", new FlywheelIO() {}),
                 new Flywheel("Feeder", new FlywheelIO() {}));
-        // vision =
-        //     new Vision(
-        //         drive::addVisionMeasurement,
-        //         new VisionIO() {},
-        //         new VisionIO() {},
-        //         new VisionIO() {},
-        //         new VisionIO() {},
-        //         new VisionIO() {});
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         testlaserCAN = new TestLaserCAN(new TestLaserCANIO() {});
         break;
     }
