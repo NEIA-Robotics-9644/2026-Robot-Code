@@ -2,6 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "java",
+      "name": "Main",
+      "request": "launch",
+      "mainClass": "org.neiacademy.robotics.frc2026.Main",
+      "projectName": "2026-Robot-Code"
+    },
+    {
       "name": "WPILib Sim (Corrected Classpath)",
       "type": "java",
       "request": "launch",

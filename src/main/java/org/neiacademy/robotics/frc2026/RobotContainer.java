@@ -24,6 +24,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
 import org.neiacademy.robotics.frc2026.commands.IndexerCommands;
 import org.neiacademy.robotics.frc2026.commands.IntakeCommands;
+import org.neiacademy.robotics.frc2026.commands.ShootWhenAtSpeedPercent;
 import org.neiacademy.robotics.frc2026.generated.TunerConstants;
 import org.neiacademy.robotics.frc2026.subsystems.drive.Drive;
 import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIO;
@@ -40,6 +41,12 @@ import org.neiacademy.robotics.frc2026.subsystems.intake.IntakeIO;
 import org.neiacademy.robotics.frc2026.subsystems.intake.IntakeIOSim;
 import org.neiacademy.robotics.frc2026.subsystems.intake.IntakeIOTalonFX;
 import org.neiacademy.robotics.frc2026.subsystems.misc.LED.LEDSubsystem;
+import org.neiacademy.robotics.frc2026.subsystems.shooter.Shooter;
+import org.neiacademy.robotics.frc2026.subsystems.shooter.Shooter.FlywheelSide;
+import org.neiacademy.robotics.frc2026.subsystems.shooter.wheels.Flywheel;
+import org.neiacademy.robotics.frc2026.subsystems.shooter.wheels.FlywheelIO;
+import org.neiacademy.robotics.frc2026.subsystems.shooter.wheels.FlywheelIOSim;
+import org.neiacademy.robotics.frc2026.subsystems.shooter.wheels.FlywheelIOTalonFX;
 import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffect;
 import org.neiacademy.robotics.frc2026.subsystems.test.HallEffect.TestHallEffectIOReal;
 import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCAN;
@@ -62,6 +69,8 @@ public class RobotContainer {
 
   private final Intake intake;
   private final Indexer indexer;
+
+  private final Shooter shooter;
 
   // private final Intake intake
 
@@ -110,6 +119,15 @@ public class RobotContainer {
 
         // set CAN later
         indexer = new Indexer(new IndexerIOTalonFX(30, new CANBus("rio"), false));
+        indexer = new Indexer(new IndexerIOTalonFX(0, false));
+
+        shooter =
+            new Shooter(
+                new Flywheel("Left Flywheel", new FlywheelIOTalonFX(25, new CANBus("rio"), false)),
+                new Flywheel("Right Flywheel", new FlywheelIOTalonFX(21, new CANBus("rio"), false)),
+                new Flywheel("Left Follower", new FlywheelIOTalonFX(24, new CANBus("rio"), false)),
+                new Flywheel("Right Follower", new FlywheelIOTalonFX(22, new CANBus("rio"), false)),
+                new Flywheel("Feeder", new FlywheelIOTalonFX(20, new CANBus("rio"), false)));
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
@@ -120,7 +138,9 @@ public class RobotContainer {
         //         new VisionIOPhotonVision(
         //             VisionConstants.camera2Name, VisionConstants.robotToCamera2),
         //         new VisionIOPhotonVision(
-        //             VisionConstants.camera3Name, VisionConstants.robotToCamera3));
+        //             VisionConstants.camera3Name, VisionConstants.robotToCamera3),
+        //         new VisionIOPhotonVision(
+        //             VisionConstants.camera4Name, VisionConstants.robotToCamera4));
         testlaserCAN = new TestLaserCAN(new TestLaserCANIOReal());
         break;
 
@@ -137,6 +157,14 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSim(), new IntakeIOSim());
 
         indexer = new Indexer(new IndexerIOSim());
+
+        shooter =
+            new Shooter(
+                new Flywheel("Left Flywheel", new FlywheelIOSim()),
+                new Flywheel("Right Flywheel", new FlywheelIOSim()),
+                new Flywheel("Left Follower", new FlywheelIOSim()),
+                new Flywheel("Right Follower", new FlywheelIOSim()),
+                new Flywheel("Feeder", new FlywheelIOSim()));
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
@@ -147,7 +175,9 @@ public class RobotContainer {
         //         new VisionIOPhotonVisionSim(
         //             VisionConstants.camera2Name, VisionConstants.robotToCamera2, drive::getPose),
         //         new VisionIOPhotonVisionSim(
-        //             VisionConstants.camera3Name, VisionConstants.robotToCamera3,
+        //             VisionConstants.camera3Name, VisionConstants.robotToCamera3, drive::getPose),
+        //         new VisionIOPhotonVisionSim(
+        //             VisionConstants.camera4Name, VisionConstants.robotToCamera4,
         // drive::getPose));
         testlaserCAN = new TestLaserCAN(new TestLaserCANIOSim());
         testhalleffect = null;
@@ -168,9 +198,18 @@ public class RobotContainer {
 
         indexer = new Indexer(new IndexerIO() {});
 
+
+        shooter =
+            new Shooter(
+                new Flywheel("Left Flywheel", new FlywheelIO() {}),
+                new Flywheel("Right Flywheel", new FlywheelIO() {}),
+                new Flywheel("Left Follower", new FlywheelIO() {}),
+                new Flywheel("Right Follower", new FlywheelIO() {}),
+                new Flywheel("Feeder", new FlywheelIO() {}));
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
+        //         new VisionIO() {},
         //         new VisionIO() {},
         //         new VisionIO() {},
         //         new VisionIO() {},
@@ -249,6 +288,20 @@ public class RobotContainer {
     operatorCon.x().onTrue(intake.setPivotAngle(() -> 0));
 
     operatorCon.y().onTrue(intake.setPivotAngle(() -> 90));
+
+    operatorCon
+        .rightTrigger()
+        .onTrue(
+            Commands.runOnce(
+                    () -> {
+                      shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.RIGHT_FLYWHEEL);
+                    })
+                .ignoringDisable(true));
+
+    operatorCon
+        .rightBumper()
+        .onTrue(new ShootWhenAtSpeedPercent(shooter, () -> 1.0, () -> 0.1, () -> 0.8, () -> 0.8));
   }
 
   /**
