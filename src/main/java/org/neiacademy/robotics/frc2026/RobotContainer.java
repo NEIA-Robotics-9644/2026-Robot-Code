@@ -128,9 +128,9 @@ public class RobotContainer {
         shooter =
             new Shooter(
                 new Flywheel("Left Flywheel", new FlywheelIOTalonFX(25, new CANBus("rio"), false)),
-                new Flywheel("Right Flywheel", new FlywheelIOTalonFX(21, new CANBus("rio"), false)),
+                new Flywheel("Right Flywheel", new FlywheelIOTalonFX(21, new CANBus("rio"), true)),
                 new Flywheel("Left Follower", new FlywheelIOTalonFX(24, new CANBus("rio"), false)),
-                new Flywheel("Right Follower", new FlywheelIOTalonFX(22, new CANBus("rio"), false)),
+                new Flywheel("Right Follower", new FlywheelIOTalonFX(22, new CANBus("rio"), true)),
                 new Flywheel("Feeder", new FlywheelIOTalonFX(20, new CANBus("rio"), false)));
         vision =
             new Vision(
@@ -317,14 +317,14 @@ public class RobotContainer {
         .whileTrue(
             Commands.runEnd(
                     () -> {
-                      shooter.setFlywheelVelocity(1, 1, FlywheelSide.LEFT_FLYWHEEL);
-                      shooter.setFlywheelVelocity(1, 1, FlywheelSide.RIGHT_FLYWHEEL);
-                      shooter.setFlywheelVelocity(1, 1, FlywheelSide.FEEDER);
+                      shooter.setFlywheelVelocity(1, 11, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(1, 11, FlywheelSide.RIGHT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(1, 11, FlywheelSide.FEEDER);
                     },
                     () -> {
-                      shooter.setFlywheelVelocity(0, 1, FlywheelSide.LEFT_FLYWHEEL);
-                      shooter.setFlywheelVelocity(0, 1, FlywheelSide.RIGHT_FLYWHEEL);
-                      shooter.setFlywheelVelocity(0, 1, FlywheelSide.FEEDER);
+                      shooter.setFlywheelVelocity(0, 11, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0, 11, FlywheelSide.RIGHT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0, 11, FlywheelSide.FEEDER);
                     })
                 .ignoringDisable(true));
 
