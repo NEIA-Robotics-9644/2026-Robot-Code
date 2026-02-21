@@ -265,7 +265,7 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    operatorCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 1.0, () -> 11));
+    operatorCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 0.5, () -> 11));
 
     operatorCon.leftBumper().whileTrue(IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 11));
 
@@ -289,7 +289,7 @@ public class RobotContainer {
         .whileTrue(
             Commands.runEnd(
                 () -> {
-                  intake.setPivotVelocity(-1, 4);
+                  intake.setPivotVelocity(-1, -4);
                 },
                 () -> {
                   intake.setPivotVelocity(0, 1);
