@@ -127,7 +127,7 @@ public class RobotContainer {
 
         shooter =
             new Shooter(
-                new Flywheel("Left Flywheel", new FlywheelIOTalonFX(25, new CANBus("rio"), true)),
+                new Flywheel("Left Flywheel", new FlywheelIOTalonFX(25, new CANBus("rio"), false)),
                 new Flywheel("Right Flywheel", new FlywheelIOTalonFX(21, new CANBus("rio"), false)),
                 new Flywheel("Left Follower", new FlywheelIOTalonFX(24, new CANBus("rio"), false)),
                 new Flywheel("Right Follower", new FlywheelIOTalonFX(22, new CANBus("rio"), false)),
@@ -298,7 +298,7 @@ public class RobotContainer {
                       shooter.setFlywheelVelocity(0, 11, FlywheelSide.FEEDER);
                     })
                 .ignoringDisable(true));
-    
+
     driverCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 0.22, () -> 11));
 
     driverCon.leftBumper().whileTrue(IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 11));
