@@ -1,6 +1,7 @@
 package org.neiacademy.robotics.frc2026.subsystems.intake;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -37,8 +38,8 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   private final boolean useCancoder;
 
-  public IntakeIOTalonFX(int id, boolean inverted) {
-    motor = new TalonFX(id);
+  public IntakeIOTalonFX(int id, CANBus canBus, boolean inverted) {
+    motor = new TalonFX(id, canBus);
     cancoder = null;
     this.useCancoder = false;
 
@@ -64,8 +65,9 @@ public class IntakeIOTalonFX implements IntakeIO {
         100.0, position, velocity, appliedVolts, supplyCurrent, torqueCurrent, tempCelsius);
   }
 
-  public IntakeIOTalonFX(int id, int canId, boolean invertedMotor, boolean invertedCancoder) {
-    motor = new TalonFX(id);
+  public IntakeIOTalonFX(
+      int id, int canId, CANBus canBus, boolean invertedMotor, boolean invertedCancoder) {
+    motor = new TalonFX(id, canBus);
     cancoder = new CANcoder(canId);
     this.useCancoder = true;
 

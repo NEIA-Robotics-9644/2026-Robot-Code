@@ -7,6 +7,7 @@
 
 package org.neiacademy.robotics.frc2026;
 
+import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -102,10 +103,13 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
 
-        intake = new Intake(new IntakeIOTalonFX(0, false), new IntakeIOTalonFX(0, 0, false, false));
+        intake =
+            new Intake(
+                new IntakeIOTalonFX(0, new CANBus("idk"), false),
+                new IntakeIOTalonFX(0, 0, new CANBus("idk"), false, false));
 
         // set CAN later
-        indexer = new Indexer(new IndexerIOTalonFX(0, false));
+        indexer = new Indexer(new IndexerIOTalonFX(0, new CANBus("idk"), false));
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,

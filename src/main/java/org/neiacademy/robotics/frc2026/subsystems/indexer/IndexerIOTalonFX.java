@@ -1,6 +1,7 @@
 package org.neiacademy.robotics.frc2026.subsystems.indexer;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -30,8 +31,8 @@ public class IndexerIOTalonFX implements IndexerIO {
   private final VelocityVoltage velocityControl = new VelocityVoltage(0).withUpdateFreqHz(0.0);
   private final NeutralOut neutralControl = new NeutralOut().withUpdateFreqHz(0.0);
 
-  public IndexerIOTalonFX(int id, boolean inverted) {
-    motor = new TalonFX(id);
+  public IndexerIOTalonFX(int id, CANBus canBus, boolean inverted) {
+    motor = new TalonFX(id, canBus);
 
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 60.0;
