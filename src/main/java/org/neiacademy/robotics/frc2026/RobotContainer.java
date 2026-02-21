@@ -127,10 +127,10 @@ public class RobotContainer {
 
         shooter =
             new Shooter(
-                new Flywheel("Left Flywheel", new FlywheelIOTalonFX(25, new CANBus("rio"), false)),
-                new Flywheel("Right Flywheel", new FlywheelIOTalonFX(21, new CANBus("rio"), true)),
-                new Flywheel("Left Follower", new FlywheelIOTalonFX(24, new CANBus("rio"), false)),
-                new Flywheel("Right Follower", new FlywheelIOTalonFX(22, new CANBus("rio"), true)),
+                new Flywheel("Left Flywheel", new FlywheelIOTalonFX(25, new CANBus("rio"), true)),
+                new Flywheel("Right Flywheel", new FlywheelIOTalonFX(21, new CANBus("rio"), false)),
+                new Flywheel("Left Follower", new FlywheelIOTalonFX(24, new CANBus("rio"), true)),
+                new Flywheel("Right Follower", new FlywheelIOTalonFX(22, new CANBus("rio"), false)),
                 new Flywheel("Feeder", new FlywheelIOTalonFX(20, new CANBus("rio"), false)));
         vision =
             new Vision(
@@ -266,9 +266,9 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    operatorCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 1, () -> 0.1));
+    operatorCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 1, () -> 11));
 
-    operatorCon.leftBumper().whileTrue(IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 0.1));
+    operatorCon.leftBumper().whileTrue(IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 11));
 
     // operatorCon.x().onTrue(intake.setPivotAngle(() -> 0));
 
@@ -279,21 +279,21 @@ public class RobotContainer {
         .onTrue(
             Commands.runEnd(
                 () -> {
-                  intake.setPivotVelocity(1, 11);
+                  intake.setPivotVelocity(1, 1);
                 },
                 () -> {
-                  intake.setPivotVelocity(0, 11);
+                  intake.setPivotVelocity(0, 1);
                 }));
 
     operatorCon
-        .x()
+        .y()
         .onTrue(
             Commands.runEnd(
                 () -> {
-                  intake.setPivotVelocity(-1, 11);
+                  intake.setPivotVelocity(-1, 1);
                 },
                 () -> {
-                  intake.setPivotVelocity(0, 11);
+                  intake.setPivotVelocity(0, 1);
                 }));
 
     /*operatorCon
