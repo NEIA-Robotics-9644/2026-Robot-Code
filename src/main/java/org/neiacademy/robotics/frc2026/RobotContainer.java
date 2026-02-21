@@ -129,7 +129,7 @@ public class RobotContainer {
             new Shooter(
                 new Flywheel("Left Flywheel", new FlywheelIOTalonFX(25, new CANBus("rio"), true)),
                 new Flywheel("Right Flywheel", new FlywheelIOTalonFX(21, new CANBus("rio"), false)),
-                new Flywheel("Left Follower", new FlywheelIOTalonFX(24, new CANBus("rio"), true)),
+                new Flywheel("Left Follower", new FlywheelIOTalonFX(24, new CANBus("rio"), false)),
                 new Flywheel("Right Follower", new FlywheelIOTalonFX(22, new CANBus("rio"), false)),
                 new Flywheel("Feeder", new FlywheelIOTalonFX(20, new CANBus("rio"), false)));
         vision =
@@ -282,6 +282,26 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+
+    driverCon
+        .rightTrigger()
+        .whileTrue(
+            Commands.runEnd(
+                    () -> {
+                      shooter.setFlywheelVelocity(0.625, 11, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0.625, 11, FlywheelSide.RIGHT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(1, 11, FlywheelSide.FEEDER);
+                    },
+                    () -> {
+                      shooter.setFlywheelVelocity(0, 11, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0, 11, FlywheelSide.RIGHT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0, 11, FlywheelSide.FEEDER);
+                    })
+                .ignoringDisable(true));
+    
+    driverCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 0.22, () -> 11));
+
+    driverCon.leftBumper().whileTrue(IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 11));
 
     operatorCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 0.22, () -> 11));
 
