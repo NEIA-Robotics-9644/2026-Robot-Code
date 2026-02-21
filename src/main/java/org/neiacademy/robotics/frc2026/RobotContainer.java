@@ -279,10 +279,10 @@ public class RobotContainer {
         .onTrue(
             Commands.runEnd(
                 () -> {
-                  intake.setPivotVelocity(1, 0.1);
+                  intake.setPivotVelocity(1, 11);
                 },
                 () -> {
-                  intake.setPivotVelocity(0, 0.1);
+                  intake.setPivotVelocity(0, 11);
                 }));
 
     operatorCon
@@ -290,10 +290,10 @@ public class RobotContainer {
         .onTrue(
             Commands.runEnd(
                 () -> {
-                  intake.setPivotVelocity(-1, 0.1);
+                  intake.setPivotVelocity(-1, 11);
                 },
                 () -> {
-                  intake.setPivotVelocity(0, 0.1);
+                  intake.setPivotVelocity(0, 11);
                 }));
 
     /*operatorCon
