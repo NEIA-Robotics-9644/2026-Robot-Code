@@ -317,14 +317,14 @@ public class RobotContainer {
         .whileTrue(
             Commands.runEnd(
                     () -> {
-                      shooter.setFlywheelVelocity(1, 0.1, FlywheelSide.LEFT_FLYWHEEL);
-                      shooter.setFlywheelVelocity(1, 0.1, FlywheelSide.RIGHT_FLYWHEEL);
-                      shooter.setFlywheelVelocity(1, 0.1, FlywheelSide.FEEDER);
+                      shooter.setFlywheelVelocity(1, 1, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(1, 1, FlywheelSide.RIGHT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(1, 1, FlywheelSide.FEEDER);
                     },
                     () -> {
-                      shooter.setFlywheelVelocity(0, 0.1, FlywheelSide.LEFT_FLYWHEEL);
-                      shooter.setFlywheelVelocity(0, 0.1, FlywheelSide.RIGHT_FLYWHEEL);
-                      shooter.setFlywheelVelocity(0, 0.1, FlywheelSide.FEEDER);
+                      shooter.setFlywheelVelocity(0, 1, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0, 1, FlywheelSide.RIGHT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0, 1, FlywheelSide.FEEDER);
                     })
                 .ignoringDisable(true));
 
