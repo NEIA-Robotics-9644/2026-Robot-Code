@@ -15,9 +15,9 @@ public class Flywheel {
 
   private double currentVelocityGoal = 0;
 
-  private static LoggedTunableNumber kP;
-  private static LoggedTunableNumber kI;
-  private static LoggedTunableNumber kD;
+  private LoggedTunableNumber kP;
+  private LoggedTunableNumber kI;
+  private LoggedTunableNumber kD;
 
   public Flywheel(String name, FlywheelIO flywheel) {
     this.name = name;
