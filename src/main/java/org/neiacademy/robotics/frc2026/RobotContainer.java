@@ -105,11 +105,11 @@ public class RobotContainer {
 
         intake =
             new Intake(
-                new IntakeIOTalonFX(0, new CANBus("idk"), false),
-                new IntakeIOTalonFX(0, 0, new CANBus("idk"), false, false));
+                new IntakeIOTalonFX(0, new CANBus("rio"), false),
+                new IntakeIOTalonFX(0, 0, new CANBus("rio"), false, false));
 
         // set CAN later
-        indexer = new Indexer(new IndexerIOTalonFX(0, new CANBus("idk"), false));
+        indexer = new Indexer(new IndexerIOTalonFX(30, new CANBus("rio"), false));
         // vision =
         //     new Vision(
         //         drive::addVisionMeasurement,
