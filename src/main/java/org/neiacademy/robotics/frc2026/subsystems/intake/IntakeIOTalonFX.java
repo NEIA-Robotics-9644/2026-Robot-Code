@@ -38,6 +38,8 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   private final boolean useCancoder;
 
+  private double pidSetpointRads;
+
   public IntakeIOTalonFX(int id, CANBus canBus, boolean inverted) {
     motor = new TalonFX(id, canBus);
     cancoder = null;
@@ -152,11 +154,17 @@ public class IntakeIOTalonFX implements IntakeIO {
   @Override
   public void setPIDSetpoint(double angleInRads) {
     motor.setControl(new PositionVoltage(angleInRads).withSlot(0).withEnableFOC(true));
+    pidSetpointRads = angleInRads;
   }
 
   @Override
   public void setOutputPIDZero() {
     motor.setControl(new DutyCycleOut(0));
+  }
+
+  @Override 
+  public double getPIDSetpoint(){
+    return pidSetpointRads;
   }
 
   @Override

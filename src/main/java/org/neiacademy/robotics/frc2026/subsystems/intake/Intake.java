@@ -47,6 +47,10 @@ public class Intake extends SubsystemBase {
     pivot.setVelocity(normalizedVelocity, feedForward);
   }
 
+  public double getPivotPIDSetpoint(){
+    return pivot.getPIDSetpoint();
+  }
+
   public Command setPivotAngle(DoubleSupplier angleDegrees) {
     return Commands.runEnd(
         () -> {

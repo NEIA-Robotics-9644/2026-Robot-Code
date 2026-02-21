@@ -73,6 +73,7 @@ public class RobotContainer {
   private final Drive drive;
 
   private final Intake intake;
+  
   private final Indexer indexer;
 
   private final Shooter shooter;
@@ -119,8 +120,8 @@ public class RobotContainer {
 
         intake =
             new Intake(
-                new IntakeIOTalonFX(0, new CANBus("Drive"), false),
-                new IntakeIOTalonFX(0, 0, new CANBus("Drive"), false, false));
+                new IntakeIOTalonFX(33, new CANBus("Drive"), false),
+                new IntakeIOTalonFX(32, 35, new CANBus("Drive"), false, false));
 
         // set CAN later
         indexer = new Indexer(new IndexerIOTalonFX(30, new CANBus("rio"), false));
@@ -265,7 +266,10 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+
     operatorCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 1.0, () -> 0.1));
+
+    operatorCon.leftBumper().whileTrue(IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 0.1));
 
     operatorCon.leftBumper().whileTrue(IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 0.1));
 
@@ -286,6 +290,16 @@ public class RobotContainer {
     operatorCon
         .rightBumper()
         .onTrue(new ShootWhenAtSpeedPercent(shooter, () -> 1.0, () -> 0.1, () -> 0.8, () -> 0.8));
+
+    operatorCon
+        .povUp()
+        .onTrue(
+            Commands.runOnce(() -> intake.setPivotAngle(() -> Math.toDegrees(intake.getPivotPIDSetpoint()) + 1)));
+            
+    operatorCon
+        .povUp()
+        .onTrue(
+            Commands.runOnce(() -> intake.setPivotAngle(() -> Math.toDegrees(intake.getPivotPIDSetpoint()) - 1)));
   }
 
   /**
