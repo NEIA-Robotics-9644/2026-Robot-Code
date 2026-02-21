@@ -19,15 +19,21 @@ public class Intake extends SubsystemBase {
   private LoggedTunableNumber pivotOffsetDegrees =
       new LoggedTunableNumber("Pivot/OffsetDegrees", 0.1);
 
-  private LoggedTunableNumber kP = new LoggedTunableNumber("Pivot/P", 0.1);
-  private LoggedTunableNumber kI = new LoggedTunableNumber("Pivot/I", 0.0);
-  private LoggedTunableNumber kD = new LoggedTunableNumber("Pivot/D", 0.0);
+  private LoggedTunableNumber kP;
+  private LoggedTunableNumber kI;
+  private LoggedTunableNumber kD;
 
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
   public Intake(IntakeIO wheels, IntakeIO pivot) {
     this.wheels = wheels;
     this.pivot = pivot;
+
+    kP = new LoggedTunableNumber("Pivot/kP");
+    kI = new LoggedTunableNumber("Pivot/kI");
+    kD = new LoggedTunableNumber("Pivot/kD");
+
+    pivot.setPID(kP.get(), kI.get(), kD.get());
   }
 
   public void periodic() {
@@ -35,8 +41,6 @@ public class Intake extends SubsystemBase {
     Logger.processInputs("IntakeWheels", inputs);
     pivot.updateInputs(inputs);
     Logger.processInputs("Pivot", inputs);
-
-    pivot.setPID(kP.get(), kI.get(), kD.get());
   }
 
   public void setWheelsVelocity(double velocity, double feedForward) {

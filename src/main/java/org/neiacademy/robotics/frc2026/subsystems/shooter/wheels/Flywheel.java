@@ -15,9 +15,9 @@ public class Flywheel {
 
   private double currentVelocityGoal = 0;
 
-  private final LoggedTunableNumber kP;
-  private final LoggedTunableNumber kI;
-  private final LoggedTunableNumber kD;
+  private LoggedTunableNumber kP;
+  private LoggedTunableNumber kI;
+  private LoggedTunableNumber kD;
 
   public Flywheel(String name, FlywheelIO flywheel) {
     this.name = name;
@@ -26,13 +26,13 @@ public class Flywheel {
     kP = new LoggedTunableNumber(name + "/kP");
     kI = new LoggedTunableNumber(name + "/kI");
     kD = new LoggedTunableNumber(name + "/kD");
+
+    flywheel.setPID(kP.getAsDouble(), kI.getAsDouble(), kD.getAsDouble());
   }
 
   public void periodic() {
     flywheel.updateInputs(inputs);
     Logger.processInputs(name, inputs);
-
-    flywheel.setPID(kP.getAsDouble(), kI.getAsDouble(), kD.getAsDouble());
   }
 
   public Command setSpeedSetpoint(DoubleSupplier velocity) {
