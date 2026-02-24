@@ -9,6 +9,7 @@ package org.neiacademy.robotics.frc2026;
 
 import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Alert;
@@ -24,7 +25,6 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
 import org.neiacademy.robotics.frc2026.commands.IndexerCommands;
 import org.neiacademy.robotics.frc2026.commands.IntakeCommands;
-import org.neiacademy.robotics.frc2026.commands.ShootWhenAtSpeedPercent;
 import org.neiacademy.robotics.frc2026.generated.TunerConstants;
 import org.neiacademy.robotics.frc2026.subsystems.drive.Drive;
 import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIO;
@@ -53,6 +53,11 @@ import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCAN;
 import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCANIO;
 import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCANIOReal;
 import org.neiacademy.robotics.frc2026.subsystems.test.LaserCAN.TestLaserCANIOSim;
+import org.neiacademy.robotics.frc2026.subsystems.vision.Vision;
+import org.neiacademy.robotics.frc2026.subsystems.vision.VisionConstants;
+import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIO;
+import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVision;
+import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVisionSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -68,13 +73,14 @@ public class RobotContainer {
   private final Drive drive;
 
   private final Intake intake;
+
   private final Indexer indexer;
 
   private final Shooter shooter;
 
   // private final Intake intake
 
-  //   private final Vision vision;
+  private final Vision vision;
 
   private final TestLaserCAN testlaserCAN;
 
@@ -114,32 +120,26 @@ public class RobotContainer {
 
         intake =
             new Intake(
-                new IntakeIOTalonFX(0, new CANBus("Drive"), false),
-                new IntakeIOTalonFX(0, 0, new CANBus("Drive"), false, false));
+                new IntakeIOTalonFX(33, new CANBus("Drive"), false, false),
+                new IntakeIOTalonFX(32, 35, new CANBus("Drive"), false, false, true));
 
-        // set CAN later
         indexer = new Indexer(new IndexerIOTalonFX(30, new CANBus("rio"), false));
 
         shooter =
             new Shooter(
-                new Flywheel("Left Flywheel", new FlywheelIOTalonFX(25, new CANBus("rio"), false)),
+                new Flywheel("Left Flywheel", new FlywheelIOTalonFX(25, new CANBus("rio"), true)),
                 new Flywheel("Right Flywheel", new FlywheelIOTalonFX(21, new CANBus("rio"), false)),
-                new Flywheel("Left Follower", new FlywheelIOTalonFX(24, new CANBus("rio"), false)),
+                new Flywheel("Left Follower", new FlywheelIOTalonFX(24, new CANBus("rio"), true)),
                 new Flywheel("Right Follower", new FlywheelIOTalonFX(22, new CANBus("rio"), false)),
                 new Flywheel("Feeder", new FlywheelIOTalonFX(20, new CANBus("rio"), false)));
-        // vision =
-        //     new Vision(
-        //         drive::addVisionMeasurement,
-        //         new VisionIOPhotonVision(
-        //             VisionConstants.camera0Name, VisionConstants.robotToCamera0),
-        //         new VisionIOPhotonVision(
-        //             VisionConstants.camera1Name, VisionConstants.robotToCamera1),
-        //         new VisionIOPhotonVision(
-        //             VisionConstants.camera2Name, VisionConstants.robotToCamera2),
-        //         new VisionIOPhotonVision(
-        //             VisionConstants.camera3Name, VisionConstants.robotToCamera3),
-        //         new VisionIOPhotonVision(
-        //             VisionConstants.camera4Name, VisionConstants.robotToCamera4));
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOPhotonVision(
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0),
+                new VisionIOPhotonVision(
+                    VisionConstants.camera1Name, VisionConstants.robotToCamera1));
+
         testlaserCAN = new TestLaserCAN(new TestLaserCANIOReal());
         break;
 
@@ -164,20 +164,13 @@ public class RobotContainer {
                 new Flywheel("Left Follower", new FlywheelIOSim()),
                 new Flywheel("Right Follower", new FlywheelIOSim()),
                 new Flywheel("Feeder", new FlywheelIOSim()));
-        // vision =
-        //     new Vision(
-        //         drive::addVisionMeasurement,
-        //         new VisionIOPhotonVisionSim(
-        //             VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
-        //         new VisionIOPhotonVisionSim(
-        //             VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose),
-        //         new VisionIOPhotonVisionSim(
-        //             VisionConstants.camera2Name, VisionConstants.robotToCamera2, drive::getPose),
-        //         new VisionIOPhotonVisionSim(
-        //             VisionConstants.camera3Name, VisionConstants.robotToCamera3, drive::getPose),
-        //         new VisionIOPhotonVisionSim(
-        //             VisionConstants.camera4Name, VisionConstants.robotToCamera4,
-        // drive::getPose));
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose));
         testlaserCAN = new TestLaserCAN(new TestLaserCANIOSim());
         testhalleffect = null;
         break;
@@ -204,17 +197,27 @@ public class RobotContainer {
                 new Flywheel("Left Follower", new FlywheelIO() {}),
                 new Flywheel("Right Follower", new FlywheelIO() {}),
                 new Flywheel("Feeder", new FlywheelIO() {}));
-        // vision =
-        //     new Vision(
-        //         drive::addVisionMeasurement,
-        //         new VisionIO() {},
-        //         new VisionIO() {},
-        //         new VisionIO() {},
-        //         new VisionIO() {},
-        //         new VisionIO() {});
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         testlaserCAN = new TestLaserCAN(new TestLaserCANIO() {});
         break;
     }
+
+    NamedCommands.registerCommand(
+        "Shooter",
+        Commands.runEnd(
+            () -> {
+              shooter.setFlywheelVelocity(0.375, 11, FlywheelSide.LEFT_FLYWHEEL);
+              shooter.setFlywheelVelocity(0.375, 11, FlywheelSide.RIGHT_FLYWHEEL);
+              shooter.setFlywheelVelocity(0.375, 11, FlywheelSide.FEEDER);
+            },
+            () -> {
+              shooter.setFlywheelVelocity(0, 11, FlywheelSide.LEFT_FLYWHEEL);
+              shooter.setFlywheelVelocity(0, 11, FlywheelSide.RIGHT_FLYWHEEL);
+              shooter.setFlywheelVelocity(0, 11, FlywheelSide.FEEDER);
+            }));
+
+    NamedCommands.registerCommand(
+        "Indexer", IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 11));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -279,29 +282,126 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
-    operatorCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 1.0, () -> 0.1));
 
-    operatorCon.leftBumper().whileTrue(IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 0.1));
-
-    operatorCon.x().onTrue(intake.setPivotAngle(() -> 0));
-
-    operatorCon.y().onTrue(intake.setPivotAngle(() -> 90));
-
-    operatorCon
+    driverCon
         .rightTrigger()
-        .onTrue(
-            Commands.runOnce(
+        .whileTrue(
+            Commands.runEnd(
                     () -> {
-                      shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.LEFT_FLYWHEEL);
-                      shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.RIGHT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0.55, 11, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0.55, 11, FlywheelSide.RIGHT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(1, 11, FlywheelSide.FEEDER);
+                    },
+                    () -> {
+                      shooter.setFlywheelVelocity(0, 11, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0, 11, FlywheelSide.RIGHT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0, 11, FlywheelSide.FEEDER);
                     })
                 .ignoringDisable(true));
 
-    operatorCon
-        .rightBumper()
-        .onTrue(new ShootWhenAtSpeedPercent(shooter, () -> 1.0, () -> 0.1, () -> 0.8, () -> 0.8));
-  }
+    driverCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 0.22, () -> 11));
 
+    driverCon.leftBumper().whileTrue(IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 11));
+
+    operatorCon.leftTrigger().whileTrue(IntakeCommands.runIntake(intake, () -> 0.22, () -> 11));
+
+    operatorCon.leftBumper().whileTrue(IndexerCommands.runIndexer(indexer, () -> 1.0, () -> 11));
+
+    // operatorCon.x().onTrue(intake.setPivotAngle(() -> 0));
+
+    // operatorCon.y().onTrue(intake.setPivotAngle(() -> 90));
+
+    operatorCon
+        .x()
+        .whileTrue(
+            Commands.runEnd(
+                () -> {
+                  intake.setPivotVelocity(1, 1);
+                },
+                () -> {
+                  intake.setPivotVelocity(0, 1);
+                }));
+
+    operatorCon.a().whileTrue(IndexerCommands.runIndexer(indexer, () -> -1.0, () -> -11.0));
+    operatorCon
+        .b()
+        .whileTrue(
+            Commands.parallel(
+                IndexerCommands.runIndexer(indexer, () -> -1.0, () -> -11.0),
+                IntakeCommands.runIntake(intake, () -> -0.22, () -> -11),
+                Commands.runEnd(
+                    () -> {
+                      shooter.setFlywheelVelocity(-0.55, -11, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(-0.55, -11, FlywheelSide.RIGHT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(-1, -11, FlywheelSide.FEEDER);
+                    },
+                    () -> {
+                      shooter.setFlywheelVelocity(0, 11, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0, 11, FlywheelSide.RIGHT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0, 11, FlywheelSide.FEEDER);
+                    })));
+
+    operatorCon
+        .y()
+        .whileTrue(
+            Commands.runEnd(
+                () -> {
+                  intake.setPivotVelocity(-1, -4);
+                },
+                () -> {
+                  intake.setPivotVelocity(0, 1);
+                }));
+
+    /*operatorCon
+    .rightTrigger()
+    .whileTrue(
+        Commands.runEnd(
+                () -> {
+                  shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.LEFT_FLYWHEEL);
+                  shooter.setFlywheelSpeedSetpoint(() -> 1.0, FlywheelSide.RIGHT_FLYWHEEL);
+                },
+                () -> {
+                    shooter.setFlywheelSpeedSetpoint(() -> 0, FlywheelSide.LEFT_FLYWHEEL);
+                    shooter.setFlywheelSpeedSetpoint(() -> 0, FlywheelSide.RIGHT_FLYWHEEL);
+                    shooter.setFlywheelVelocity(0, 0.1, FlywheelSide.FEEDER);
+                }
+            )
+            .ignoringDisable(true));*/
+
+    operatorCon
+        .rightTrigger()
+        .whileTrue(
+            Commands.runEnd(
+                    () -> {
+                      shooter.setFlywheelVelocity(0.55, 11, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0.55, 11, FlywheelSide.RIGHT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(1, 11, FlywheelSide.FEEDER);
+                    },
+                    () -> {
+                      shooter.setFlywheelVelocity(0, 11, FlywheelSide.LEFT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0, 11, FlywheelSide.RIGHT_FLYWHEEL);
+                      shooter.setFlywheelVelocity(0, 11, FlywheelSide.FEEDER);
+                    })
+                .ignoringDisable(true));
+
+    /*operatorCon
+    .rightBumper()
+    .whileTrue(new ShootWhenAtSpeedPercent(shooter, () -> 1.0, () -> 0.1, () -> 0.8, () -> 0.8));*/
+
+    operatorCon
+        .povUp()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    intake.setPivotAngle(() -> Math.toDegrees(intake.getPivotPIDSetpoint()) + 1)));
+
+    operatorCon
+        .povUp()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    intake.setPivotAngle(() -> Math.toDegrees(intake.getPivotPIDSetpoint()) - 1)));
+  }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

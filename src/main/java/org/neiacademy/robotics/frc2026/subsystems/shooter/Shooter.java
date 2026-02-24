@@ -60,18 +60,11 @@ public class Shooter extends SubsystemBase {
   public void setFlywheelVelocity(
       double normalizedVelocity, double feedForward, FlywheelSide side) {
     switch (side) {
-      case LEFT_FLYWHEEL:
-        leftFlywheel.setVelocity(normalizedVelocity, feedForward);
-      case RIGHT_FLYWHEEL:
-        rightFlywheel.setVelocity(normalizedVelocity, feedForward);
-      case LEFT_FOLLOWER:
-        leftFollower.setVelocity(normalizedVelocity, feedForward);
-      case RIGHT_FOLLOWER:
-        rightFollower.setVelocity(normalizedVelocity, feedForward);
-      case FEEDER:
-        feeder.setVelocity(normalizedVelocity, feedForward);
-      default:
-        throw new IllegalStateException(side + " is not an option for setFlywheelVelocity.");
+      case LEFT_FLYWHEEL -> leftFlywheel.setVelocity(normalizedVelocity, feedForward);
+      case RIGHT_FLYWHEEL -> rightFlywheel.setVelocity(normalizedVelocity, feedForward);
+      case LEFT_FOLLOWER -> leftFollower.setVelocity(normalizedVelocity, feedForward);
+      case RIGHT_FOLLOWER -> rightFollower.setVelocity(normalizedVelocity, feedForward);
+      case FEEDER -> feeder.setVelocity(normalizedVelocity, feedForward);
     }
   }
 
@@ -92,10 +85,13 @@ public class Shooter extends SubsystemBase {
     switch (side) {
       case LEFT_FLYWHEEL:
         leftFlywheel.setOutputPIDZero();
+        break;
       case RIGHT_FLYWHEEL:
         rightFlywheel.setOutputPIDZero();
+        break;
       case FEEDER:
         feeder.setOutputPIDZero();
+        break;
       default:
         throw new IllegalStateException(side + " is not an option for setFlywheelOutputPIDZero.");
     }
@@ -104,11 +100,11 @@ public class Shooter extends SubsystemBase {
   public double getFlywheelVelocityPercent(FlywheelSide side) {
     switch (side) {
       case LEFT_FLYWHEEL:
-        leftFlywheel.getVelocityPercentToGoal();
+        return leftFlywheel.getVelocityPercentToGoal();
       case RIGHT_FLYWHEEL:
-        rightFlywheel.getVelocityPercentToGoal();
+        return rightFlywheel.getVelocityPercentToGoal();
       case FEEDER:
-        feeder.getVelocityPercentToGoal();
+        return feeder.getVelocityPercentToGoal();
       default:
         throw new IllegalStateException(side + " is not an option for getFlywheelVelocityPercent.");
     }

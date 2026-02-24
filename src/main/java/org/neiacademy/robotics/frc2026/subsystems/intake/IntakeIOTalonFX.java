@@ -38,7 +38,11 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   private final boolean useCancoder;
 
-  public IntakeIOTalonFX(int id, CANBus canBus, boolean inverted) {
+  private double pidSetpointRads;
+
+  private static final double MAX_RPS = 5000.0;
+
+  public IntakeIOTalonFX(int id, CANBus canBus, boolean inverted, boolean brakeMode) {
     motor = new TalonFX(id, canBus);
     cancoder = null;
     this.useCancoder = false;
@@ -47,7 +51,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     config.CurrentLimits.SupplyCurrentLimit = 60.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     config.MotorOutput.Inverted =
         inverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
 
@@ -66,7 +70,12 @@ public class IntakeIOTalonFX implements IntakeIO {
   }
 
   public IntakeIOTalonFX(
-      int id, int canId, CANBus canBus, boolean invertedMotor, boolean invertedCancoder) {
+      int id,
+      int canId,
+      CANBus canBus,
+      boolean invertedMotor,
+      boolean invertedCancoder,
+      boolean brakeMode) {
     motor = new TalonFX(id, canBus);
     cancoder = new CANcoder(canId);
     this.useCancoder = true;
@@ -75,7 +84,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     config.CurrentLimits.SupplyCurrentLimit = 60.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     config.MotorOutput.Inverted =
         invertedMotor ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
 
@@ -138,7 +147,7 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   @Override
   public void setVelocity(double velocity, double feedForward) {
-    motor.setControl(velocityControl.withVelocity(velocity).withFeedForward(feedForward));
+    motor.setControl(velocityControl.withVelocity(velocity * MAX_RPS).withFeedForward(feedForward));
   }
 
   @Override
@@ -152,11 +161,17 @@ public class IntakeIOTalonFX implements IntakeIO {
   @Override
   public void setPIDSetpoint(double angleInRads) {
     motor.setControl(new PositionVoltage(angleInRads).withSlot(0).withEnableFOC(true));
+    pidSetpointRads = angleInRads;
   }
 
   @Override
   public void setOutputPIDZero() {
     motor.setControl(new DutyCycleOut(0));
+  }
+
+  @Override
+  public double getPIDSetpoint() {
+    return pidSetpointRads;
   }
 
   @Override

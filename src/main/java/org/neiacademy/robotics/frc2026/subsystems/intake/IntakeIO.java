@@ -26,6 +26,10 @@ public interface IntakeIO {
 
   default void setPIDSetpoint(double angleInRads) {}
 
+  default double getPIDSetpoint() {
+    return 0.0;
+  }
+
   default void setOutputPIDZero() {}
 
   default void stop() {}
