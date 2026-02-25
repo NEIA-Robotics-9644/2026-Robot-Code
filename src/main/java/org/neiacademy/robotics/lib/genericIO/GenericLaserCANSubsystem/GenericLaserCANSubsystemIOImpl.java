@@ -34,7 +34,7 @@ public class GenericLaserCANSubsystemIOImpl implements GenericLaserCANSubsystemI
       GenericLaserCANSubsystemConstants constants, boolean isSim) {
     name = constants.kName;
 
-    lc = isSim ? new LaserCANSim(name) : new LaserCan(constants.laserCANDeviceId.getDeviceNumber());
+    lc = isSim ? new LaserCANSim(name) : new LaserCan(constants.laserCANDeviceId.getID());
     while (!hasConfiged && tries < 5) {
       try {
         lc.setRangingMode(constants.rangingMode);

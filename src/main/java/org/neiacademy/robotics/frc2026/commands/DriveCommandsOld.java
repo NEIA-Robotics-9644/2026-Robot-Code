@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2026 Littleton Robotics
+// Copyright (c) 2021-2025 Littleton Robotics
 // http://github.com/Mechanical-Advantage
 //
 // Use of this source code is governed by a BSD
@@ -28,37 +28,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.Logger;
 import org.neiacademy.robotics.frc2026.subsystems.drive.Drive;
-import org.neiacademy.robotics.frc2026.util.LoggedTunableNumber;
-import org.neiacademy.robotics.frc2026.util.Util;
 
-public class DriveCommands {
+public class DriveCommandsOld {
   private static final double DEADBAND = 0.1;
-
-  private static final double ANGLE_KP = 8.0;
-  private static final double ANGLE_KD = 0.0;
-  private static final double ANGLE_MAX_VELOCITY = 12.0;
-  private static final double ANGLE_MAX_ACCELERATION = 30.0;
-  private static final LoggedTunableNumber ANGLE_TOLERANCE =
-      new LoggedTunableNumber("DriveCommands/AngleToleranceDeg", 3.0);
-
-  private static final double DRIVE_KP = 3.5;
-  private static final double DRIVE_KD = 0.0;
-  private static final double DRIVE_MAX_VELOCITY = 4.0;
-  private static final double DRIVE_MAX_ACCELERATION = 20.0;
-  private static final LoggedTunableNumber DRIVE_TOLERANCE =
-      new LoggedTunableNumber("DriveCommands/PositionToleranceMeters", 0.025);
-
+  private static final double ANGLE_KP = 5.0;
+  private static final double ANGLE_KD = 0.4;
+  private static final double ANGLE_MAX_VELOCITY = 8.0;
+  private static final double ANGLE_MAX_ACCELERATION = 20.0;
   private static final double FF_START_DELAY = 2.0; // Secs
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
-  private static boolean atAngleSetpoint = false;
-  private static boolean atDriveSetpoint = false;
-
-  private DriveCommands() {}
+  private DriveCommandsOld() {}
 
   private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
     // Apply deadband
@@ -122,8 +105,7 @@ public class DriveCommands {
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      Supplier<Rotation2d> rotationSupplier,
-      Supplier<Rotation2d> rotationalVelocitySupplier) {
+      Supplier<Rotation2d> rotationSupplier) {
 
     // Create PID controller
     ProfiledPIDController angleController =
@@ -137,22 +119,14 @@ public class DriveCommands {
     // Construct command
     return Commands.run(
             () -> {
-              Logger.recordOutput("DriveCommands/AnglePositionSetpoint", rotationSupplier.get());
-              Logger.recordOutput(
-                  "DriveCommands/AngleVelocitySetpoint", rotationalVelocitySupplier.get());
-
               // Get linear velocity
               Translation2d linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
               // Calculate angular speed
               double omega =
-                  MathUtil.clamp(
-                      angleController.calculate(
-                              drive.getRotation().getRadians(), rotationSupplier.get().getRadians())
-                          + rotationalVelocitySupplier.get().getRadians(),
-                      -drive.getMaxAngularSpeedRadPerSec(),
-                      drive.getMaxAngularSpeedRadPerSec());
+                  angleController.calculate(
+                      drive.getRotation().getRadians(), rotationSupplier.get().getRadians());
 
               // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
@@ -169,89 +143,11 @@ public class DriveCommands {
                       isFlipped
                           ? drive.getRotation().plus(new Rotation2d(Math.PI))
                           : drive.getRotation()));
-
-              atAngleSetpoint =
-                  Util.epsilonEquals(
-                      rotationSupplier.get().getRadians(),
-                      drive.getPose().getRotation().getRadians(),
-                      Units.degreesToRadians(ANGLE_TOLERANCE.get()));
             },
             drive)
 
         // Reset PID controller when command starts
-        .beforeStarting(
-            () -> {
-              angleController.reset(drive.getRotation().getRadians());
-              atAngleSetpoint = false;
-            });
-  }
-
-  public static Command driveToPose(Drive drive, Supplier<Pose2d> pose) {
-    // Create PID controller
-    ProfiledPIDController angleController =
-        new ProfiledPIDController(
-            ANGLE_KP,
-            0.0,
-            ANGLE_KD,
-            new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
-    angleController.enableContinuousInput(-Math.PI, Math.PI);
-
-    ProfiledPIDController driveXController =
-        new ProfiledPIDController(
-            DRIVE_KP,
-            0.0,
-            DRIVE_KD,
-            new TrapezoidProfile.Constraints(DRIVE_MAX_VELOCITY, DRIVE_MAX_ACCELERATION));
-
-    ProfiledPIDController driveYController =
-        new ProfiledPIDController(
-            DRIVE_KP,
-            0.0,
-            DRIVE_KD,
-            new TrapezoidProfile.Constraints(DRIVE_MAX_VELOCITY, DRIVE_MAX_ACCELERATION));
-
-    // Construct command
-    return Commands.run(
-            () -> {
-              Logger.recordOutput("DriveCommands/PoseSetpoint", pose.get());
-
-              double omega =
-                  angleController.calculate(
-                      drive.getRotation().getRadians(), pose.get().getRotation().getRadians());
-
-              double driveX = driveXController.calculate(drive.getPose().getX(), pose.get().getX());
-
-              double driveY = driveYController.calculate(drive.getPose().getY(), pose.get().getY());
-
-              ChassisSpeeds speeds = new ChassisSpeeds(driveX, driveY, omega);
-              drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, drive.getRotation()));
-
-              atDriveSetpoint =
-                  (Util.epsilonEquals(
-                          drive.getPose().getX(), pose.get().getX(), DRIVE_TOLERANCE.get())
-                      && Util.epsilonEquals(
-                          drive.getPose().getY(), pose.get().getY(), DRIVE_TOLERANCE.get())
-                      && Util.epsilonEquals(
-                          drive.getRotation().getRadians(),
-                          pose.get().getRotation().getRadians(),
-                          Units.degreesToRadians(ANGLE_TOLERANCE.get())));
-            },
-            drive)
-        // Reset PID controller when command starts
-        .beforeStarting(
-            () -> {
-              ChassisSpeeds fieldRelSpeeds =
-                  ChassisSpeeds.fromRobotRelativeSpeeds(
-                      drive.getChassisSpeeds(), drive.getRotation());
-
-              angleController.reset(
-                  drive.getRotation().getRadians(), fieldRelSpeeds.omegaRadiansPerSecond);
-              driveXController.reset(drive.getPose().getX(), fieldRelSpeeds.vxMetersPerSecond);
-              driveYController.reset(drive.getPose().getY(), fieldRelSpeeds.vyMetersPerSecond);
-
-              atDriveSetpoint = false;
-            })
-        .finallyDo(drive::stop);
+        .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
   }
 
   /**
@@ -384,14 +280,6 @@ public class DriveCommands {
                               + formatter.format(Units.metersToInches(wheelRadius))
                               + " inches");
                     })));
-  }
-
-  public static boolean atAngleSetpoint() {
-    return atAngleSetpoint;
-  }
-
-  public static boolean atDriveToPoseSetpoint() {
-    return atDriveSetpoint;
   }
 
   private static class WheelRadiusCharacterizationState {

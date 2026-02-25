@@ -7,6 +7,8 @@
 
 package org.neiacademy.robotics.frc2026.util.drivers;
 
+import com.ctre.phoenix6.CANBus;
+
 public class CANDeviceID {
   private final int deviceNumber;
   private final String bus;
@@ -21,12 +23,16 @@ public class CANDeviceID {
     this(deviceNumber, "rio");
   }
 
-  public int getDeviceNumber() {
+  public int getID() {
     return deviceNumber;
   }
 
   public String getBus() {
     return bus;
+  }
+
+  public CANBus getPhoenixBus() {
+    return new CANBus(bus);
   }
 
   @SuppressWarnings("NonOverridingEquals")

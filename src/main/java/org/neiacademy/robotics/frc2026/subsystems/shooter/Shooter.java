@@ -1,120 +1,100 @@
 package org.neiacademy.robotics.frc2026.subsystems.shooter;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.DoubleSupplier;
-import lombok.Getter;
-import org.neiacademy.robotics.frc2026.subsystems.shooter.wheels.Flywheel;
-import org.neiacademy.robotics.frc2026.util.LoggedTunableNumber;
+import org.littletonrobotics.junction.Logger;
+import org.neiacademy.robotics.frc2026.Constants;
+import org.neiacademy.robotics.frc2026.util.Util;
 
 public class Shooter extends SubsystemBase {
-  // private final Hood hood;
 
-  private final Flywheel leftFlywheel;
-  private final Flywheel rightFlywheel;
-  private final Flywheel leftFollower;
-  private final Flywheel rightFollower;
+  private final ShooterIO io;
+  private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
-  private final Flywheel feeder;
+  private final boolean isLeftShooter;
 
-  @Getter
-  private static final LoggedTunableNumber flywheelSpeedPercent =
-      new LoggedTunableNumber("Shooter/FlywheelSpeedPercent");
+  private final Debouncer motorConnectedDebouncer = new Debouncer(0.5, DebounceType.kFalling);
+  private final Alert shooterLeaderDisconnectedAlert;
+  private final Alert shooterFollowerDisconnectedAlert;
 
-  public Shooter(
-      /*Hood leftHood,
-      Hood rightHood,*/
-      Flywheel leftFlywheel,
-      Flywheel rightFlywheel,
-      Flywheel leftFollower,
-      Flywheel rightFollower,
-      Flywheel feeder) {
-    // this.leftHood = leftHood;
-    // this.rightHood = rightHood;
+  public Shooter(ShooterIO io, boolean isLeftShooter) {
+    this.io = io;
+    this.isLeftShooter = isLeftShooter;
 
-    this.leftFlywheel = leftFlywheel;
-    this.rightFlywheel = rightFlywheel;
-    this.leftFollower = leftFollower;
-    this.rightFollower = rightFollower;
-
-    this.feeder = feeder;
-
-    leftFollower.followFlywheel(leftFlywheel, false);
-    rightFollower.followFlywheel(rightFlywheel, false);
+    shooterLeaderDisconnectedAlert =
+        new Alert(
+            (isLeftShooter ? "Left" : "Right") + "ShooterLeader motor disconnected!",
+            Alert.AlertType.kWarning);
+    shooterFollowerDisconnectedAlert =
+        new Alert(
+            (isLeftShooter ? "Left" : "Right") + "ShooterFollower motor disconnected!",
+            Alert.AlertType.kWarning);
   }
 
-  public void periodic() {}
+  @Override
+  public void periodic() {
+    io.updateInputs(inputs);
+    Logger.processInputs("Shooter/" + (isLeftShooter ? "Left" : "Right"), inputs);
 
-  /*public void setHoodVelocity(
-      double normalizedVelocity, double feedForward) {
-        hood.setVelocity(normalizedVelocity, feedForward);
+    shooterLeaderDisconnectedAlert.set(!motorConnectedDebouncer.calculate(inputs.leaderConnected));
+    shooterFollowerDisconnectedAlert.set(
+        !motorConnectedDebouncer.calculate(inputs.followerConnected));
+
+    if (isLeftShooter) {
+      if (Constants.Shooter.LEFT_kP.hasChanged(hashCode())
+          || Constants.Shooter.LEFT_kD.hasChanged(hashCode())) {
+        io.setPID(Constants.Shooter.LEFT_kP.get(), Constants.Shooter.LEFT_kD.get());
       }
-  }*/
-
-  /*public Command setHoodAngleSetpoint(
-      DoubleSupplier angleDegrees) {
-        return hood.setAngleDegrees(angleDegrees);
-    }
-  }*/
-
-  public void setFlywheelVelocity(
-      double normalizedVelocity, double feedForward, FlywheelSide side) {
-    switch (side) {
-      case LEFT_FLYWHEEL -> leftFlywheel.setVelocity(normalizedVelocity, feedForward);
-      case RIGHT_FLYWHEEL -> rightFlywheel.setVelocity(normalizedVelocity, feedForward);
-      case LEFT_FOLLOWER -> leftFollower.setVelocity(normalizedVelocity, feedForward);
-      case RIGHT_FOLLOWER -> rightFollower.setVelocity(normalizedVelocity, feedForward);
-      case FEEDER -> feeder.setVelocity(normalizedVelocity, feedForward);
-    }
-  }
-
-  public Command setFlywheelSpeedSetpoint(DoubleSupplier normalizedVelocity, FlywheelSide side) {
-    switch (side) {
-      case LEFT_FLYWHEEL:
-        return leftFlywheel.setSpeedSetpoint(normalizedVelocity);
-      case RIGHT_FLYWHEEL:
-        return rightFlywheel.setSpeedSetpoint(normalizedVelocity);
-      case FEEDER:
-        return feeder.setSpeedSetpoint(normalizedVelocity);
-      default:
-        throw new IllegalStateException(side + " is not an option for setFlywheelSpeedSetpoint.");
+      if (Constants.Shooter.LEFT_kS.hasChanged(hashCode())
+          || Constants.Shooter.LEFT_kV.hasChanged(hashCode())
+          || Constants.Shooter.LEFT_kA.hasChanged(hashCode())) {
+        io.setFeedForward(
+            Constants.Shooter.LEFT_kS.get(),
+            0.0,
+            Constants.Shooter.LEFT_kV.get(),
+            Constants.Shooter.LEFT_kA.get());
+      }
+    } else {
+      if (Constants.Shooter.RIGHT_kP.hasChanged(hashCode())
+          || Constants.Shooter.RIGHT_kD.hasChanged(hashCode())) {
+        io.setPID(Constants.Shooter.RIGHT_kP.get(), Constants.Shooter.RIGHT_kD.get());
+      }
+      if (Constants.Shooter.RIGHT_kS.hasChanged(hashCode())
+          || Constants.Shooter.RIGHT_kV.hasChanged(hashCode())
+          || Constants.Shooter.RIGHT_kA.hasChanged(hashCode())) {
+        io.setFeedForward(
+            Constants.Shooter.RIGHT_kS.get(),
+            0.0,
+            Constants.Shooter.RIGHT_kV.get(),
+            Constants.Shooter.RIGHT_kA.get());
+      }
     }
   }
 
-  public void setFlywheelOutputPIDZero(FlywheelSide side) {
-    switch (side) {
-      case LEFT_FLYWHEEL:
-        leftFlywheel.setOutputPIDZero();
-        break;
-      case RIGHT_FLYWHEEL:
-        rightFlywheel.setOutputPIDZero();
-        break;
-      case FEEDER:
-        feeder.setOutputPIDZero();
-        break;
-      default:
-        throw new IllegalStateException(side + " is not an option for setFlywheelOutputPIDZero.");
-    }
+  public boolean atSetpoint() {
+    return Util.epsilonEquals(
+        inputs.leaderVelocitySetpointRadsPerSec,
+        inputs.leaderVelocityRadsPerSec,
+        Constants.Shooter.VELOCITY_TOLERANCE.get());
   }
 
-  public double getFlywheelVelocityPercent(FlywheelSide side) {
-    switch (side) {
-      case LEFT_FLYWHEEL:
-        return leftFlywheel.getVelocityPercentToGoal();
-      case RIGHT_FLYWHEEL:
-        return rightFlywheel.getVelocityPercentToGoal();
-      case FEEDER:
-        return feeder.getVelocityPercentToGoal();
-      default:
-        throw new IllegalStateException(side + " is not an option for getFlywheelVelocityPercent.");
-    }
+  public Command runVelocityCommand(double velocityRadsPerSec) {
+    return run(() -> io.runVelocity(velocityRadsPerSec)).until(this::atSetpoint);
   }
 
-  public enum FlywheelSide {
-    LEFT_FLYWHEEL,
-    RIGHT_FLYWHEEL,
-    LEFT_FOLLOWER,
-    RIGHT_FOLLOWER,
-    FEEDER
-  };
+  public Command runTrackedVelocityCommand(DoubleSupplier velocityRadsPerSec) {
+    return run(() -> io.runVelocity(velocityRadsPerSec.getAsDouble()));
+  }
+
+  public void stop() {
+    io.stop();
+  }
+
+  public Command stopCommand() {
+    return runOnce(this::stop);
+  }
 }
