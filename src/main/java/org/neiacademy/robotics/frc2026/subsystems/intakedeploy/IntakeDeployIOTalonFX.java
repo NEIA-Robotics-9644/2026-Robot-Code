@@ -39,8 +39,7 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
   public IntakeDeployIOTalonFX() {
     deploy =
         new TalonFX(
-            Constants.Intake.DEPLOY_MOTOR_ID.getID(),
-            Constants.Intake.DEPLOY_MOTOR_ID.getPhoenixBus());
+            Constants.Intake.DEPLOY_MOTOR_ID.getID(), Constants.Intake.DEPLOY_MOTOR_ID.getBus());
     deployConfig = new TalonFXConfiguration();
 
     deployConfig.CurrentLimits.StatorCurrentLimitEnable = true;

@@ -32,8 +32,7 @@ public class IntakeRollerIOTalonFX implements IntakeRollerIO {
   public IntakeRollerIOTalonFX() {
     roller =
         new TalonFX(
-            Constants.Intake.ROLLER_MOTOR_ID.getID(),
-            Constants.Intake.ROLLER_MOTOR_ID.getPhoenixBus());
+            Constants.Intake.ROLLER_MOTOR_ID.getID(), Constants.Intake.ROLLER_MOTOR_ID.getBus());
 
     rollerConfig = new TalonFXConfiguration();
 

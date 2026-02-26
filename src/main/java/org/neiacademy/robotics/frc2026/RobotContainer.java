@@ -9,7 +9,6 @@ package org.neiacademy.robotics.frc2026;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -42,21 +41,21 @@ import org.neiacademy.robotics.frc2026.subsystems.intakedeploy.IntakeDeployIOTal
 import org.neiacademy.robotics.frc2026.subsystems.intakeroller.IntakeRoller;
 import org.neiacademy.robotics.frc2026.subsystems.intakeroller.IntakeRollerIO;
 import org.neiacademy.robotics.frc2026.subsystems.intakeroller.IntakeRollerIOTalonFX;
+import org.neiacademy.robotics.frc2026.subsystems.loader.Loader;
+import org.neiacademy.robotics.frc2026.subsystems.loader.LoaderIO;
 import org.neiacademy.robotics.frc2026.subsystems.loader.LoaderIOTalonFX;
 import org.neiacademy.robotics.frc2026.subsystems.misc.LED.LEDSubsystem;
+import org.neiacademy.robotics.frc2026.subsystems.shooter.Shooter;
+import org.neiacademy.robotics.frc2026.subsystems.shooter.ShooterIO;
 import org.neiacademy.robotics.frc2026.subsystems.shooter.ShooterIOTalonFX;
+import org.neiacademy.robotics.frc2026.subsystems.spindexer.Spindexer;
+import org.neiacademy.robotics.frc2026.subsystems.spindexer.SpindexerIO;
 import org.neiacademy.robotics.frc2026.subsystems.spindexer.SpindexerIOTalonFX;
 import org.neiacademy.robotics.frc2026.subsystems.vision.Vision;
 import org.neiacademy.robotics.frc2026.subsystems.vision.VisionConstants;
 import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVision;
 import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVisionSim;
 import org.neiacademy.robotics.frc2026.util.AllianceFlipUtil;
-import org.neiacademy.robotics.frc2026.subsystems.spindexer.Spindexer;
-import org.neiacademy.robotics.frc2026.subsystems.spindexer.SpindexerIO;
-import org.neiacademy.robotics.frc2026.subsystems.shooter.Shooter;
-import org.neiacademy.robotics.frc2026.subsystems.shooter.ShooterIO;
-import org.neiacademy.robotics.frc2026.subsystems.loader.Loader;
-import org.neiacademy.robotics.frc2026.subsystems.loader.LoaderIO;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -125,14 +124,16 @@ public class RobotContainer {
                 new ShooterIOTalonFX(
                     true,
                     Constants.Shooter.LEFT_SHOOTER_LEADER_ID,
-                    Constants.Shooter.LEFT_SHOOTER_FOLLOWER_ID),
+                    Constants.Shooter.LEFT_SHOOTER_FOLLOWER_ID,
+                    true),
                 true);
         rightShooter =
             new Shooter(
                 new ShooterIOTalonFX(
                     false,
                     Constants.Shooter.RIGHT_SHOOTER_LEADER_ID,
-                    Constants.Shooter.RIGHT_SHOOTER_FOLLOWER_ID),
+                    Constants.Shooter.RIGHT_SHOOTER_FOLLOWER_ID,
+                    false),
                 false);
 
         break;
@@ -189,13 +190,7 @@ public class RobotContainer {
 
     superstructure =
         new Superstructure(
-            drive,
-            spindexer,
-            intakeDeploy,
-            intakeRoller,
-            loader,
-            leftShooter,
-            rightShooter);
+            drive, spindexer, intakeDeploy, intakeRoller, loader, leftShooter, rightShooter);
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -232,7 +227,6 @@ public class RobotContainer {
                 () -> Units.degreesToRadians(Presets.Intake.TUNING_ANGLE_DEG.getAsDouble())),
             leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
             rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED)));
-
 
     // Configure the button bindings
     configureButtonBindings();
@@ -277,7 +271,8 @@ public class RobotContainer {
     driverCon
         .rightTrigger()
         .and(inAllianceZone)
-        .whileTrue(superstructure.hubAimCommand(() -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+        .whileTrue(
+            superstructure.hubAimCommand(() -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
         .and(DriveCommands::atAngleSetpoint)
@@ -287,7 +282,8 @@ public class RobotContainer {
         .rightTrigger()
         .and(inAllianceZone.negate())
         .whileTrue(
-            superstructure.shuttleAimCommand(() -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+            superstructure.shuttleAimCommand(
+                () -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
         .and(DriveCommands::atAngleSetpoint)
@@ -303,14 +299,15 @@ public class RobotContainer {
                 leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED.getAsDouble()),
                 rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED.getAsDouble())));
 
-    driverCon.leftTrigger().onTrue(superstructure.deployIntake());
+    // driverCon.leftTrigger().onTrue(superstructure.deployIntake());
     driverCon.leftTrigger().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
 
     driverCon.leftBumper().onTrue(superstructure.retractIntake());
 
     driverCon.x().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
+    driverCon.x().whileTrue(loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS));
   }
-  
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

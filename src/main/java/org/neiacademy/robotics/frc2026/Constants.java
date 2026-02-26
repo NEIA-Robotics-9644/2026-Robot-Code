@@ -5,6 +5,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotBase;
+import lombok.Setter;
 import org.neiacademy.robotics.frc2026.util.LoggedTunableNumber;
 import org.neiacademy.robotics.frc2026.util.drivers.CANDeviceID;
 
@@ -16,7 +17,9 @@ import org.neiacademy.robotics.frc2026.util.drivers.CANDeviceID;
 public final class Constants {
   public static final Mode simMode = Mode.SIM;
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
-  public static final boolean tuningMode = true;
+
+  @Setter public static boolean tuningMode = true;
+
   public static final boolean disableHAL = false;
 
   public static final CANDeviceID kPDH_ID = new CANDeviceID(0, "rio");
@@ -50,10 +53,10 @@ public final class Constants {
   }
 
   public static class Intake {
-    public static final String CANBUS = "drive";
-    public static final CANDeviceID DEPLOY_MOTOR_ID = new CANDeviceID(32, "drive");
-    public static final CANDeviceID ENCODER_ID = new CANDeviceID(35, "drive");
-    public static final CANDeviceID ROLLER_MOTOR_ID = new CANDeviceID(33, "drive");
+    public static final String CANBUS = "Drive";
+    public static final CANDeviceID DEPLOY_MOTOR_ID = new CANDeviceID(32, "Drive");
+    public static final CANDeviceID ENCODER_ID = new CANDeviceID(35, "Drive");
+    public static final CANDeviceID ROLLER_MOTOR_ID = new CANDeviceID(33, "Drive");
 
     public static final InvertedValue DEPLOY_INVERTED = InvertedValue.CounterClockwise_Positive;
     public static final InvertedValue ROLLER_INVERTED = InvertedValue.CounterClockwise_Positive;
@@ -84,7 +87,7 @@ public final class Constants {
     public static final String CANBUS = "rio";
     public static final CANDeviceID MOTOR_ID = new CANDeviceID(20, "rio");
 
-    public static final InvertedValue INVERTED = InvertedValue.Clockwise_Positive;
+    public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
     public static final double STATOR_LIMIT = 80.0;
     public static final double SUPPLY_LIMIT = 80.0;
@@ -99,8 +102,8 @@ public final class Constants {
     public static final CANDeviceID RIGHT_SHOOTER_LEADER_ID = new CANDeviceID(21, "rio");
     public static final CANDeviceID RIGHT_SHOOTER_FOLLOWER_ID = new CANDeviceID(22, "rio");
 
-    public static final InvertedValue LEFT_INVERTED = InvertedValue.CounterClockwise_Positive;
-    public static final InvertedValue RIGHT_INVERTED = InvertedValue.Clockwise_Positive;
+    public static final InvertedValue LEFT_INVERTED = InvertedValue.Clockwise_Positive;
+    public static final InvertedValue RIGHT_INVERTED = InvertedValue.CounterClockwise_Positive;
 
     public static final double STATOR_LIMIT = 80.0;
     public static final double SUPPLY_LIMIT = 80.0;

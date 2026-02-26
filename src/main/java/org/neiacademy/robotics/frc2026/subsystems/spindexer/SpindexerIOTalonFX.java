@@ -31,8 +31,7 @@ public class SpindexerIOTalonFX implements SpindexerIO {
 
   public SpindexerIOTalonFX() {
     spindexer =
-        new TalonFX(
-            Constants.Spindexer.MOTOR_ID.getID(), Constants.Spindexer.MOTOR_ID.getPhoenixBus());
+        new TalonFX(Constants.Spindexer.MOTOR_ID.getID(), Constants.Spindexer.MOTOR_ID.getBus());
     config = new TalonFXConfiguration();
 
     config.CurrentLimits.StatorCurrentLimitEnable = true;

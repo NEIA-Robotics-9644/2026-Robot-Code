@@ -44,11 +44,16 @@ public class ShooterIOTalonFX implements ShooterIO {
   private final VoltageOut voltageOut = new VoltageOut(0).withEnableFOC(true);
   private final VelocityTorqueCurrentFOC velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0);
 
-  public ShooterIOTalonFX(boolean isLeftShooter, CANDeviceID leader, CANDeviceID follower) {
-    shooterLeader = new TalonFX(leader.getID(), leader.getPhoenixBus());
-    shooterFollower = new TalonFX(follower.getID(), follower.getPhoenixBus());
-    shooterFollower.setControl(new Follower(leader.getID(), MotorAlignmentValue.Aligned));
+  public ShooterIOTalonFX(
+      boolean isLeftShooter, CANDeviceID leader, CANDeviceID follower, boolean opposed) {
+    shooterLeader = new TalonFX(leader.getID(), leader.getBus());
+    shooterFollower = new TalonFX(follower.getID(), follower.getBus());
+    if (opposed) {
+      shooterFollower.setControl(new Follower(leader.getID(), MotorAlignmentValue.Opposed));
 
+    } else {
+      shooterFollower.setControl(new Follower(leader.getID(), MotorAlignmentValue.Aligned));
+    }
     config = new TalonFXConfiguration();
 
     config.CurrentLimits.StatorCurrentLimitEnable = true;

@@ -30,8 +30,7 @@ public class LoaderIOTalonFX implements LoaderIO {
   private final StatusSignal<Current> supplyCurrent;
 
   public LoaderIOTalonFX() {
-    loader =
-        new TalonFX(Constants.Loader.MOTOR_ID.getID(), Constants.Loader.MOTOR_ID.getPhoenixBus());
+    loader = new TalonFX(Constants.Loader.MOTOR_ID.getID(), Constants.Loader.MOTOR_ID.getBus());
     config = new TalonFXConfiguration();
 
     config.CurrentLimits.StatorCurrentLimitEnable = true;
