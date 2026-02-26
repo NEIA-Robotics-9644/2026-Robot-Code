@@ -21,7 +21,7 @@ public class CANDeviceID {
     this(deviceNumber, "rio");
   }
 
-  public int getDeviceNumber() {
+  public int getID() {
     return deviceNumber;
   }
 

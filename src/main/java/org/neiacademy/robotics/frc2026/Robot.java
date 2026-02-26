@@ -64,7 +64,7 @@ public class Robot extends LoggedRobot {
         Logger.addDataReceiver(new WPILOGWriter());
         Logger.addDataReceiver(new NT4Publisher());
         LoggedPowerDistribution.getInstance(
-            Constants.kPDH_CAN_ID.getDeviceNumber(), ModuleType.kRev); // check PDH CAN ID
+            Constants.kPDH_ID.getID(), ModuleType.kRev); // check PDH CAN ID
         break;
 
       case SIM:
