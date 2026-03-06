@@ -2,6 +2,7 @@ package org.neiacademy.robotics.frc2026;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -66,8 +67,7 @@ public final class Constants {
     public static final InvertedValue DEPLOY_INVERTED = InvertedValue.Clockwise_Positive;
     public static final InvertedValue ROLLER_INVERTED = InvertedValue.CounterClockwise_Positive;
 
-    public static final SensorDirectionValue DEPLOY_CANCODER_INVERTED =
-        SensorDirectionValue.Clockwise_Positive;
+    public static final SensorDirectionValue DEPLOY_CANCODER_INVERTED = SensorDirectionValue.Clockwise_Positive;
 
     public static final double DEPLOY_STATOR_LIMIT = 80.0;
     public static final double DEPLOY_SUPPLY_LIMIT = 40.0;
