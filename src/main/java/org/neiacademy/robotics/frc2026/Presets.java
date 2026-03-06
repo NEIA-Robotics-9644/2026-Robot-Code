@@ -4,18 +4,11 @@ import org.neiacademy.robotics.frc2026.util.LoggedTunableNumber;
 
 public final class Presets {
 
-  public static class Climber {
-    public static final LoggedTunableNumber TUCK_ANGLE_DEG =
-        new LoggedTunableNumber("Setpoints/Climber/TuckAngleDeg", 0.0);
-    public static final LoggedTunableNumber TUNING_ANGLE_DEG =
-        new LoggedTunableNumber("Setpoints/Climber/TuningAngleDeg", 0.0);
-  }
-
   public static class Spindexer {
     public static final LoggedTunableNumber FEED_VOLTS =
-        new LoggedTunableNumber("Setpoints/Spindexer/FeedVolts", 6.0);
+        new LoggedTunableNumber("Setpoints/Spindexer/FeedVolts", 12.0);
     public static final LoggedTunableNumber EXHAUST_VOLTS =
-        new LoggedTunableNumber("Setpoints/Spindexer/ExhaustVolts", 0.0);
+        new LoggedTunableNumber("Setpoints/Spindexer/ExhaustVolts", -12.0);
     public static final LoggedTunableNumber TUNING_VOLTS =
         new LoggedTunableNumber("Setpoints/Spindexer/TuningVolts", 0.0);
   }
@@ -29,7 +22,7 @@ public final class Presets {
         new LoggedTunableNumber("Setpoints/Intake/DeployTuningAngleDeg", 0.0);
 
     public static final LoggedTunableNumber INTAKE_VOLTS =
-        new LoggedTunableNumber("Setpoints/Intake/RollerIntakeVolts", 10.0);
+        new LoggedTunableNumber("Setpoints/Intake/RollerIntakeVolts", 7.5);
     public static final LoggedTunableNumber EXHAUST_VOLTS =
         new LoggedTunableNumber("Setpoints/Intake/RollerExhaustVolts", -6.0);
     public static final LoggedTunableNumber TUNING_VOLTS =
@@ -38,9 +31,9 @@ public final class Presets {
 
   public static class Loader {
     public static final LoggedTunableNumber FEED_VOLTS =
-        new LoggedTunableNumber("Setpoints/Loader/FeedVolts", 10.0);
+        new LoggedTunableNumber("Setpoints/Loader/FeedVolts", 12.0);
     public static final LoggedTunableNumber EXHAUST_VOLTS =
-        new LoggedTunableNumber("Setpoints/Loader/ExhaustVolts", 0.0);
+        new LoggedTunableNumber("Setpoints/Loader/ExhaustVolts", -12);
     public static final LoggedTunableNumber SLOW_EXHAUST_VOLTS =
         new LoggedTunableNumber("Setpoints/Loader/SlowExhaustVolts", -6.0);
     public static final LoggedTunableNumber TUNING_VOLTS =
@@ -49,7 +42,7 @@ public final class Presets {
 
   public static class Shooter {
     public static final LoggedTunableNumber CLOSE_HUB_SPEED =
-        new LoggedTunableNumber("Setpoints/Shooter/CloseHubSpeedRadsPerSec", 275.0);
+        new LoggedTunableNumber("Setpoints/Shooter/CloseHubSpeedRadsPerSec", 300.0);
     public static final LoggedTunableNumber TUNING_SPEED =
         new LoggedTunableNumber("Setpoints/Shooter/TuningSpeedRadsPerSec", 0.0);
   }

@@ -7,6 +7,7 @@ public interface IntakeDeployIO {
   @AutoLog
   public static class IntakeDeployIOInputs {
     public boolean motorConnected = false;
+    public boolean cancoderConnected = false;
     public double tempCelsius = 0.0;
     public double rotorPositionRads = 0.0;
     public double positionSetpointRads = 0.0;

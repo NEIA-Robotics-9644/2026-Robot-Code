@@ -82,8 +82,8 @@ public class Shooter extends SubsystemBase {
         Constants.Shooter.VELOCITY_TOLERANCE.get());
   }
 
-  public Command runVelocityCommand(double velocityRadsPerSec) {
-    return run(() -> io.runVelocity(velocityRadsPerSec)).until(this::atSetpoint);
+  public Command runVelocityCommand(DoubleSupplier velocityRadsPerSec) {
+    return run(() -> io.runVelocity(velocityRadsPerSec.getAsDouble())).until(this::atSetpoint);
   }
 
   public Command runTrackedVelocityCommand(DoubleSupplier velocityRadsPerSec) {

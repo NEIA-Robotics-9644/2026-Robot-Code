@@ -59,8 +59,9 @@ public class IntakeDeploy extends SubsystemBase {
     return inputs.rotorPositionRads >= Units.degreesToRadians(45);
   }
 
-  public Command runPositionCommand(double positionRads) {
-    return run(() -> io.runPosition(positionRads)).until(this::atSetpoint);
+  public Command runPositionCommand(DoubleSupplier positionRads) {
+    return run(() -> io.runPosition(Units.degreesToRadians(positionRads.getAsDouble())))
+        .until(this::atSetpoint);
   }
 
   public Command runTrackedPositionCommand(DoubleSupplier positionRads) {
