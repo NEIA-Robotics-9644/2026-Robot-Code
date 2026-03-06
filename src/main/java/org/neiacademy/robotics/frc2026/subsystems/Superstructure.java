@@ -2,13 +2,13 @@ package org.neiacademy.robotics.frc2026.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import java.util.function.DoubleSupplier;
+import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 import org.neiacademy.robotics.frc2026.FieldConstants;
 import org.neiacademy.robotics.frc2026.Presets;
@@ -34,6 +34,8 @@ public class Superstructure extends SubsystemBase {
 
   private ShooterSetpoint hubShootingSetpoint;
   private ShooterSetpoint shuttleShootingSetpoint;
+
+  @Getter INTAKE_DEPLOY_SETPOINT currentIntakeDeploySetpoint;
 
   public Superstructure(
       Drive drive,
@@ -114,10 +116,12 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Command deployIntake() {
+    currentIntakeDeploySetpoint = INTAKE_DEPLOY_SETPOINT.DEPLOYED;
     return intakeDeploy.runPositionCommand(Presets.Intake.EXTEND_ANGLE_DEG);
   }
 
   public Command retractIntake() {
+    currentIntakeDeploySetpoint = INTAKE_DEPLOY_SETPOINT.RETRACTED;
     return intakeDeploy.runPositionCommand(Presets.Intake.TUCK_ANGLE_DEG);
   }
 
@@ -172,5 +176,10 @@ public class Superstructure extends SubsystemBase {
 
   public double getShuttleShootingSetpointShooterSpeed() {
     return shuttleShootingSetpoint.shooterSpeedRadsPerSec();
+  }
+
+  public enum INTAKE_DEPLOY_SETPOINT {
+    RETRACTED,
+    DEPLOYED;
   }
 }

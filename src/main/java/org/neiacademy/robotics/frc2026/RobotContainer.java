@@ -29,6 +29,7 @@ import org.neiacademy.robotics.frc2026.Constants.*;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
 import org.neiacademy.robotics.frc2026.generated.TunerConstants;
 import org.neiacademy.robotics.frc2026.subsystems.Superstructure;
+import org.neiacademy.robotics.frc2026.subsystems.Superstructure.INTAKE_DEPLOY_SETPOINT;
 import org.neiacademy.robotics.frc2026.subsystems.drive.Drive;
 import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIO;
 import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIOPigeon2;
@@ -84,6 +85,8 @@ public class RobotContainer {
   private final Alert noAutoAlert = new Alert("Please select an auto routine!!!", AlertType.kError);
 
   private Command noAuto = Commands.none();
+
+  private Trigger inAllianceZone;
 
   // Controller
   private final CommandXboxController driverCon = new CommandXboxController(0);
@@ -191,14 +194,63 @@ public class RobotContainer {
         new Superstructure(
             drive, spindexer, intakeDeploy, intakeRoller, loader, leftShooter, rightShooter);
 
+    inAllianceZone =
+        new Trigger(
+            () -> {
+              Pose2d robotPose = AllianceFlipUtil.apply(drive.getPose());
+              return (robotPose.getX() <= FieldConstants.LinesVertical.allianceZone + 0.40);
+            });
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     autoChooser.addDefaultOption("No Auto!", noAuto);
 
-    NamedCommands.registerCommand("shoot", superstructure.autoShoot().withTimeout(5));
+    NamedCommands.registerCommand("shoot", superstructure.shootCommand());
+    NamedCommands.registerCommand("autoShoot", superstructure.autoShoot().withTimeout(5));
     NamedCommands.registerCommand(
-        "intakeRoller", intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
+        "runIntakeRoller", intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
+    NamedCommands.registerCommand("intakeDeploy", superstructure.deployIntake());
+    NamedCommands.registerCommand("intakeRetract", superstructure.retractIntake());
+    NamedCommands.registerCommand(
+        "runSpindexer", spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS));
+    NamedCommands.registerCommand(
+        "shuttleAimAndShoot",
+        Commands.run(
+            () ->
+                inAllianceZone
+                    .negate()
+                    .whileTrue(
+                        superstructure.shuttleAimCommand(
+                            () -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+                    .and(leftShooter::atSetpoint)
+                    .and(rightShooter::atSetpoint)
+                    .and(DriveCommands::atAngleSetpoint)
+                    .whileTrue(superstructure.shootCommand())
+                    .onFalse(superstructure.endShootCommand()),
+            leftShooter,
+            rightShooter));
+    NamedCommands.registerCommand(
+        "hubAimAndShoot",
+        Commands.run(
+            () ->
+                inAllianceZone
+                    .whileTrue(
+                        superstructure.hubAimCommand(
+                            () -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+                    .and(leftShooter::atSetpoint)
+                    .and(rightShooter::atSetpoint)
+                    .and(DriveCommands::atAngleSetpoint)
+                    .whileTrue(superstructure.shootCommand())
+                    .onFalse(superstructure.endShootCommand())));
+
+    NamedCommands.registerCommand(
+        "spinShooterFlywheels",
+        Commands.run(
+            () -> {
+              leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
+              rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
+            }));
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -239,11 +291,10 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    Trigger inAllianceZone =
+    Trigger isManualMode =
         new Trigger(
             () -> {
-              Pose2d robotPose = AllianceFlipUtil.apply(drive.getPose());
-              return (robotPose.getX() <= FieldConstants.LinesVertical.allianceZone + 0.40);
+              return Constants.manualMode;
             });
 
     // Default command, normal field-relative drive
@@ -304,6 +355,61 @@ public class RobotContainer {
 
     driverCon.x().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
     driverCon.x().whileTrue(loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS));
+
+    operatorCon
+        .start()
+        .onTrue(Commands.runOnce(() -> Constants.setManualMode(!Constants.manualMode)));
+    operatorCon
+        .back()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  Presets.Shooter.CLOSE_HUB_SPEED.setDefault(
+                      Presets.Shooter.CLOSE_HUB_SPEED.getAsDouble());
+                  if (superstructure.getCurrentIntakeDeploySetpoint()
+                      == INTAKE_DEPLOY_SETPOINT.DEPLOYED) {
+                    Presets.Intake.EXTEND_ANGLE_DEG.setDefault(
+                        Units.radiansToDegrees(intakeDeploy.getAngleRads()));
+                  } else if (superstructure.getCurrentIntakeDeploySetpoint()
+                      == INTAKE_DEPLOY_SETPOINT.DEPLOYED) {
+                    Presets.Intake.TUCK_ANGLE_DEG.setDefault(
+                        Units.radiansToDegrees(intakeDeploy.getAngleRads()));
+                  }
+                }));
+
+    operatorCon
+        .povUp()
+        .and(isManualMode)
+        .onTrue(Commands.runOnce(() -> Presets.Shooter.CLOSE_HUB_SPEED.adjustSetValue(1)));
+    operatorCon
+        .povDown()
+        .and(isManualMode)
+        .onTrue(Commands.runOnce(() -> Presets.Shooter.CLOSE_HUB_SPEED.adjustSetValue(-1)));
+    operatorCon
+        .povLeft()
+        .and(isManualMode)
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    intakeDeploy.runPositionCommand(
+                        () -> intakeDeploy.getAngleRads() + Units.degreesToRadians(-1))));
+    operatorCon
+        .povRight()
+        .and(isManualMode)
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    intakeDeploy.runPositionCommand(
+                        () -> intakeDeploy.getAngleRads() + Units.degreesToRadians(1))));
+
+    operatorCon
+        .rightBumper()
+        .whileTrue(
+            new ParallelCommandGroup(
+                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
+                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
   }
 
   /**
