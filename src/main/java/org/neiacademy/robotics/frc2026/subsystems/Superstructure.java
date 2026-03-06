@@ -114,12 +114,11 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Command deployIntake() {
-    return intakeDeploy.runPositionCommand(
-        Units.degreesToRadians(Presets.Intake.EXTEND_ANGLE_DEG.get()));
+    return intakeDeploy.runPositionCommand(Presets.Intake.EXTEND_ANGLE_DEG);
   }
 
   public Command retractIntake() {
-    return intakeDeploy.runPositionCommand(Presets.Intake.TUCK_ANGLE_DEG.get());
+    return intakeDeploy.runPositionCommand(Presets.Intake.TUCK_ANGLE_DEG);
   }
 
   public Command stopAllRollersCommand() {
