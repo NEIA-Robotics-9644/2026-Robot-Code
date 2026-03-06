@@ -2,14 +2,17 @@ package org.neiacademy.robotics.frc2026.subsystems.intakedeploy;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -23,6 +26,8 @@ import org.neiacademy.robotics.frc2026.util.PhoenixUtil;
 public class IntakeDeployIOTalonFX implements IntakeDeployIO {
 
   private final TalonFX deploy;
+  private final CANcoder cancoder;
+
   private final TalonFXConfiguration deployConfig;
 
   private final StatusSignal<Temperature> temp;
@@ -40,6 +45,8 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
     deploy =
         new TalonFX(
             Constants.Intake.DEPLOY_MOTOR_ID.getID(), Constants.Intake.DEPLOY_MOTOR_ID.getBus());
+
+    cancoder = new CANcoder(Constants.Intake.DEPLOY_CANCODER_ID.getID(), Constants.Intake.DEPLOY_CANCODER_ID.getBus());
     deployConfig = new TalonFXConfiguration();
 
     deployConfig.CurrentLimits.StatorCurrentLimitEnable = true;
@@ -47,8 +54,15 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
     deployConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     deployConfig.CurrentLimits.SupplyCurrentLimit = Constants.Intake.DEPLOY_SUPPLY_LIMIT;
 
-    deployConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    deployConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+    deployConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
     deployConfig.Feedback.SensorToMechanismRatio = Constants.Intake.DEPLOY_GEAR_RATIO;
+
+    CANcoderConfiguration cancoderConfig = new CANcoderConfiguration();
+
+    cancoderConfig.MagnetSensor.SensorDirection = Constants.Intake.DEPLOY_CANCODER_INVERTED;
+
+    cancoder.getConfigurator().apply(cancoderConfig);
 
     deployConfig.MotorOutput.Inverted = Constants.Intake.DEPLOY_INVERTED;
     deployConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -67,9 +81,9 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
     PhoenixUtil.tryUntilOk(5, () -> deploy.getConfigurator().apply(deployConfig, 0.25));
 
     temp = deploy.getDeviceTemp();
-    rotorPosition = deploy.getPosition();
+    rotorPosition = cancoder.getPosition();
     positionSetpoint = deploy.getClosedLoopReference();
-    velocity = deploy.getVelocity();
+    velocity = cancoder.getVelocity();
     appliedVolts = deploy.getMotorVoltage();
     statorCurrent = deploy.getStatorCurrent();
     supplyCurrent = deploy.getSupplyCurrent();
@@ -110,12 +124,15 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
     inputs.motorConnected =
         BaseStatusSignal.isAllGood(
             temp,
-            rotorPosition,
             positionSetpoint,
-            velocity,
             appliedVolts,
             statorCurrent,
             supplyCurrent);
+      
+    inputs.cancoderConnected =
+        BaseStatusSignal.isAllGood(
+            rotorPosition,
+            velocity);
     inputs.tempCelsius = temp.getValueAsDouble();
     inputs.rotorPositionRads = Units.rotationsToRadians(rotorPosition.getValueAsDouble());
     inputs.positionSetpointRads = Units.rotationsToRadians(positionSetpoint.getValueAsDouble());
