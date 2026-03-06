@@ -4,34 +4,76 @@
     {
       "anchor": {
         "x": 3.5201255063657415,
-        "y": 4.030144820601851
+        "y": 4.03
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9498526114910057,
-        "y": 4.030882158747028
+        "x": 2.923203363174471,
+        "y": 4.03
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.0541893807870375,
+        "x": 1.9227924486871304,
         "y": 4.030144820601851
       },
       "prevControl": {
-        "x": 1.8041894031771009,
-        "y": 4.03003901402766
+        "x": 2.404348486731951,
+        "y": 4.02707016057553
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 0,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 0,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 0,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 0,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 0,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "spinShooterFlywheels",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "hubAimAndShoot",
+      "waypointRelativePos": 1.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -48,7 +90,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 1.6721433632468217
+    "rotation": 0.16645360622502306
   },
   "useDefaultConstraints": true
 }

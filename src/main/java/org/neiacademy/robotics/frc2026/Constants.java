@@ -22,6 +22,8 @@ public final class Constants {
 
   @Setter public static boolean tuningMode = true;
 
+  @Setter public static boolean manualMode = false;
+
   public static final boolean disableHAL = false;
 
   public static final CANDeviceID kPDH_ID = new CANDeviceID(0, "rio");

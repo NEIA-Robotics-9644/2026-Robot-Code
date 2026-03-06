@@ -68,6 +68,10 @@ public class IntakeDeploy extends SubsystemBase {
     return run(() -> io.runPosition(positionRads.getAsDouble()));
   }
 
+  public double getAngleRads() {
+    return inputs.rotorPositionRads;
+  }
+
   public void stop() {
     io.stop();
   }
