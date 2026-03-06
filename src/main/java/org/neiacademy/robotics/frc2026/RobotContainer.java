@@ -257,7 +257,7 @@ public class RobotContainer {
     // Switch to X pattern when X button is pressed
     driverCon.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    // Reset gyro to 0° when B button is pressed
+    // Reset gyro to 0 when povdown button is pressed
     driverCon
         .povDown()
         .onTrue(
@@ -298,12 +298,14 @@ public class RobotContainer {
                 leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
                 rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
 
+    driverCon.leftTrigger().onTrue(superstructure.deployIntake());
     driverCon.leftTrigger().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
 
     driverCon.leftBumper().onTrue(superstructure.retractIntake());
 
-    driverCon.x().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
-    driverCon.x().whileTrue(loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS));
+    driverCon.b().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
+    driverCon.b().whileTrue(loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS));
+    driverCon.b().whileTrue(spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS));
   }
 
   /**

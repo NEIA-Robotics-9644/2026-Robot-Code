@@ -60,7 +60,8 @@ public class IntakeDeploy extends SubsystemBase {
   }
 
   public Command runPositionCommand(DoubleSupplier positionRads) {
-    return run(() -> io.runPosition(Units.degreesToRadians(positionRads.getAsDouble()))).until(this::atSetpoint);
+    return run(() -> io.runPosition(Units.degreesToRadians(positionRads.getAsDouble())))
+        .until(this::atSetpoint);
   }
 
   public Command runTrackedPositionCommand(DoubleSupplier positionRads) {
