@@ -152,6 +152,27 @@ public class Superstructure extends SubsystemBase {
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS))));
   }
 
+  public Command closeHubShoot() {
+    return new ParallelCommandGroup(
+            new SequentialCommandGroup(
+                new WaitUntilCommand(() -> leftShooter.atSetpoint() && rightShooter.atSetpoint()),
+                new ParallelCommandGroup(
+                    loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
+                    spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS))))
+        .withTimeout(5.0)
+        .andThen(autoEndShootCommand());
+  }
+
+  public Command autoEndShootCommand() {
+    return new ParallelCommandGroup(
+        spindexer.stopCommand(),
+        new SequentialCommandGroup(
+            loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS).withTimeout(0.5),
+            loader.stopCommand()),
+        leftShooter.stopCommand(),
+        rightShooter.stopCommand());
+  }
+
   public Rotation2d getHubShootingSetpointDriveAngle() {
     return hubShootingSetpoint.driveAngleRads();
   }

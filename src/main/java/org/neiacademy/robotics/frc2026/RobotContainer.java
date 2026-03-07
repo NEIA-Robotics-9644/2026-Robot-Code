@@ -111,9 +111,11 @@ public class RobotContainer {
             new Vision(
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVision(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0),
-                new VisionIOPhotonVision(
-                    VisionConstants.camera1Name, VisionConstants.robotToCamera1));
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0)
+                // ,
+                // new VisionIOPhotonVision(
+                //     VisionConstants.camera1Name, VisionConstants.robotToCamera1)
+                );
 
         spindexer = new Spindexer(new SpindexerIOTalonFX());
         intakeDeploy = new IntakeDeploy(new IntakeDeployIOTalonFX());
@@ -153,9 +155,10 @@ public class RobotContainer {
             new Vision(
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose));
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
+                // new VisionIOPhotonVisionSim(
+                //     VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+                );
 
         spindexer = new Spindexer(new SpindexerIO() {});
         intakeDeploy = new IntakeDeploy(new IntakeDeployIO() {});
@@ -247,15 +250,12 @@ public class RobotContainer {
 
     NamedCommands.registerCommand(
         "spinShooterFlywheels",
-        Commands.runEnd(
-            () -> {
-              leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
-              rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
-            },
-            () -> {
-              leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
-              rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
-            }));
+        Commands.run(
+                Commands.ParallelCommandGroup(
+                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)))
+            .Commands
+            .withTimeout(5));
 
     NamedCommands.registerCommand(
         "closeHubShoot",
