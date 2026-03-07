@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -201,11 +202,6 @@ public class RobotContainer {
               return (robotPose.getX() <= FieldConstants.LinesVertical.allianceZone + 0.40);
             });
 
-    // Set up auto routines
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-
-    autoChooser.addDefaultOption("No Auto!", noAuto);
-
     NamedCommands.registerCommand("shoot", superstructure.shootCommand().withTimeout(5));
     NamedCommands.registerCommand("autoShoot", superstructure.autoShoot().withTimeout(5));
     NamedCommands.registerCommand(
@@ -250,8 +246,9 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "spinShooterFlywheels",
         Commands.parallel(
-                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))
+                Commands.runOnce(() -> System.out.println("spin shooter flywheels")),
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))
             .withTimeout(5));
 
     NamedCommands.registerCommand(
@@ -263,6 +260,18 @@ public class RobotContainer {
               leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
               rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
             }));
+
+    SmartDashboard.putData(
+        "spinShooterFlywheels",
+        Commands.parallel(
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))
+            .withTimeout(5));
+
+    // Set up auto routines
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+
+    autoChooser.addDefaultOption("No Auto!", noAuto);
 
     // Set up SysId routines
     autoChooser.addOption(
