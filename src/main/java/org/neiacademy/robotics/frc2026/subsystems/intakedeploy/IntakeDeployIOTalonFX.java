@@ -56,7 +56,14 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
 
     deployConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     deployConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
-    deployConfig.Feedback.SensorToMechanismRatio = Constants.Intake.DEPLOY_GEAR_RATIO;
+    deployConfig.Feedback.SensorToMechanismRatio = 1;
+    deployConfig.Feedback.RotorToSensorRatio = Constants.Intake.DEPLOY_GEAR_RATIO;
+    deployConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    deployConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    deployConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+        Constants.Intake.SOFT_LIMIT_FORWARD;
+    deployConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+        Constants.Intake.SOFT_LIMIT_REVERSE;
 
     CANcoderConfiguration cancoderConfig = new CANcoderConfiguration();
 
