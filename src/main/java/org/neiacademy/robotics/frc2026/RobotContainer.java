@@ -350,10 +350,14 @@ public class RobotContainer {
                 leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
                 rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
 
-    driverCon.leftTrigger().onTrue(superstructure.deployIntake());
+    //driverCon.leftTrigger().onTrue(superstructure.deployIntake());
     driverCon.leftTrigger().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
 
-    driverCon.leftBumper().onTrue(superstructure.retractIntake());
+    driverCon.leftTrigger().whileTrue(intakeDeploy.setVolts(() -> -7));
+
+    //driverCon.leftBumper().onTrue(superstructure.retractIntake());
+
+    driverCon.leftBumper().whileTrue(intakeDeploy.setVolts(() -> 7));
 
     driverCon.b().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
     driverCon.b().whileTrue(loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS));
@@ -412,6 +416,14 @@ public class RobotContainer {
                 loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
                 leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
                 rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
+
+    operatorCon
+        .rightTrigger()
+        .whileTrue(
+            new ParallelCommandGroup(
+                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
+
     driverCon.b().whileTrue(spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS));
   }
 
