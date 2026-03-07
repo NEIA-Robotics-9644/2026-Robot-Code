@@ -5,7 +5,6 @@ import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
@@ -60,13 +59,8 @@ public class IntakeDeploy extends SubsystemBase {
     return inputs.rotorPositionRads >= Units.degreesToRadians(45);
   }
 
-  public Command setVolts(DoubleSupplier volts) {
-    return Commands.run(() -> io.runVoltage(volts.getAsDouble()));
-  }
-
-  public Command runPositionCommand(DoubleSupplier positionRads) {
-    return run(() -> io.runPosition(Units.degreesToRadians(positionRads.getAsDouble())))
-        .until(this::atSetpoint);
+  public Command runPositionCommand(double positionRads) {
+    return run(() -> io.runPosition(positionRads)).until(this::atSetpoint);
   }
 
   public Command runTrackedPositionCommand(DoubleSupplier positionRads) {

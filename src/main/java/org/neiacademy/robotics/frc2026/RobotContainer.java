@@ -11,7 +11,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -250,11 +249,9 @@ public class RobotContainer {
 
     NamedCommands.registerCommand(
         "spinShooterFlywheels",
-        Commands.run(
-                Commands.ParallelCommandGroup(
-                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)))
-            .Commands
+        Commands.parallel(
+                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))
             .withTimeout(5));
 
     NamedCommands.registerCommand(
@@ -379,22 +376,22 @@ public class RobotContainer {
     operatorCon
         .start()
         .onTrue(Commands.runOnce(() -> Constants.setManualMode(!Constants.manualMode)));
-    operatorCon
-        .back()
-        .and(isManualMode)
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  Presets.Shooter.CLOSE_HUB_SPEED.setDefault(
-                      Presets.Shooter.CLOSE_HUB_SPEED.getAsDouble());
-                  if (intakeDeploy.isDeployed()) {
-                    Presets.Intake.EXTEND_ANGLE_DEG.setDefault(
-                        Units.radiansToDegrees(intakeDeploy.getAngleRads()));
-                  } else if (intakeDeploy.isDeployed() == false) {
-                    Presets.Intake.TUCK_ANGLE_DEG.setDefault(
-                        Units.radiansToDegrees(intakeDeploy.getAngleRads()));
-                  }
-                }));
+    /*operatorCon
+    .back()
+    .and(isManualMode)
+    .onTrue(
+        Commands.runOnce(
+            () -> {
+              Presets.Shooter.CLOSE_HUB_SPEED.setDefault(
+                  Presets.Shooter.CLOSE_HUB_SPEED.getAsDouble());
+              if (intakeDeploy.isDeployed()) {
+                Presets.Intake.EXTEND_ANGLE_DEG.setDefault(
+                    Units.radiansToDegrees(intakeDeploy.getAngleRads()));
+              } else if (intakeDeploy.isDeployed() == false) {
+                Presets.Intake.TUCK_ANGLE_DEG.setDefault(
+                    Units.radiansToDegrees(intakeDeploy.getAngleRads()));
+              }
+            }));
 
     operatorCon
         .povUp()
@@ -419,7 +416,7 @@ public class RobotContainer {
             Commands.runOnce(
                 () ->
                     intakeDeploy.runPositionCommand(
-                        () -> intakeDeploy.getAngleRads() + Units.degreesToRadians(1))));
+                        () -> intakeDeploy.getAngleRads() + Units.degreesToRadians(1))));*/
 
     operatorCon
         .rightBumper()
