@@ -218,40 +218,43 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "shuttleAimAndShoot",
         Commands.run(
-            () ->
-                inAllianceZone
-                    .negate()
-                    .whileTrue(
-                        superstructure.shuttleAimCommand(
-                            () -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
-                    .and(leftShooter::atSetpoint)
-                    .and(rightShooter::atSetpoint)
-                    .and(DriveCommands::atAngleSetpoint)
-                    .whileTrue(superstructure.shootCommand())
-                    .onFalse(superstructure.endShootCommand()),
-            leftShooter,
-            rightShooter).withTimeout(4));
+                () ->
+                    inAllianceZone
+                        .negate()
+                        .whileTrue(
+                            superstructure.shuttleAimCommand(
+                                () -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+                        .and(leftShooter::atSetpoint)
+                        .and(rightShooter::atSetpoint)
+                        .and(DriveCommands::atAngleSetpoint)
+                        .whileTrue(superstructure.shootCommand())
+                        .onFalse(superstructure.endShootCommand()),
+                leftShooter,
+                rightShooter)
+            .withTimeout(4));
     NamedCommands.registerCommand(
         "hubAimAndShoot",
         Commands.run(
-            () ->
-                inAllianceZone
-                    .whileTrue(
-                        superstructure.hubAimCommand(
-                            () -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
-                    .and(leftShooter::atSetpoint)
-                    .and(rightShooter::atSetpoint)
-                    .and(DriveCommands::atAngleSetpoint)
-                    .whileTrue(superstructure.shootCommand())
-                    .onFalse(superstructure.endShootCommand())).withTimeout(4));
+                () ->
+                    inAllianceZone
+                        .whileTrue(
+                            superstructure.hubAimCommand(
+                                () -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+                        .and(leftShooter::atSetpoint)
+                        .and(rightShooter::atSetpoint)
+                        .and(DriveCommands::atAngleSetpoint)
+                        .whileTrue(superstructure.shootCommand())
+                        .onFalse(superstructure.endShootCommand()))
+            .withTimeout(4));
 
     NamedCommands.registerCommand(
         "spinShooterFlywheels",
         Commands.run(
-            () -> {
-              leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
-              rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
-            }).withTimeout(5));
+                () -> {
+                  leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
+                  rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
+                })
+            .withTimeout(5));
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -350,14 +353,14 @@ public class RobotContainer {
                 leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
                 rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
 
-    //driverCon.leftTrigger().onTrue(superstructure.deployIntake());
+    // driverCon.leftTrigger().onTrue(superstructure.deployIntake());
     driverCon.leftTrigger().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
 
-    driverCon.leftTrigger().whileTrue(intakeDeploy.setVolts(() -> -7));
+    // driverCon.leftTrigger().whileTrue(intakeDeploy.setVolts(() -> -7));
 
-    //driverCon.leftBumper().onTrue(superstructure.retractIntake());
+    // driverCon.leftBumper().onTrue(superstructure.retractIntake());
 
-    driverCon.leftBumper().whileTrue(intakeDeploy.setVolts(() -> 7));
+    // driverCon.leftBumper().whileTrue(intakeDeploy.setVolts(() -> 7));
 
     driverCon.b().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
     driverCon.b().whileTrue(loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS));

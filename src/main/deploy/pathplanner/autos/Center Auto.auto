@@ -5,9 +5,21 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "spinShooterFlywheels"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Center Path"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "hubAimAndShoot"
           }
         }
       ]

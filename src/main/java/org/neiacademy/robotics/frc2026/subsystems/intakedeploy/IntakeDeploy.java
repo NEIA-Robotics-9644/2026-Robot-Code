@@ -60,7 +60,7 @@ public class IntakeDeploy extends SubsystemBase {
     return inputs.rotorPositionRads >= Units.degreesToRadians(45);
   }
 
-  public Command setVolts(DoubleSupplier volts){
+  public Command setVolts(DoubleSupplier volts) {
     return Commands.run(() -> io.runVoltage(volts.getAsDouble()));
   }
 
