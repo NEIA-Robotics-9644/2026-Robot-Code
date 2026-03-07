@@ -9,25 +9,6 @@
           "data": {
             "pathName": "Center Path"
           }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shooter"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Indexer"
-                }
-              }
-            ]
-          }
         }
       ]
     }

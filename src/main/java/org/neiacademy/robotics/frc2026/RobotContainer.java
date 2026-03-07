@@ -206,14 +206,15 @@ public class RobotContainer {
 
     autoChooser.addDefaultOption("No Auto!", noAuto);
 
-    NamedCommands.registerCommand("shoot", superstructure.shootCommand());
+    NamedCommands.registerCommand("shoot", superstructure.shootCommand().withTimeout(5));
     NamedCommands.registerCommand("autoShoot", superstructure.autoShoot().withTimeout(5));
     NamedCommands.registerCommand(
-        "runIntakeRoller", intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
+        "runIntakeRoller",
+        intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS).withTimeout(5));
     NamedCommands.registerCommand("intakeDeploy", superstructure.deployIntake());
     NamedCommands.registerCommand("intakeRetract", superstructure.retractIntake());
     NamedCommands.registerCommand(
-        "runSpindexer", spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS));
+        "runSpindexer", spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS).withTimeout(5));
     NamedCommands.registerCommand(
         "shuttleAimAndShoot",
         Commands.run(
@@ -229,7 +230,7 @@ public class RobotContainer {
                     .whileTrue(superstructure.shootCommand())
                     .onFalse(superstructure.endShootCommand()),
             leftShooter,
-            rightShooter));
+            rightShooter).withTimeout(4));
     NamedCommands.registerCommand(
         "hubAimAndShoot",
         Commands.run(
@@ -242,7 +243,7 @@ public class RobotContainer {
                     .and(rightShooter::atSetpoint)
                     .and(DriveCommands::atAngleSetpoint)
                     .whileTrue(superstructure.shootCommand())
-                    .onFalse(superstructure.endShootCommand())));
+                    .onFalse(superstructure.endShootCommand())).withTimeout(4));
 
     NamedCommands.registerCommand(
         "spinShooterFlywheels",
@@ -250,7 +251,7 @@ public class RobotContainer {
             () -> {
               leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
               rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
-            }));
+            }).withTimeout(5));
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -372,7 +373,7 @@ public class RobotContainer {
                     Presets.Intake.EXTEND_ANGLE_DEG.setDefault(
                         Units.radiansToDegrees(intakeDeploy.getAngleRads()));
                   } else if (superstructure.getCurrentIntakeDeploySetpoint()
-                      == INTAKE_DEPLOY_SETPOINT.DEPLOYED) {
+                      == INTAKE_DEPLOY_SETPOINT.RETRACTED) {
                     Presets.Intake.TUCK_ANGLE_DEG.setDefault(
                         Units.radiansToDegrees(intakeDeploy.getAngleRads()));
                   }
