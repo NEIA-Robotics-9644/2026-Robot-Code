@@ -61,13 +61,13 @@ public final class Constants {
     public static final CANDeviceID ENCODER_ID = new CANDeviceID(35, "Drive");
     public static final CANDeviceID ROLLER_MOTOR_ID = new CANDeviceID(33, "Drive");
 
-    public static final CANDeviceID DEPLOY_CANCODER_ID = new CANDeviceID(21, "rio");
-
     public static final InvertedValue DEPLOY_INVERTED = InvertedValue.Clockwise_Positive;
     public static final InvertedValue ROLLER_INVERTED = InvertedValue.CounterClockwise_Positive;
 
-    public static final SensorDirectionValue DEPLOY_CANCODER_INVERTED =
+    public static final SensorDirectionValue ENCODER_DIRECTION =
         SensorDirectionValue.Clockwise_Positive;
+    public static final double ENCODER_OFFSET = 0.1655;
+    public static final double ENCODER_DISCONTINUITY_POINT = 0.5;
 
     public static final double DEPLOY_STATOR_LIMIT = 80.0;
     public static final double DEPLOY_SUPPLY_LIMIT = 40.0;

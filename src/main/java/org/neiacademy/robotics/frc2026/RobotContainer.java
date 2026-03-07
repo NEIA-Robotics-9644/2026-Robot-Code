@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -249,12 +248,25 @@ public class RobotContainer {
 
     NamedCommands.registerCommand(
         "spinShooterFlywheels",
+        Commands.runEnd(
+            () -> {
+              leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
+              rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
+            },
+            () -> {
+              leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
+              rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
+            }));
+
+    NamedCommands.registerCommand(
+        "closeHubShoot",
         Commands.run(
-                () -> {
-                  leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
-                  rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
-                })
-            .withTimeout(5));
+            () -> {
+              spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS);
+              loader.runVoltageCommand(Presets.Loader.FEED_VOLTS);
+              leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
+              rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
+            }));
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -272,16 +284,16 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    SmartDashboard.putData(
-        "RunEverythingForTuning",
-        new ParallelCommandGroup(
-            loader.runVoltageCommand(Presets.Loader.TUNING_VOLTS),
-            spindexer.runVoltageCommand(Presets.Spindexer.TUNING_VOLTS),
-            intakeRoller.runVoltageCommand(Presets.Intake.TUNING_VOLTS),
-            intakeDeploy.runTrackedPositionCommand(
-                () -> Units.degreesToRadians(Presets.Intake.TUNING_ANGLE_DEG.getAsDouble())),
-            leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
-            rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED)));
+    // SmartDashboard.putData(
+    //     "RunEverythingForTuning",
+    //     new ParallelCommandGroup(
+    //         loader.runVoltageCommand(Presets.Loader.TUNING_VOLTS),
+    //         spindexer.runVoltageCommand(Presets.Spindexer.TUNING_VOLTS),
+    //         intakeRoller.runVoltageCommand(Presets.Intake.TUNING_VOLTS),
+    //         intakeDeploy.runTrackedPositionCommand(
+    //             () -> Units.degreesToRadians(Presets.Intake.TUNING_ANGLE_DEG.getAsDouble())),
+    //         leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
+    //         rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED)));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -353,14 +365,10 @@ public class RobotContainer {
                 leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
                 rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
 
-    // driverCon.leftTrigger().onTrue(superstructure.deployIntake());
+    driverCon.leftTrigger().onTrue(superstructure.deployIntake());
     driverCon.leftTrigger().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
 
-    // driverCon.leftTrigger().whileTrue(intakeDeploy.setVolts(() -> -7));
-
-    // driverCon.leftBumper().onTrue(superstructure.retractIntake());
-
-    // driverCon.leftBumper().whileTrue(intakeDeploy.setVolts(() -> 7));
+    driverCon.leftBumper().onTrue(superstructure.retractIntake());
 
     driverCon.b().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
     driverCon.b().whileTrue(loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS));
@@ -426,6 +434,10 @@ public class RobotContainer {
             new ParallelCommandGroup(
                 leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
                 rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
+
+    operatorCon
+        .leftTrigger()
+        .whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
 
     driverCon.b().whileTrue(spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS));
   }

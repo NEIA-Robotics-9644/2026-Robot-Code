@@ -17,9 +17,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "hubAimAndShoot"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "spinShooterFlywheels"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "closeHubShoot"
+                }
+              }
+            ]
           }
         }
       ]
