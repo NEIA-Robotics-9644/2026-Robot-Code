@@ -65,13 +65,23 @@
       "name": "spinShooterFlywheels",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "spinShooterFlywheels"
+        }
+      }
     },
     {
       "name": "hubAimAndShoot",
       "waypointRelativePos": 1.0,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "hubAimAndShoot"
+        }
+      }
     }
   ],
   "globalConstraints": {
