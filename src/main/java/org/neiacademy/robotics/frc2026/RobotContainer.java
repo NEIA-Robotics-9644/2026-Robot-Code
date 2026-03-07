@@ -28,7 +28,6 @@ import org.neiacademy.robotics.frc2026.Constants.*;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
 import org.neiacademy.robotics.frc2026.generated.TunerConstants;
 import org.neiacademy.robotics.frc2026.subsystems.Superstructure;
-import org.neiacademy.robotics.frc2026.subsystems.Superstructure.INTAKE_DEPLOY_SETPOINT;
 import org.neiacademy.robotics.frc2026.subsystems.drive.Drive;
 import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIO;
 import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIOPigeon2;
@@ -361,7 +360,11 @@ public class RobotContainer {
         .whileTrue(
             new ParallelCommandGroup(
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)))
+        .and(leftShooter::atSetpoint)
+        .and(rightShooter::atSetpoint)
+        .whileTrue(
+            new ParallelCommandGroup(
                 leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
                 rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
 
@@ -378,17 +381,16 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> Constants.setManualMode(!Constants.manualMode)));
     operatorCon
         .back()
+        .and(isManualMode)
         .onTrue(
             Commands.runOnce(
                 () -> {
                   Presets.Shooter.CLOSE_HUB_SPEED.setDefault(
                       Presets.Shooter.CLOSE_HUB_SPEED.getAsDouble());
-                  if (superstructure.getCurrentIntakeDeploySetpoint()
-                      == INTAKE_DEPLOY_SETPOINT.DEPLOYED) {
+                  if (intakeDeploy.isDeployed()) {
                     Presets.Intake.EXTEND_ANGLE_DEG.setDefault(
                         Units.radiansToDegrees(intakeDeploy.getAngleRads()));
-                  } else if (superstructure.getCurrentIntakeDeploySetpoint()
-                      == INTAKE_DEPLOY_SETPOINT.RETRACTED) {
+                  } else if (intakeDeploy.isDeployed() == false) {
                     Presets.Intake.TUCK_ANGLE_DEG.setDefault(
                         Units.radiansToDegrees(intakeDeploy.getAngleRads()));
                   }
@@ -424,7 +426,11 @@ public class RobotContainer {
         .whileTrue(
             new ParallelCommandGroup(
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)))
+        .and(leftShooter::atSetpoint)
+        .and(rightShooter::atSetpoint)
+        .whileTrue(
+            new ParallelCommandGroup(
                 leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
                 rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
 
