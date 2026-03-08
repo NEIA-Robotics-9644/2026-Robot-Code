@@ -366,11 +366,7 @@ public class RobotContainer {
         .whileTrue(
             new ParallelCommandGroup(
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)))
-        .and(leftShooter::atSetpoint)
-        .and(rightShooter::atSetpoint)
-        .whileTrue(
-            new ParallelCommandGroup(
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
                 leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
                 rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
 
