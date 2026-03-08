@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5201255063657415,
-        "y": 4.03
+        "x": 0.875,
+        "y": 5.935
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9201326884858014,
-        "y": 4.027064273090179
+        "x": 1.875,
+        "y": 5.935
       },
       "isLocked": false,
       "linkedName": null
@@ -20,8 +20,8 @@
         "y": 4.03
       },
       "prevControl": {
-        "x": 3.1615151150390512,
-        "y": 4.03799584605223
+        "x": 1.678,
+        "y": 4.03
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,20 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "intakeRetract",
+      "waypointRelativePos": 0.1602542123824452,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "spinShooterFlywheels",
+      "waypointRelativePos": 0.33724774686520387,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -42,13 +55,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -1.1409793588545734
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.16645360622502306
+    "rotation": -179.60183813301987
   },
   "useDefaultConstraints": true
 }

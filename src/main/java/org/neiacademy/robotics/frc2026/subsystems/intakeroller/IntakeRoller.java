@@ -33,6 +33,11 @@ public class IntakeRoller extends SubsystemBase {
     return run(() -> io.runVoltage(volts.getAsDouble())).finallyDo(() -> io.stop());
   }
 
+  // always have a timeout when running this
+  public Command runAutoVoltageCommand(DoubleSupplier volts) {
+    return runEnd(() -> io.runVoltage(volts.getAsDouble()), () -> io.runVoltage(0));
+  }
+
   public void stop() {
     io.stop();
   }
