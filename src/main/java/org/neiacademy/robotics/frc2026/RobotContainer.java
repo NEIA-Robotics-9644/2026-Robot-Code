@@ -246,7 +246,6 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "spinShooterFlywheels",
         Commands.parallel(
-                Commands.runOnce(() -> System.out.println("spin shooter flywheels")),
                 leftShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
                 rightShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))
             .withTimeout(5));
@@ -267,6 +266,9 @@ public class RobotContainer {
                 leftShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
                 rightShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))
             .withTimeout(5));
+    SmartDashboard.putData(
+        "spinIntakeRoller",
+        intakeRoller.runAutoVoltageCommand(Presets.Intake.INTAKE_VOLTS).withTimeout(6));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
