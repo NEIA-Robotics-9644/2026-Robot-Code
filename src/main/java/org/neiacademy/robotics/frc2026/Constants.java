@@ -2,7 +2,6 @@ package org.neiacademy.robotics.frc2026;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -62,12 +61,13 @@ public final class Constants {
     public static final CANDeviceID ENCODER_ID = new CANDeviceID(35, "Drive");
     public static final CANDeviceID ROLLER_MOTOR_ID = new CANDeviceID(33, "Drive");
 
-    public static final CANDeviceID DEPLOY_CANCODER_ID = new CANDeviceID(21, "rio");
-
     public static final InvertedValue DEPLOY_INVERTED = InvertedValue.Clockwise_Positive;
     public static final InvertedValue ROLLER_INVERTED = InvertedValue.CounterClockwise_Positive;
 
-    public static final SensorDirectionValue DEPLOY_CANCODER_INVERTED = SensorDirectionValue.Clockwise_Positive;
+    public static final SensorDirectionValue ENCODER_DIRECTION =
+        SensorDirectionValue.Clockwise_Positive;
+    public static final double ENCODER_OFFSET = 0.1655;
+    public static final double ENCODER_DISCONTINUITY_POINT = 0.5;
 
     public static final double DEPLOY_STATOR_LIMIT = 80.0;
     public static final double DEPLOY_SUPPLY_LIMIT = 40.0;
@@ -75,17 +75,20 @@ public final class Constants {
     public static final double ROLLER_STATOR_LIMIT = 80.0;
     public static final double ROLLER_SUPPLY_LIMIT = 60.0;
 
-    public static final LoggedTunableNumber kP = new LoggedTunableNumber("PID/Intake/kP", 460);
-    public static final LoggedTunableNumber kD = new LoggedTunableNumber("PID/Intake/kD", 0.0);
+    public static final double SOFT_LIMIT_FORWARD = 0;
+    public static final double SOFT_LIMIT_REVERSE = -0.35;
+
+    public static final LoggedTunableNumber kP = new LoggedTunableNumber("PID/Intake/kP", 50);
+    public static final LoggedTunableNumber kD = new LoggedTunableNumber("PID/Intake/kD", 10);
     public static final LoggedTunableNumber kS = new LoggedTunableNumber("PID/Intake/kS", 0.0);
-    public static final LoggedTunableNumber kG = new LoggedTunableNumber("PID/Intake/kG", 32);
+    public static final LoggedTunableNumber kG = new LoggedTunableNumber("PID/Intake/kG", 0);
     public static final LoggedTunableNumber kV = new LoggedTunableNumber("PID/Intake/kV", 0.0);
     public static final LoggedTunableNumber kA = new LoggedTunableNumber("PID/Intake/kA", 0.0);
 
     public static final LoggedTunableNumber POSITION_TOLERANCE =
         new LoggedTunableNumber("PID/Intake/DeployToleranceDeg", 3.0);
 
-    public static final double ROLLER_GEAR_RATIO = 3.0;
+    public static final double ROLLER_GEAR_RATIO = 18 / 24;
     public static final double DEPLOY_GEAR_RATIO = 25 * (75 / 24);
 
     public static final Rotation2d GRAVITY_POSTION_OFFSET = Rotation2d.fromDegrees(90.0);

@@ -12,7 +12,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -47,9 +46,7 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
             Constants.Intake.DEPLOY_MOTOR_ID.getID(), Constants.Intake.DEPLOY_MOTOR_ID.getBus());
 
     cancoder =
-        new CANcoder(
-            Constants.Intake.DEPLOY_CANCODER_ID.getID(),
-            Constants.Intake.DEPLOY_CANCODER_ID.getBus());
+        new CANcoder(Constants.Intake.ENCODER_ID.getID(), Constants.Intake.ENCODER_ID.getBus());
     deployConfig = new TalonFXConfiguration();
 
     deployConfig.CurrentLimits.StatorCurrentLimitEnable = true;
@@ -59,13 +56,21 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
 
     deployConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     deployConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
-    deployConfig.Feedback.SensorToMechanismRatio = Constants.Intake.DEPLOY_GEAR_RATIO;
+    deployConfig.Feedback.SensorToMechanismRatio = 1;
+    deployConfig.Feedback.RotorToSensorRatio = Constants.Intake.DEPLOY_GEAR_RATIO;
+    deployConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    deployConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    deployConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+        Constants.Intake.SOFT_LIMIT_FORWARD;
+    deployConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+        Constants.Intake.SOFT_LIMIT_REVERSE;
 
     CANcoderConfiguration cancoderConfig = new CANcoderConfiguration();
 
-    cancoderConfig.MagnetSensor.SensorDirection = Constants.Intake.DEPLOY_CANCODER_INVERTED;
-
-    cancoder.getConfigurator().apply(cancoderConfig);
+    cancoderConfig.MagnetSensor.SensorDirection = Constants.Intake.ENCODER_DIRECTION;
+    cancoderConfig.MagnetSensor.MagnetOffset = Constants.Intake.ENCODER_OFFSET;
+    cancoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint =
+        Constants.Intake.ENCODER_DISCONTINUITY_POINT;
 
     deployConfig.MotorOutput.Inverted = Constants.Intake.DEPLOY_INVERTED;
     deployConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -82,6 +87,7 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
         Constants.Intake.GRAVITY_POSTION_OFFSET.getRotations();
 
     PhoenixUtil.tryUntilOk(5, () -> deploy.getConfigurator().apply(deployConfig, 0.25));
+    PhoenixUtil.tryUntilOk(5, () -> cancoder.getConfigurator().apply(cancoderConfig, 0.25));
 
     temp = deploy.getDeviceTemp();
     rotorPosition = cancoder.getPosition();

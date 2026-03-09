@@ -11,7 +11,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -29,7 +28,6 @@ import org.neiacademy.robotics.frc2026.Constants.*;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
 import org.neiacademy.robotics.frc2026.generated.TunerConstants;
 import org.neiacademy.robotics.frc2026.subsystems.Superstructure;
-import org.neiacademy.robotics.frc2026.subsystems.Superstructure.INTAKE_DEPLOY_SETPOINT;
 import org.neiacademy.robotics.frc2026.subsystems.drive.Drive;
 import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIO;
 import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIOPigeon2;
@@ -113,9 +111,11 @@ public class RobotContainer {
             new Vision(
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVision(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0),
-                new VisionIOPhotonVision(
-                    VisionConstants.camera1Name, VisionConstants.robotToCamera1));
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0)
+                // ,
+                // new VisionIOPhotonVision(
+                //     VisionConstants.camera1Name, VisionConstants.robotToCamera1)
+                );
 
         spindexer = new Spindexer(new SpindexerIOTalonFX());
         intakeDeploy = new IntakeDeploy(new IntakeDeployIOTalonFX());
@@ -155,9 +155,10 @@ public class RobotContainer {
             new Vision(
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose));
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
+                // new VisionIOPhotonVisionSim(
+                //     VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+                );
 
         spindexer = new Spindexer(new SpindexerIO() {});
         intakeDeploy = new IntakeDeploy(new IntakeDeployIO() {});
@@ -201,56 +202,78 @@ public class RobotContainer {
               return (robotPose.getX() <= FieldConstants.LinesVertical.allianceZone + 0.40);
             });
 
+    NamedCommands.registerCommand("shoot", superstructure.shootCommand().withTimeout(5));
+    NamedCommands.registerCommand("autoShoot", superstructure.autoShoot().withTimeout(5));
+    NamedCommands.registerCommand(
+        "runIntakeRoller",
+        intakeRoller.runAutoVoltageCommand(Presets.Intake.INTAKE_VOLTS).withTimeout(6));
+    NamedCommands.registerCommand("intakeDeploy", superstructure.deployIntake());
+    NamedCommands.registerCommand("intakeRetract", superstructure.retractIntake());
+    NamedCommands.registerCommand(
+        "runSpindexer", spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS).withTimeout(5));
+    NamedCommands.registerCommand(
+        "shuttleAimAndShoot",
+        Commands.run(
+                () ->
+                    inAllianceZone
+                        .negate()
+                        .whileTrue(
+                            superstructure.shuttleAimCommand(
+                                () -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+                        .and(leftShooter::atSetpoint)
+                        .and(rightShooter::atSetpoint)
+                        .and(DriveCommands::atAngleSetpoint)
+                        .whileTrue(superstructure.shootCommand())
+                        .onFalse(superstructure.endShootCommand()),
+                leftShooter,
+                rightShooter)
+            .withTimeout(4));
+    NamedCommands.registerCommand(
+        "hubAimAndShoot",
+        Commands.run(
+                () ->
+                    inAllianceZone
+                        .whileTrue(
+                            superstructure.hubAimCommand(
+                                () -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+                        .and(leftShooter::atSetpoint)
+                        .and(rightShooter::atSetpoint)
+                        .and(DriveCommands::atAngleSetpoint)
+                        .whileTrue(superstructure.shootCommand())
+                        .onFalse(superstructure.endShootCommand()))
+            .withTimeout(4));
+
+    NamedCommands.registerCommand(
+        "spinShooterFlywheels",
+        Commands.parallel(
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))
+            .withTimeout(5));
+
+    NamedCommands.registerCommand(
+        "closeHubShoot",
+        Commands.run(
+            () -> {
+              spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS);
+              loader.runVoltageCommand(Presets.Loader.FEED_VOLTS);
+              leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
+              rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
+            }));
+
+    SmartDashboard.putData(
+        "spinShooterFlywheels",
+        Commands.parallel(
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))
+            .withTimeout(5));
+    SmartDashboard.putData(
+        "spinIntakeRoller",
+        intakeRoller.runAutoVoltageCommand(Presets.Intake.INTAKE_VOLTS).withTimeout(6));
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     autoChooser.addDefaultOption("No Auto!", noAuto);
-
-    NamedCommands.registerCommand("shoot", superstructure.shootCommand());
-    NamedCommands.registerCommand("autoShoot", superstructure.autoShoot().withTimeout(5));
-    NamedCommands.registerCommand(
-        "runIntakeRoller", intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
-    NamedCommands.registerCommand("intakeDeploy", superstructure.deployIntake());
-    NamedCommands.registerCommand("intakeRetract", superstructure.retractIntake());
-    NamedCommands.registerCommand(
-        "runSpindexer", spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS));
-    NamedCommands.registerCommand(
-        "shuttleAimAndShoot",
-        Commands.run(
-            () ->
-                inAllianceZone
-                    .negate()
-                    .whileTrue(
-                        superstructure.shuttleAimCommand(
-                            () -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
-                    .and(leftShooter::atSetpoint)
-                    .and(rightShooter::atSetpoint)
-                    .and(DriveCommands::atAngleSetpoint)
-                    .whileTrue(superstructure.shootCommand())
-                    .onFalse(superstructure.endShootCommand()),
-            leftShooter,
-            rightShooter));
-    NamedCommands.registerCommand(
-        "hubAimAndShoot",
-        Commands.run(
-            () ->
-                inAllianceZone
-                    .whileTrue(
-                        superstructure.hubAimCommand(
-                            () -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
-                    .and(leftShooter::atSetpoint)
-                    .and(rightShooter::atSetpoint)
-                    .and(DriveCommands::atAngleSetpoint)
-                    .whileTrue(superstructure.shootCommand())
-                    .onFalse(superstructure.endShootCommand())));
-
-    NamedCommands.registerCommand(
-        "spinShooterFlywheels",
-        Commands.run(
-            () -> {
-              leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
-              rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
-            }));
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -268,16 +291,16 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    SmartDashboard.putData(
-        "RunEverythingForTuning",
-        new ParallelCommandGroup(
-            loader.runVoltageCommand(Presets.Loader.TUNING_VOLTS),
-            spindexer.runVoltageCommand(Presets.Spindexer.TUNING_VOLTS),
-            intakeRoller.runVoltageCommand(Presets.Intake.TUNING_VOLTS),
-            intakeDeploy.runTrackedPositionCommand(
-                () -> Units.degreesToRadians(Presets.Intake.TUNING_ANGLE_DEG.getAsDouble())),
-            leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
-            rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED)));
+    // SmartDashboard.putData(
+    //     "RunEverythingForTuning",
+    //     new ParallelCommandGroup(
+    //         loader.runVoltageCommand(Presets.Loader.TUNING_VOLTS),
+    //         spindexer.runVoltageCommand(Presets.Spindexer.TUNING_VOLTS),
+    //         intakeRoller.runVoltageCommand(Presets.Intake.TUNING_VOLTS),
+    //         intakeDeploy.runTrackedPositionCommand(
+    //             () -> Units.degreesToRadians(Presets.Intake.TUNING_ANGLE_DEG.getAsDouble())),
+    //         leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
+    //         rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED)));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -360,23 +383,22 @@ public class RobotContainer {
     operatorCon
         .start()
         .onTrue(Commands.runOnce(() -> Constants.setManualMode(!Constants.manualMode)));
-    operatorCon
-        .back()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  Presets.Shooter.CLOSE_HUB_SPEED.setDefault(
-                      Presets.Shooter.CLOSE_HUB_SPEED.getAsDouble());
-                  if (superstructure.getCurrentIntakeDeploySetpoint()
-                      == INTAKE_DEPLOY_SETPOINT.DEPLOYED) {
-                    Presets.Intake.EXTEND_ANGLE_DEG.setDefault(
-                        Units.radiansToDegrees(intakeDeploy.getAngleRads()));
-                  } else if (superstructure.getCurrentIntakeDeploySetpoint()
-                      == INTAKE_DEPLOY_SETPOINT.DEPLOYED) {
-                    Presets.Intake.TUCK_ANGLE_DEG.setDefault(
-                        Units.radiansToDegrees(intakeDeploy.getAngleRads()));
-                  }
-                }));
+    /*operatorCon
+    .back()
+    .and(isManualMode)
+    .onTrue(
+        Commands.runOnce(
+            () -> {
+              Presets.Shooter.CLOSE_HUB_SPEED.setDefault(
+                  Presets.Shooter.CLOSE_HUB_SPEED.getAsDouble());
+              if (intakeDeploy.isDeployed()) {
+                Presets.Intake.EXTEND_ANGLE_DEG.setDefault(
+                    Units.radiansToDegrees(intakeDeploy.getAngleRads()));
+              } else if (intakeDeploy.isDeployed() == false) {
+                Presets.Intake.TUCK_ANGLE_DEG.setDefault(
+                    Units.radiansToDegrees(intakeDeploy.getAngleRads()));
+              }
+            }));
 
     operatorCon
         .povUp()
@@ -401,16 +423,32 @@ public class RobotContainer {
             Commands.runOnce(
                 () ->
                     intakeDeploy.runPositionCommand(
-                        () -> intakeDeploy.getAngleRads() + Units.degreesToRadians(1))));
+                        () -> intakeDeploy.getAngleRads() + Units.degreesToRadians(1))));*/
 
     operatorCon
         .rightBumper()
         .whileTrue(
             new ParallelCommandGroup(
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)))
+        .and(leftShooter::atSetpoint)
+        .and(rightShooter::atSetpoint)
+        .whileTrue(
+            new ParallelCommandGroup(
                 leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
                 rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
+
+    operatorCon
+        .rightTrigger()
+        .whileTrue(
+            new ParallelCommandGroup(
+                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
+
+    operatorCon
+        .leftTrigger()
+        .whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
+
     driverCon.b().whileTrue(spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS));
   }
 

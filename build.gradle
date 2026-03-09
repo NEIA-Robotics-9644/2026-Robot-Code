@@ -142,16 +142,16 @@ tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
 }
 
-// // Create version file
-// project.compileJava.dependsOn(createVersionFile)
-// gversion {
-//     srcDir       = "src/main/java/"
-//     classPackage = "org.neiacademy.robotics"
-//     className    = "BuildConstants"
-//     dateFormat   = "yyyy-MM-dd HH:mm:ss z"
-//     timeZone     = "America/New_York"
-//     indent       = "  "
-// }
+// Create version file
+project.compileJava.dependsOn(createVersionFile)
+gversion {
+    srcDir       = "src/main/java/"
+    classPackage = "org.neiacademy.robotics"
+    className    = "BuildConstants"
+    dateFormat   = "yyyy-MM-dd HH:mm:ss z"
+    timeZone     = "America/New_York"
+    indent       = "  "
+}
 
 // // Generate git graph SVG before build/deploy
 // def gitGraphGenerator = file("assets/git-graph-gen.py")

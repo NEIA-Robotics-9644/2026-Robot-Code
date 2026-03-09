@@ -2,13 +2,13 @@ package org.neiacademy.robotics.frc2026.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import java.util.function.DoubleSupplier;
-import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 import org.neiacademy.robotics.frc2026.FieldConstants;
 import org.neiacademy.robotics.frc2026.Presets;
@@ -34,8 +34,6 @@ public class Superstructure extends SubsystemBase {
 
   private ShooterSetpoint hubShootingSetpoint;
   private ShooterSetpoint shuttleShootingSetpoint;
-
-  @Getter INTAKE_DEPLOY_SETPOINT currentIntakeDeploySetpoint;
 
   public Superstructure(
       Drive drive,
@@ -116,13 +114,13 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Command deployIntake() {
-    currentIntakeDeploySetpoint = INTAKE_DEPLOY_SETPOINT.DEPLOYED;
-    return intakeDeploy.runTrackedPositionCommand(Presets.Intake.EXTEND_ANGLE_DEG);
+    return intakeDeploy.runTrackedPositionCommand(
+        () -> Units.degreesToRadians(Presets.Intake.EXTEND_ANGLE_DEG.getAsDouble()));
   }
 
   public Command retractIntake() {
-    currentIntakeDeploySetpoint = INTAKE_DEPLOY_SETPOINT.RETRACTED;
-    return intakeDeploy.runTrackedPositionCommand(Presets.Intake.TUCK_ANGLE_DEG);
+    return intakeDeploy.runTrackedPositionCommand(
+        () -> Units.degreesToRadians(Presets.Intake.TUCK_ANGLE_DEG.getAsDouble()));
   }
 
   public Command stopAllRollersCommand() {
@@ -154,6 +152,27 @@ public class Superstructure extends SubsystemBase {
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS))));
   }
 
+  public Command closeHubShoot() {
+    return new ParallelCommandGroup(
+            new SequentialCommandGroup(
+                new WaitUntilCommand(() -> leftShooter.atSetpoint() && rightShooter.atSetpoint()),
+                new ParallelCommandGroup(
+                    loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
+                    spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS))))
+        .withTimeout(5.0)
+        .andThen(autoEndShootCommand());
+  }
+
+  public Command autoEndShootCommand() {
+    return new ParallelCommandGroup(
+        spindexer.stopCommand(),
+        new SequentialCommandGroup(
+            loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS).withTimeout(0.5),
+            loader.stopCommand()),
+        leftShooter.stopCommand(),
+        rightShooter.stopCommand());
+  }
+
   public Rotation2d getHubShootingSetpointDriveAngle() {
     return hubShootingSetpoint.driveAngleRads();
   }
@@ -176,10 +195,5 @@ public class Superstructure extends SubsystemBase {
 
   public double getShuttleShootingSetpointShooterSpeed() {
     return shuttleShootingSetpoint.shooterSpeedRadsPerSec();
-  }
-
-  public enum INTAKE_DEPLOY_SETPOINT {
-    RETRACTED,
-    DEPLOYED;
   }
 }
