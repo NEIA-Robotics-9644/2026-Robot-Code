@@ -55,7 +55,7 @@ public class TunerConstants {
 
   // The stator current at which the wheels start to slip;
   // This needs to be tuned to your individual robot
-  private static final Current kSlipCurrent = Amps.of(80);
+  private static final Current kSlipCurrent = Amps.of(65);
 
   // Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
   // Some configs will be overwritten; check the `with*InitialConfigs()` API documentation.
@@ -88,7 +88,7 @@ public class TunerConstants {
   // Wheel size (same for all modules)
   private static final Distance kWheelRadius = Inches.of(2);
 
-  // --- Mixed-module ratios (your robot):
+  // --- Mixed-module ratios:
   // Front Left / Front Right: MK4n L2+ (drive 5.9:1, steer 18.75:1)
   // Back Left  / Back Right : MK4i L2  (drive 6.75:1, steer 150/7:1)
 
