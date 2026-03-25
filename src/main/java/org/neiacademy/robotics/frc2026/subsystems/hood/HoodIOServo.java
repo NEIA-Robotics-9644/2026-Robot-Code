@@ -1,80 +1,89 @@
 package org.neiacademy.robotics.frc2026.subsystems.hood;
 
-import org.neiacademy.robotics.frc2026.Constants;
-
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj.Timer;
+import org.neiacademy.robotics.frc2026.Constants;
 
 public class HoodIOServo implements HoodIO {
 
-  private final Servo servo;
-  private boolean inverted;
-  private double length;
-  private double speed;
-  private double lastTime = 0;
+  private final Servo leftServo;
+  private final Servo rightServo;
 
-  public HoodIOServo(int channel, boolean servoInverted, double length, double speed) {
-    this.servo = new Servo(channel);
-    this.inverted = servoInverted;
-    this.length = length;
-    this.speed = speed;
+  private boolean leftInverted;
+  private boolean rightInverted;
+
+  private double length;
+
+  public HoodIOServo() {
+    leftServo = new Servo(Constants.Hood.LEFT_CHANNEL);
+    rightServo = new Servo(Constants.Hood.RIGHT_CHANNEL);
+
+    leftInverted = Constants.Hood.LEFT_INVERTED;
+    rightInverted = Constants.Hood.RIGHT_INVERTED;
+
+    length = Constants.Hood.LENGTH;
+
     setBounds(
-        Constants.Shooter.LINEAR_ACTUATOR_MAX, 
-        Constants.Shooter.LINEAR_ACTUATOR_DEADBAND_MAX, 
-        Constants.Shooter.LINEAR_ACTUATOR_CENTER, 
-        Constants.Shooter.LINEAR_ACTUATOR_DEADBAND_MIN, 
-        Constants.Shooter.LINEAR_ACTUATOR_MIN);
+        Constants.Hood.LINEAR_ACTUATOR_MAX,
+        Constants.Hood.LINEAR_ACTUATOR_DEADBAND_MAX,
+        Constants.Hood.LINEAR_ACTUATOR_CENTER,
+        Constants.Hood.LINEAR_ACTUATOR_DEADBAND_MIN,
+        Constants.Hood.LINEAR_ACTUATOR_MIN);
   }
 
   @Override
   public void updateInputs(HoodIOInputs inputs) {
-    inputs.normalizedSpeed = Units.rotationsToRadians(servo.getSpeed());
-    inputs.angleDegrees = servo.getAngle();
-    //inputs.normalizedSetpoint = servo.getPosition();
-    inputs.normalizedPosition = 
-    inputs.rawPWM = servo.getPulseTimeMicroseconds();
-  }
+    inputs.leftNormalizedSpeed = leftServo.getSpeed();
+    inputs.leftNormalizedPosition =
+        leftInverted ? (1 - leftServo.getPosition()) : leftServo.getPosition();
+    inputs.leftPositionMillimeters =
+        leftInverted ? (140 - leftServo.getPosition() * 140) : leftServo.getPosition() * 140;
 
-  /*@Override
-  public void periodic(){
-    double dt = Timer.getFPGATimestamp() - lastTime;
-    if (curPos > setPos + m_speed * dt) {
-      curPos -= m_speed * dt;
-    } else if (curPos < setPos - m_speed * dt) {
-      curPos += m_speed * dt;
-    } else {
-      curPos = setPos;
-    }
-  }*/
+    inputs.rightNormalizedSpeed = rightServo.getSpeed();
+    inputs.rightNormalizedPosition =
+        rightInverted ? (1 - rightServo.getPosition()) : rightServo.getPosition();
+    inputs.rightPositionMillimeters =
+        rightInverted ? (140 - rightServo.getPosition() * 140) : rightServo.getPosition() * 140;
+  }
 
   @Override
   public void setSpeed(double normalizedSpeed) {
-    servo.setSpeed(normalizedSpeed);
+    leftServo.setSpeed(normalizedSpeed);
+    rightServo.setSpeed(normalizedSpeed);
   }
 
   @Override
   public void setPositionNormalized(double normalizedPosition) {
-    servo.set(normalizedPosition);
+    leftServo.set(leftInverted ? (1 - normalizedPosition) : normalizedPosition);
+    rightServo.set(rightInverted ? (1 - normalizedPosition) : normalizedPosition);
   }
+
   @Override
-  public void setPositionMillimeters(double setpoint) {
-    servo.set(MathUtil.clamp(setpoint, 0, length) / length);
+  public void setPositionMillimeters(double millimeters) {
+    double position = MathUtil.clamp(millimeters, 0, length) / length;
+    double speed = (position * 2) - 1;
+
+    leftServo.set(leftInverted ? (1 - position) : position);
+    rightServo.set(rightInverted ? (1 - position) : position);
+
+    leftServo.setSpeed(speed);
+    rightServo.setSpeed(speed);
+  }
+
+  public void resetServosPosition() {
+    leftServo.setPosition(leftInverted ? 1 : 0);
+    rightServo.setPosition(rightInverted ? 1 : 0);
   }
 
   @Override
   public void setDisabled() {
-    servo.setDisabled();
+    leftServo.setDisabled();
+    rightServo.setDisabled();
   }
 
   @Override
   public void setBounds(int max, int deadbandMax, int center, int deadbandMin, int min) {
-    servo.setBoundsMicroseconds(max, deadbandMax, center, deadbandMin, min);
-  }
-
-  @Override
-  public void setAngle(double angleDegrees) {
-    servo.setAngle(MathUtil.clamp(angleDegrees, 0, 180));
+    leftServo.setBoundsMicroseconds(max, deadbandMax, center, deadbandMin, min);
+    rightServo.setBoundsMicroseconds(max, deadbandMax, center, deadbandMin, min);
   }
 }

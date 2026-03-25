@@ -34,6 +34,9 @@ import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIOPigeon2;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIO;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOSim;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOTalonFX;
+import org.neiacademy.robotics.frc2026.subsystems.hood.Hood;
+import org.neiacademy.robotics.frc2026.subsystems.hood.HoodIO;
+import org.neiacademy.robotics.frc2026.subsystems.hood.HoodIOServo;
 import org.neiacademy.robotics.frc2026.subsystems.intakedeploy.IntakeDeploy;
 import org.neiacademy.robotics.frc2026.subsystems.intakedeploy.IntakeDeployIO;
 import org.neiacademy.robotics.frc2026.subsystems.intakedeploy.IntakeDeployIOTalonFX;
@@ -72,6 +75,7 @@ public class RobotContainer {
   private final Loader loader;
   private final Shooter leftShooter;
   private final Shooter rightShooter;
+  private final Hood hood;
   private final Superstructure superstructure;
 
   private final LEDSubsystem led;
@@ -138,6 +142,8 @@ public class RobotContainer {
                     false),
                 false);
 
+        hood = new Hood(new HoodIOServo());
+
         break;
 
       case SIM:
@@ -166,6 +172,7 @@ public class RobotContainer {
         loader = new Loader(new LoaderIO() {});
         leftShooter = new Shooter(new ShooterIO() {}, true);
         rightShooter = new Shooter(new ShooterIO() {}, false);
+        hood = new Hood(new HoodIO() {});
 
         break;
 
@@ -187,6 +194,7 @@ public class RobotContainer {
         loader = new Loader(new LoaderIO() {});
         leftShooter = new Shooter(new ShooterIO() {}, true);
         rightShooter = new Shooter(new ShooterIO() {}, false);
+        hood = new Hood(new HoodIO() {});
 
         break;
     }

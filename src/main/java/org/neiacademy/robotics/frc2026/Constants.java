@@ -119,12 +119,6 @@ public final class Constants {
     public static final double STATOR_LIMIT = 80.0;
     public static final double SUPPLY_LIMIT = 80.0;
 
-    public static final int LINEAR_ACTUATOR_MAX = 2000;
-    public static final int LINEAR_ACTUATOR_DEADBAND_MAX = 1800;
-    public static final int LINEAR_ACTUATOR_CENTER = 1500;
-    public static final int LINEAR_ACTUATOR_DEADBAND_MIN= 1300;
-    public static final int LINEAR_ACTUATOR_MIN = 1000;
-
     public static final LoggedTunableNumber LEFT_kP =
         new LoggedTunableNumber("PID/Shooter/Left/kP", 10.0);
     public static final LoggedTunableNumber LEFT_kD =
@@ -151,5 +145,21 @@ public final class Constants {
         new LoggedTunableNumber("PID/Shooter/ToleranceRadsPerSec", 20.0);
 
     public static final double GEAR_RATIO = 1;
+  }
+
+  public static class Hood {
+    public static final int LEFT_CHANNEL = 0;
+    public static final int RIGHT_CHANNEL = 1;
+
+    public static final boolean LEFT_INVERTED = false;
+    public static final boolean RIGHT_INVERTED = false;
+
+    public static final int LINEAR_ACTUATOR_MAX = 2000;
+    public static final int LINEAR_ACTUATOR_DEADBAND_MAX = 1800;
+    public static final int LINEAR_ACTUATOR_CENTER = 1500;
+    public static final int LINEAR_ACTUATOR_DEADBAND_MIN = 1300;
+    public static final int LINEAR_ACTUATOR_MIN = 1000;
+
+    public static final double LENGTH = 140;
   }
 }
