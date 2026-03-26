@@ -28,7 +28,8 @@ public class Hood extends SubsystemBase {
   }
 
   public Command extendHood() {
-    return this.run(() -> io.setPositionMillimeters(Constants.Hood.LENGTH)).withName("ExtendHood");
+    return this.run(() -> io.setPositionMillimeters(Constants.Hood.LENGTH_MILLIMETERS))
+        .withName("ExtendHood");
   }
 
   public Command retractHood() {
@@ -43,12 +44,12 @@ public class Hood extends SubsystemBase {
   public Command goTo(DoubleSupplier pulseWidth) {
     return this.run(() -> io.setPositionMillimeters((pulseWidth.getAsDouble())))
         .repeatedly()
-        .withName("goToHood");
+        .withName("HoodGoToPosition");
   }
 
   public Command tunableShot() {
     return this.runOnce(() -> io.setPositionMillimeters(position.get()))
-        .withName("tunableShot")
+        .withName("HoodTunableShot")
         .repeatedly();
   }
 }

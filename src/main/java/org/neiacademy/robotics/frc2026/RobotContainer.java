@@ -457,7 +457,11 @@ public class RobotContainer {
         .leftTrigger()
         .whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
 
-    driverCon.b().whileTrue(spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS));
+    operatorCon.b().whileTrue(spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS));
+
+    operatorCon.a().onTrue(hood.extendHood());
+    operatorCon.y().onTrue(hood.retractHood());
+    operatorCon.x().onTrue(hood.zeroHood());
   }
 
   /**

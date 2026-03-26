@@ -21,7 +21,7 @@ public class HoodIOServo implements HoodIO {
     leftInverted = Constants.Hood.LEFT_INVERTED;
     rightInverted = Constants.Hood.RIGHT_INVERTED;
 
-    length = Constants.Hood.LENGTH;
+    length = Constants.Hood.LENGTH_MILLIMETERS;
 
     setBounds(
         Constants.Hood.LINEAR_ACTUATOR_MAX,
@@ -37,13 +37,13 @@ public class HoodIOServo implements HoodIO {
     inputs.leftNormalizedPosition =
         leftInverted ? (1 - leftServo.getPosition()) : leftServo.getPosition();
     inputs.leftPositionMillimeters =
-        leftInverted ? (140 - leftServo.getPosition() * 140) : leftServo.getPosition() * 140;
+        leftInverted ? (140 - (leftServo.getPosition() * 140)) : leftServo.getPosition() * 140;
 
     inputs.rightNormalizedSpeed = rightServo.getSpeed();
     inputs.rightNormalizedPosition =
         rightInverted ? (1 - rightServo.getPosition()) : rightServo.getPosition();
     inputs.rightPositionMillimeters =
-        rightInverted ? (140 - rightServo.getPosition() * 140) : rightServo.getPosition() * 140;
+        rightInverted ? (140 - (rightServo.getPosition() * 140)) : rightServo.getPosition() * 140;
   }
 
   @Override
@@ -61,7 +61,7 @@ public class HoodIOServo implements HoodIO {
   @Override
   public void setPositionMillimeters(double millimeters) {
     double position = MathUtil.clamp(millimeters, 0, length) / length;
-    double speed = (position * 2) - 1;
+    double speed = (position / length * 2) - 1;
 
     leftServo.set(leftInverted ? (1 - position) : position);
     rightServo.set(rightInverted ? (1 - position) : position);
