@@ -28,12 +28,15 @@ public class Hood extends SubsystemBase {
   }
 
   public Command extendHood() {
-    return this.run(() -> io.setPositionMillimeters(Constants.Hood.LENGTH_MILLIMETERS))
-        .withName("ExtendHood");
+    return this.run(() -> io.setPosition(Constants.Hood.LENGTH_MILLIMETERS)).withName("ExtendHood");
+  }
+
+  public Command extendHoodJoystick(DoubleSupplier input) {
+    return this.run(() -> io.setPosition(input.getAsDouble())).withName("ExtendHoodJoystick");
   }
 
   public Command retractHood() {
-    return this.run(() -> io.setPositionMillimeters(0)).withName("RetractHood");
+    return this.run(() -> io.setPosition(0)).withName("RetractHood");
   }
 
   public Command zeroHood() {

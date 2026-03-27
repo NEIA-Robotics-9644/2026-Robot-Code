@@ -21,6 +21,8 @@ public interface HoodIO {
 
   public default void setPositionNormalized(double normalizedPosition) {}
 
+  public default void setPosition(double position) {}
+
   public default void setPositionMillimeters(double setpoint) {}
 
   public default void setDisabled() {}

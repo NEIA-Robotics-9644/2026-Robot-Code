@@ -61,7 +61,7 @@ public class HoodIOServo implements HoodIO {
   @Override
   public void setPositionMillimeters(double millimeters) {
     double position = MathUtil.clamp(millimeters, 0, length) / length;
-    double speed = (position / length * 2) - 1;
+    double speed = (position * 2) - 1;
 
     leftServo.set(leftInverted ? (1 - position) : position);
     rightServo.set(rightInverted ? (1 - position) : position);
