@@ -54,6 +54,7 @@ import org.neiacademy.robotics.frc2026.subsystems.spindexer.SpindexerIO;
 import org.neiacademy.robotics.frc2026.subsystems.spindexer.SpindexerIOTalonFX;
 import org.neiacademy.robotics.frc2026.subsystems.vision.Vision;
 import org.neiacademy.robotics.frc2026.subsystems.vision.VisionConstants;
+import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIO;
 import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVision;
 import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVisionSim;
 import org.neiacademy.robotics.frc2026.util.AllianceFlipUtil;
@@ -178,7 +179,6 @@ public class RobotContainer {
       default:
         // Replayed robot, disable IO implementations
         // led = null;
-        vision = null;
 
         drive =
             new Drive(
@@ -187,6 +187,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
         spindexer = new Spindexer(new SpindexerIO() {});
         intakeDeploy = new IntakeDeploy(new IntakeDeployIO() {});
         intakeRoller = new IntakeRoller(new IntakeRollerIO() {});
