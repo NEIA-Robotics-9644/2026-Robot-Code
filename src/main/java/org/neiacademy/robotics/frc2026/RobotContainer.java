@@ -35,6 +35,9 @@ import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIOPigeon2;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIO;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOSim;
 import org.neiacademy.robotics.frc2026.subsystems.drive.ModuleIOTalonFX;
+import org.neiacademy.robotics.frc2026.subsystems.hood.Hood;
+import org.neiacademy.robotics.frc2026.subsystems.hood.HoodIO;
+import org.neiacademy.robotics.frc2026.subsystems.hood.HoodIOLinearActuator;
 import org.neiacademy.robotics.frc2026.subsystems.intakedeploy.IntakeDeploy;
 import org.neiacademy.robotics.frc2026.subsystems.intakedeploy.IntakeDeployIO;
 import org.neiacademy.robotics.frc2026.subsystems.intakedeploy.IntakeDeployIOTalonFX;
@@ -44,7 +47,6 @@ import org.neiacademy.robotics.frc2026.subsystems.intakeroller.IntakeRollerIOTal
 import org.neiacademy.robotics.frc2026.subsystems.loader.Loader;
 import org.neiacademy.robotics.frc2026.subsystems.loader.LoaderIO;
 import org.neiacademy.robotics.frc2026.subsystems.loader.LoaderIOTalonFX;
-import org.neiacademy.robotics.frc2026.subsystems.misc.LED.LEDSubsystem;
 import org.neiacademy.robotics.frc2026.subsystems.shooter.Shooter;
 import org.neiacademy.robotics.frc2026.subsystems.shooter.ShooterIO;
 import org.neiacademy.robotics.frc2026.subsystems.shooter.ShooterIOTalonFX;
@@ -53,6 +55,7 @@ import org.neiacademy.robotics.frc2026.subsystems.spindexer.SpindexerIO;
 import org.neiacademy.robotics.frc2026.subsystems.spindexer.SpindexerIOTalonFX;
 import org.neiacademy.robotics.frc2026.subsystems.vision.Vision;
 import org.neiacademy.robotics.frc2026.subsystems.vision.VisionConstants;
+import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIO;
 import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVision;
 import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVisionSim;
 import org.neiacademy.robotics.frc2026.util.AllianceFlipUtil;
@@ -73,9 +76,10 @@ public class RobotContainer {
   private final Loader loader;
   private final Shooter leftShooter;
   private final Shooter rightShooter;
+  private final Hood hood;
   private final Superstructure superstructure;
 
-  private final LEDSubsystem led;
+  //   private final LEDSubsystem led;
 
   private final Alert driverDisconnected =
       new Alert("Driver controller disconnected (port 0).", AlertType.kWarning);
@@ -99,7 +103,7 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        led = new LEDSubsystem(9);
+        // led = new LEDSubsystem(9);
         // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and a CANcoder
         drive =
             new Drive(
@@ -139,11 +143,13 @@ public class RobotContainer {
                     false),
                 false);
 
+        hood = new Hood(new HoodIOLinearActuator());
+
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        led = null;
+        // led = null;
         drive =
             new Drive(
                 new GyroIO() {},
@@ -167,13 +173,13 @@ public class RobotContainer {
         loader = new Loader(new LoaderIO() {});
         leftShooter = new Shooter(new ShooterIO() {}, true);
         rightShooter = new Shooter(new ShooterIO() {}, false);
+        hood = new Hood(new HoodIO() {});
 
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        led = null;
-        vision = null;
+        // led = null;
 
         drive =
             new Drive(
@@ -182,12 +188,14 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
         spindexer = new Spindexer(new SpindexerIO() {});
         intakeDeploy = new IntakeDeploy(new IntakeDeployIO() {});
         intakeRoller = new IntakeRoller(new IntakeRollerIO() {});
         loader = new Loader(new LoaderIO() {});
         leftShooter = new Shooter(new ShooterIO() {}, true);
         rightShooter = new Shooter(new ShooterIO() {}, false);
+        hood = new Hood(new HoodIO() {});
 
         break;
     }
@@ -439,7 +447,10 @@ public class RobotContainer {
         .leftTrigger()
         .whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
 
-    driverCon.b().whileTrue(spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS));
+    operatorCon.b().whileTrue(spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS));
+
+    operatorCon.x().onTrue(hood.positionCommand(1));
+    operatorCon.y().onTrue(hood.positionCommand(0));
   }
 
   /**
