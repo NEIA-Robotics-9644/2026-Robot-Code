@@ -214,8 +214,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("shoot", superstructure.shootCommand().withTimeout(5));
     NamedCommands.registerCommand("autoShoot", superstructure.autoShoot());
     NamedCommands.registerCommand(
-        "intakeRoller",
-        intakeRoller.runAutoVoltageCommand(Presets.Intake.INTAKE_VOLTS));
+        "intakeRoller", intakeRoller.runAutoVoltageCommand(Presets.Intake.INTAKE_VOLTS));
     NamedCommands.registerCommand("intakeDeploy", superstructure.deployIntake());
     NamedCommands.registerCommand("intakeRetract", superstructure.retractIntake());
     NamedCommands.registerCommand(
