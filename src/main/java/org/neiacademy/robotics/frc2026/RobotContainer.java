@@ -458,11 +458,8 @@ public class RobotContainer {
 
     operatorCon.b().whileTrue(spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS));
 
-    hood.setDefaultCommand(hood.extendHoodJoystick(() -> operatorCon.getLeftY() * 140));
-
-    operatorCon.a().onTrue(hood.extendHood());
-    operatorCon.y().onTrue(hood.retractHood());
-    operatorCon.x().onTrue(hood.zeroHood());
+    operatorCon.x().onTrue(hood.positionCommand(1));
+    operatorCon.y().onTrue(hood.positionCommand(0));
   }
 
   /**

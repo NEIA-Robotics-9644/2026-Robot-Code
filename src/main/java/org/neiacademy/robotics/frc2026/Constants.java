@@ -1,10 +1,15 @@
 package org.neiacademy.robotics.frc2026;
 
+import static edu.wpi.first.units.Units.Millimeters;
+import static edu.wpi.first.units.Units.Second;
+
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.RobotBase;
 import lombok.Setter;
 import org.neiacademy.robotics.frc2026.util.LoggedTunableNumber;
@@ -148,11 +153,8 @@ public final class Constants {
   }
 
   public static class Hood {
-    public static final int LEFT_CHANNEL = 6;
-    public static final int RIGHT_CHANNEL = 7;
-
-    public static final boolean LEFT_INVERTED = false;
-    public static final boolean RIGHT_INVERTED = false;
+    public static final int LEFT_CHANNEL = 0;
+    public static final int RIGHT_CHANNEL = 1;
 
     public static final int LINEAR_ACTUATOR_MAX = 2000;
     public static final int LINEAR_ACTUATOR_DEADBAND_MAX = 1800;
@@ -160,6 +162,15 @@ public final class Constants {
     public static final int LINEAR_ACTUATOR_DEADBAND_MIN = 1300;
     public static final int LINEAR_ACTUATOR_MIN = 1000;
 
-    public static final double LENGTH_MILLIMETERS = 70;
+    public static final Distance LENGTH_MILLIMETERS = Millimeters.of(140);
+    public static final LinearVelocity MAX_SPEED =
+        Millimeters.of(60)
+            .per(Second); // Tripled from 20 — software position estimate only, does not limit
+    // physical servo speed
+
+    public static final double MIN_POSITION = 0.01;
+    public static final double MAX_POSITION = 0.5;
+    public static final double POSITION_TOLERANCE = 0.01;
+    public static final double INITIAL_POSITION = 0;
   }
 }
