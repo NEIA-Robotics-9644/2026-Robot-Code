@@ -52,12 +52,12 @@ public final class Constants {
     public static final String CANBUS = "rio";
     public static final CANDeviceID MOTOR_ID = new CANDeviceID(30, "Drive");
 
-    public static final InvertedValue INVERTED = InvertedValue.Clockwise_Positive;
+    public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
     public static final double STATOR_LIMIT = 40.0;
     public static final double SUPPLY_LIMIT = 40.0;
 
-    public static final double GEAR_RATIO = 1.0;
+    public static final double GEAR_RATIO = 5.0;
   }
 
   public static class Intake {
@@ -83,7 +83,7 @@ public final class Constants {
     public static final double SOFT_LIMIT_FORWARD = 0.277;
     public static final double SOFT_LIMIT_REVERSE = -0.14;
 
-    public static final LoggedTunableNumber kP = new LoggedTunableNumber("PID/Intake/kP", 50);
+    public static final LoggedTunableNumber kP = new LoggedTunableNumber("PID/Intake/kP", 80);
     public static final LoggedTunableNumber kD = new LoggedTunableNumber("PID/Intake/kD", 10);
     public static final LoggedTunableNumber kS = new LoggedTunableNumber("PID/Intake/kS", 0.0);
     public static final LoggedTunableNumber kG = new LoggedTunableNumber("PID/Intake/kG", 0);

@@ -28,7 +28,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.neiacademy.robotics.frc2026.Constants.*;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
 import org.neiacademy.robotics.frc2026.generated.TunerConstants;
-import org.neiacademy.robotics.frc2026.subsystems.SuperstructureNew;
+import org.neiacademy.robotics.frc2026.subsystems.Superstructure;
 import org.neiacademy.robotics.frc2026.subsystems.drive.Drive;
 import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIO;
 import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIOPigeon2;
@@ -77,16 +77,13 @@ public class RobotContainer {
   private final Shooter leftShooter;
   private final Shooter rightShooter;
   private final Hood hood;
-  //   private final Superstructure superstructure;
-  private final SuperstructureNew superstructure;
-
-  //   private final LEDSubsystem led;
+  private final Superstructure superstructure;
 
   private final Alert driverDisconnected =
       new Alert("Driver controller disconnected (port 0).", AlertType.kWarning);
   private final Alert operatorDisconnected =
       new Alert("Operator controller disconnected (port 1).", AlertType.kWarning);
-  private final Alert noAutoAlert = new Alert("Please select an auto routine!!!", AlertType.kError);
+  private final Alert noAutoAlert = new Alert("Select an auto routine!!!", AlertType.kError);
 
   private Command noAuto = Commands.none();
 
@@ -104,7 +101,6 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        // led = new LEDSubsystem(9);
         // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and a CANcoder
         drive =
             new Drive(
@@ -118,9 +114,6 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVision(
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0)
-                // ,
-                // new VisionIOPhotonVision(
-                //     VisionConstants.camera1Name, VisionConstants.robotToCamera1)
                 );
 
         spindexer = new Spindexer(new SpindexerIOTalonFX());
@@ -150,7 +143,6 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        // led = null;
         drive =
             new Drive(
                 new GyroIO() {},
@@ -164,8 +156,6 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-                // new VisionIOPhotonVisionSim(
-                //     VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
                 );
 
         spindexer = new Spindexer(new SpindexerIO() {});
@@ -180,8 +170,6 @@ public class RobotContainer {
 
       default:
         // Replayed robot, disable IO implementations
-        // led = null;
-
         drive =
             new Drive(
                 new GyroIO() {},
@@ -201,12 +189,8 @@ public class RobotContainer {
         break;
     }
 
-    // superstructure =
-    //     new Superstructure(
-    //         drive, spindexer, intakeDeploy, intakeRoller, loader, leftShooter, rightShooter);
-
     superstructure =
-        new SuperstructureNew(
+        new Superstructure(
             drive, spindexer, intakeDeploy, intakeRoller, loader, leftShooter, rightShooter, hood);
 
     inAllianceZone =
@@ -219,7 +203,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("shoot", superstructure.shootCommand().withTimeout(5));
     NamedCommands.registerCommand("autoShoot", superstructure.autoShoot());
     NamedCommands.registerCommand(
-        "intakeRoller", intakeRoller.runAutoVoltageCommand(Presets.Intake.INTAKE_VOLTS));
+        "intakeRoller", intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
     NamedCommands.registerCommand("intakeDeploy", superstructure.deployIntake());
     NamedCommands.registerCommand("intakeRetract", superstructure.retractIntake());
     NamedCommands.registerCommand(
