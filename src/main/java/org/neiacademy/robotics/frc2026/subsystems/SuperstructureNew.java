@@ -49,6 +49,10 @@ public class SuperstructureNew extends SubsystemBase {
     this.leftShooter = leftShooter;
     this.rightShooter = rightShooter;
     this.hood = hood;
+
+    // hood.setDefaultCommand(hood.tuckCommand(hood));
+    // leftShooter.setDefaultCommand(leftShooter.stopCommand());
+    // rightShooter.setDefaultCommand(leftShooter.stopCommand());
   }
 
   @Override
@@ -81,6 +85,8 @@ public class SuperstructureNew extends SubsystemBase {
 
   public Command endShootCommand() {
     return new SequentialCommandGroup(
+        // leftShooter.runTrackedVelocityCommand(Presets.Shooter.NO_SPEED),
+        // rightShooter.runTrackedVelocityCommand(Presets.Shooter.NO_SPEED),
         loader.runVoltageCommand(Presets.Loader.SLOW_EXHAUST_VOLTS).withTimeout(0.5),
         new ParallelCommandGroup(spindexer.stopCommand(), loader.stopCommand()));
   }

@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
+import org.neiacademy.robotics.frc2026.Presets;
 
 public class Hood extends SubsystemBase {
 
@@ -37,5 +38,9 @@ public class Hood extends SubsystemBase {
 
   public Command runTrackedPositionCommand(DoubleSupplier position) {
     return run(() -> io.setPositionNormalized(position.getAsDouble()));
+  }
+
+  public Command tuckCommand(Hood hood) {
+    return run(() -> io.setPositionNormalized(Presets.Hood.TUCK_POSITION.getAsDouble()));
   }
 }

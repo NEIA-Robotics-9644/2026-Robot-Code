@@ -57,8 +57,8 @@ public class Superstructure extends SubsystemBase {
                 new Pose2d(
                     FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)));
     shuttleShootingSetpoint = ShootingUtil.makeShuttleSetpoint(drive, getShuttleTargetPose());
-    leftShooter.setDefaultCommand(leftShooter.stopCommand());
-    rightShooter.setDefaultCommand(rightShooter.stopCommand());
+    // leftShooter.setDefaultCommand(leftShooter.stopCommand());
+    // rightShooter.setDefaultCommand(rightShooter.stopCommand());
   }
 
   @Override

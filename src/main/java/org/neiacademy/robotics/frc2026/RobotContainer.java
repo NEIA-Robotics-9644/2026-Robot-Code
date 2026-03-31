@@ -286,7 +286,7 @@ public class RobotContainer {
                 () -> Units.degreesToRadians(Presets.Intake.TUNING_ANGLE_DEG.getAsDouble())),
             leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
             rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED)));
-    hood.runTrackedPositionCommand(Presets.Hood.TUNING_ANGLE);
+    hood.runTrackedPositionCommand(Presets.Hood.TUNING_POSITION);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -329,7 +329,6 @@ public class RobotContainer {
                 .ignoringDisable(true));
     driverCon
         .rightTrigger()
-        .and(inAllianceZone)
         .whileTrue(
             superstructure.aimCommand(() -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
         .and(leftShooter::atSetpoint)
@@ -337,16 +336,16 @@ public class RobotContainer {
         .and(DriveCommands::atAngleSetpoint)
         .whileTrue(superstructure.shootCommand())
         .onFalse(superstructure.endShootCommand());
-    driverCon
-        .rightTrigger()
-        .and(inAllianceZone.negate())
-        .whileTrue(
-            superstructure.aimCommand(() -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
-        .and(leftShooter::atSetpoint)
-        .and(rightShooter::atSetpoint)
-        .and(DriveCommands::atAngleSetpoint)
-        .whileTrue(superstructure.shootCommand())
-        .onFalse(superstructure.endShootCommand());
+    // driverCon
+    //     .rightTrigger()
+    //     .and(inAllianceZone.negate())
+    //     .whileTrue(
+    //         superstructure.aimCommand(() -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+    //     .and(leftShooter::atSetpoint)
+    //     .and(rightShooter::atSetpoint)
+    //     .and(DriveCommands::atAngleSetpoint)
+    //     .whileTrue(superstructure.shootCommand())
+    //     .onFalse(superstructure.endShootCommand());
 
     driverCon
         .rightBumper()
@@ -355,7 +354,8 @@ public class RobotContainer {
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
                 loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
                 leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
+                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)))
+        .onFalse(superstructure.endShootCommand());
 
     driverCon.leftTrigger().onTrue(superstructure.deployIntake());
     driverCon.leftTrigger().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));

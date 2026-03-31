@@ -45,10 +45,14 @@ public final class Presets {
         new LoggedTunableNumber("Setpoints/Shooter/CloseHubSpeedRadsPerSec", 300.0);
     public static final LoggedTunableNumber TUNING_SPEED =
         new LoggedTunableNumber("Setpoints/Shooter/TuningSpeedRadsPerSec", 0.0);
+    public static final LoggedTunableNumber NO_SPEED =
+        new LoggedTunableNumber("Setpoints/Shooter/TuningSpeedRadsPerSec", 0.0);
   }
 
   public static class Hood {
-    public static final LoggedTunableNumber TUNING_ANGLE =
+    public static final LoggedTunableNumber TUNING_POSITION =
         new LoggedTunableNumber("Setpoints/Intake/DeployTuningAngleDeg", 0.0);
+    public static final LoggedTunableNumber TUCK_POSITION =
+        new LoggedTunableNumber("Setpoints/Intake/DeployTuningAngleDeg", 0.7);
   }
 }
