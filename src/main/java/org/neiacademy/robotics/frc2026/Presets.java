@@ -15,9 +15,9 @@ public final class Presets {
 
   public static class Intake {
     public static final LoggedTunableNumber TUCK_ANGLE_DEG =
-        new LoggedTunableNumber("Setpoints/Intake/DeployTuckAngleDeg", -126);
+        new LoggedTunableNumber("Setpoints/Intake/DeployTuckAngleDeg", 0.277);
     public static final LoggedTunableNumber EXTEND_ANGLE_DEG =
-        new LoggedTunableNumber("Setpoints/Intake/DeployExtendAngleDeg", 0);
+        new LoggedTunableNumber("Setpoints/Intake/DeployExtendAngleDeg", -0.14);
     public static final LoggedTunableNumber TUNING_ANGLE_DEG =
         new LoggedTunableNumber("Setpoints/Intake/DeployTuningAngleDeg", 0.0);
 
@@ -45,5 +45,10 @@ public final class Presets {
         new LoggedTunableNumber("Setpoints/Shooter/CloseHubSpeedRadsPerSec", 300.0);
     public static final LoggedTunableNumber TUNING_SPEED =
         new LoggedTunableNumber("Setpoints/Shooter/TuningSpeedRadsPerSec", 0.0);
+  }
+
+  public static class Hood {
+    public static final LoggedTunableNumber TUNING_ANGLE =
+        new LoggedTunableNumber("Setpoints/Intake/DeployTuningAngleDeg", 0.0);
   }
 }

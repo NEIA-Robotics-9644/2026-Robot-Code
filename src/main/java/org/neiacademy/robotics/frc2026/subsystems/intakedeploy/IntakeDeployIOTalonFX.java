@@ -151,8 +151,7 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
 
   @Override
   public void runPosition(double positionRads) {
-    deploy.setControl(
-        positionTorqueCurrentFOC.withPosition(Units.radiansToRotations(positionRads)));
+    deploy.setControl(positionTorqueCurrentFOC.withPosition(positionRads));
   }
 
   @Override

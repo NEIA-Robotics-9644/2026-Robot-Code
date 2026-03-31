@@ -33,16 +33,27 @@ public class ShootingUtil {
       new InterpolatingDoubleTreeMap();
 
   static {
-    hubDistanceShooterVelocityMap.put(0.0, 280.0);
-    hubDistanceShooterVelocityMap.put(1.0, 280.0);
-    hubDistanceShooterVelocityMap.put(1.5, 300.0);
-    hubDistanceShooterVelocityMap.put(2.0, 322.5);
-    hubDistanceShooterVelocityMap.put(2.5, 345.0);
-    hubDistanceShooterVelocityMap.put(3.0, 377.5);
-    hubDistanceShooterVelocityMap.put(3.5, 400.0);
-    hubDistanceShooterVelocityMap.put(4.0, 422.5);
-    hubDistanceShooterVelocityMap.put(4.5, 445.0);
-    hubDistanceShooterVelocityMap.put(5.0, 477.5);
+    // hubDistanceShooterVelocityMap.put(0.0, 280.0);
+    // hubDistanceShooterVelocityMap.put(1.0, 280.0);
+    // hubDistanceShooterVelocityMap.put(1.5, 300.0);
+    // hubDistanceShooterVelocityMap.put(2.0, 322.5);
+    // hubDistanceShooterVelocityMap.put(2.5, 345.0);
+    // hubDistanceShooterVelocityMap.put(3.0, 377.5);
+    // hubDistanceShooterVelocityMap.put(3.5, 400.0);
+    // hubDistanceShooterVelocityMap.put(4.0, 422.5);
+    // hubDistanceShooterVelocityMap.put(4.5, 445.0);
+    // hubDistanceShooterVelocityMap.put(5.0, 477.5);
+
+    hubDistanceShooterVelocityMap.put(0.0, 280.0 - 35);
+    hubDistanceShooterVelocityMap.put(1.0, 280.0 - 35);
+    hubDistanceShooterVelocityMap.put(1.5, 300.0 - 35);
+    hubDistanceShooterVelocityMap.put(2.0, 322.5 - 35);
+    hubDistanceShooterVelocityMap.put(2.5, 345.0 - 50);
+    hubDistanceShooterVelocityMap.put(3.0, 377.5 - 50);
+    hubDistanceShooterVelocityMap.put(3.5, 400.0 - 50);
+    hubDistanceShooterVelocityMap.put(4.0, 422.5 - 50);
+    hubDistanceShooterVelocityMap.put(4.5, 445.0 - 50);
+    hubDistanceShooterVelocityMap.put(5.0, 477.5 - 50);
 
     hubDistanceTimeOfFlightMap.put(0.0, 1.0);
     hubDistanceTimeOfFlightMap.put(1.0, 1.0);

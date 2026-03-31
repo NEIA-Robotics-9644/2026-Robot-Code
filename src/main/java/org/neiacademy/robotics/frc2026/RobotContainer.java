@@ -298,6 +298,7 @@ public class RobotContainer {
                 () -> Units.degreesToRadians(Presets.Intake.TUNING_ANGLE_DEG.getAsDouble())),
             leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
             rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED)));
+    hood.runTrackedPositionCommand(Presets.Hood.TUNING_ANGLE);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -450,6 +451,7 @@ public class RobotContainer {
 
     operatorCon.x().onTrue(hood.positionCommand(1));
     operatorCon.y().onTrue(hood.positionCommand(0));
+    operatorCon.a().onTrue(hood.positionCommand(0.5));
   }
 
   /**

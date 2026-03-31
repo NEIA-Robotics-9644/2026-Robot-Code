@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Hood extends SubsystemBase {
@@ -32,5 +33,9 @@ public class Hood extends SubsystemBase {
   public Command positionCommand(double position) {
     return runOnce(() -> io.setPositionNormalized(position))
         .andThen(Commands.waitUntil(() -> io.isPositionWithinTolerance()));
+  }
+
+  public Command runTrackedPositionCommand(DoubleSupplier position) {
+    return run(() -> io.setPositionNormalized(position.getAsDouble()));
   }
 }
