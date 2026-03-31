@@ -45,7 +45,7 @@ public class HoodIOLinearActuator implements HoodIO {
 
   @Override
   public void setPositionNormalized(double position) {
-    final double clampedPosition = MathUtil.clamp(position, kMinPosition, kMaxPosition);
+    final double clampedPosition = MathUtil.interpolate(position, kMinPosition, kMaxPosition);
     leftServo.set(clampedPosition);
     rightServo.set(clampedPosition);
     targetPosition = clampedPosition;

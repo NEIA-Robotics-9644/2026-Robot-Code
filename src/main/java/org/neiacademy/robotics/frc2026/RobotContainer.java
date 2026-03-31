@@ -28,7 +28,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.neiacademy.robotics.frc2026.Constants.*;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
 import org.neiacademy.robotics.frc2026.generated.TunerConstants;
-import org.neiacademy.robotics.frc2026.subsystems.Superstructure;
+import org.neiacademy.robotics.frc2026.subsystems.SuperstructureNew;
 import org.neiacademy.robotics.frc2026.subsystems.drive.Drive;
 import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIO;
 import org.neiacademy.robotics.frc2026.subsystems.drive.GyroIOPigeon2;
@@ -77,7 +77,8 @@ public class RobotContainer {
   private final Shooter leftShooter;
   private final Shooter rightShooter;
   private final Hood hood;
-  private final Superstructure superstructure;
+  //   private final Superstructure superstructure;
+  private final SuperstructureNew superstructure;
 
   //   private final LEDSubsystem led;
 
@@ -200,9 +201,13 @@ public class RobotContainer {
         break;
     }
 
+    // superstructure =
+    //     new Superstructure(
+    //         drive, spindexer, intakeDeploy, intakeRoller, loader, leftShooter, rightShooter);
+
     superstructure =
-        new Superstructure(
-            drive, spindexer, intakeDeploy, intakeRoller, loader, leftShooter, rightShooter);
+        new SuperstructureNew(
+            drive, spindexer, intakeDeploy, intakeRoller, loader, leftShooter, rightShooter, hood);
 
     inAllianceZone =
         new Trigger(
@@ -220,29 +225,12 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "runSpindexer", spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS));
     NamedCommands.registerCommand(
-        "shuttleAimAndShoot",
-        Commands.run(
-                () ->
-                    inAllianceZone
-                        .negate()
-                        .whileTrue(
-                            superstructure.shuttleAimCommand(
-                                () -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
-                        .and(leftShooter::atSetpoint)
-                        .and(rightShooter::atSetpoint)
-                        .and(DriveCommands::atAngleSetpoint)
-                        .whileTrue(superstructure.shootCommand())
-                        .onFalse(superstructure.endShootCommand()),
-                leftShooter,
-                rightShooter)
-            .withTimeout(4));
-    NamedCommands.registerCommand(
         "hubAimAndShoot",
         Commands.run(
                 () ->
                     inAllianceZone
                         .whileTrue(
-                            superstructure.hubAimCommand(
+                            superstructure.aimCommand(
                                 () -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
                         .and(leftShooter::atSetpoint)
                         .and(rightShooter::atSetpoint)
@@ -343,7 +331,7 @@ public class RobotContainer {
         .rightTrigger()
         .and(inAllianceZone)
         .whileTrue(
-            superstructure.hubAimCommand(() -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+            superstructure.aimCommand(() -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
         .and(DriveCommands::atAngleSetpoint)
@@ -353,8 +341,7 @@ public class RobotContainer {
         .rightTrigger()
         .and(inAllianceZone.negate())
         .whileTrue(
-            superstructure.shuttleAimCommand(
-                () -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+            superstructure.aimCommand(() -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
         .and(DriveCommands::atAngleSetpoint)
