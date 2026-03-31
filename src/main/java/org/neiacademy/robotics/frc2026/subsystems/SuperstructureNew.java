@@ -50,9 +50,9 @@ public class SuperstructureNew extends SubsystemBase {
     this.rightShooter = rightShooter;
     this.hood = hood;
 
-    // hood.setDefaultCommand(hood.tuckCommand(hood));
-    // leftShooter.setDefaultCommand(leftShooter.stopCommand());
-    // rightShooter.setDefaultCommand(leftShooter.stopCommand());
+    hood.setDefaultCommand(hood.tuckCommand(hood));
+    leftShooter.setDefaultCommand(leftShooter.stopCommand());
+    rightShooter.setDefaultCommand(rightShooter.stopCommand());
   }
 
   @Override
