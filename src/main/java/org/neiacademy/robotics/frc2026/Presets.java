@@ -17,7 +17,7 @@ public final class Presets {
     public static final LoggedTunableNumber TUCK_ANGLE_DEG =
         new LoggedTunableNumber("Setpoints/Intake/DeployTuckAngleDeg", 0.277);
     public static final LoggedTunableNumber EXTEND_ANGLE_DEG =
-        new LoggedTunableNumber("Setpoints/Intake/DeployExtendAngleDeg", -0.14);
+        new LoggedTunableNumber("Setpoints/Intake/DeployExtendAngleDeg", -0.2);
     public static final LoggedTunableNumber TUNING_ANGLE_DEG =
         new LoggedTunableNumber("Setpoints/Intake/DeployTuningAngleDeg", 0.0);
 

@@ -113,8 +113,7 @@ public class RobotContainer {
             new Vision(
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVision(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0)
-                );
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0));
 
         spindexer = new Spindexer(new SpindexerIOTalonFX());
         intakeDeploy = new IntakeDeploy(new IntakeDeployIOTalonFX());
@@ -155,8 +154,7 @@ public class RobotContainer {
             new Vision(
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-                );
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose));
 
         spindexer = new Spindexer(new SpindexerIO() {});
         intakeDeploy = new IntakeDeploy(new IntakeDeployIO() {});
@@ -313,6 +311,7 @@ public class RobotContainer {
                 .ignoringDisable(true));
     driverCon
         .rightTrigger()
+        .and(inAllianceZone)
         .whileTrue(
             superstructure.aimCommand(() -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
         .and(leftShooter::atSetpoint)
@@ -320,16 +319,16 @@ public class RobotContainer {
         .and(DriveCommands::atAngleSetpoint)
         .whileTrue(superstructure.shootCommand())
         .onFalse(superstructure.endShootCommand());
-    // driverCon
-    //     .rightTrigger()
-    //     .and(inAllianceZone.negate())
-    //     .whileTrue(
-    //         superstructure.aimCommand(() -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
-    //     .and(leftShooter::atSetpoint)
-    //     .and(rightShooter::atSetpoint)
-    //     .and(DriveCommands::atAngleSetpoint)
-    //     .whileTrue(superstructure.shootCommand())
-    //     .onFalse(superstructure.endShootCommand());
+    driverCon
+        .rightTrigger()
+        .and(inAllianceZone.negate())
+        .whileTrue(
+            superstructure.aimCommand(() -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+        .and(leftShooter::atSetpoint)
+        .and(rightShooter::atSetpoint)
+        .and(DriveCommands::atAngleSetpoint)
+        .whileTrue(superstructure.shootCommand())
+        .onFalse(superstructure.endShootCommand());
 
     driverCon
         .rightBumper()

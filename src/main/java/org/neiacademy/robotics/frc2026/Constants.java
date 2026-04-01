@@ -81,10 +81,10 @@ public final class Constants {
     public static final double ROLLER_SUPPLY_LIMIT = 60.0;
 
     public static final double SOFT_LIMIT_FORWARD = 0.277;
-    public static final double SOFT_LIMIT_REVERSE = -0.14;
+    public static final double SOFT_LIMIT_REVERSE = -0.2;
 
     public static final LoggedTunableNumber kP = new LoggedTunableNumber("PID/Intake/kP", 80);
-    public static final LoggedTunableNumber kD = new LoggedTunableNumber("PID/Intake/kD", 10);
+    public static final LoggedTunableNumber kD = new LoggedTunableNumber("PID/Intake/kD", 15);
     public static final LoggedTunableNumber kS = new LoggedTunableNumber("PID/Intake/kS", 0.0);
     public static final LoggedTunableNumber kG = new LoggedTunableNumber("PID/Intake/kG", 0);
     public static final LoggedTunableNumber kV = new LoggedTunableNumber("PID/Intake/kV", 0.0);
@@ -147,7 +147,7 @@ public final class Constants {
         new LoggedTunableNumber("PID/Shooter/Right/kA", 0.0);
 
     public static final LoggedTunableNumber VELOCITY_TOLERANCE =
-        new LoggedTunableNumber("PID/Shooter/ToleranceRadsPerSec", 20.0);
+        new LoggedTunableNumber("PID/Shooter/ToleranceRadsPerSec", 35.0);
 
     public static final double GEAR_RATIO = 1;
   }

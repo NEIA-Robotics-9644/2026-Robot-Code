@@ -21,6 +21,7 @@ import org.neiacademy.robotics.frc2026.subsystems.shooter.Shooter;
 import org.neiacademy.robotics.frc2026.subsystems.spindexer.Spindexer;
 import org.neiacademy.robotics.frc2026.util.AllianceFlipUtil;
 import org.neiacademy.robotics.frc2026.util.ShootingUtil;
+import org.neiacademy.robotics.frc2026.util.ShootingUtil.ShooterSetpoint;
 
 public class Superstructure extends SubsystemBase {
   private final Drive drive;
@@ -31,6 +32,9 @@ public class Superstructure extends SubsystemBase {
   private final Shooter leftShooter;
   private final Shooter rightShooter;
   private final Hood hood;
+
+  private ShooterSetpoint hubShootingSetpoint;
+  private ShooterSetpoint shuttleShootingSetpoint;
 
   public Superstructure(
       Drive drive,
@@ -50,7 +54,7 @@ public class Superstructure extends SubsystemBase {
     this.rightShooter = rightShooter;
     this.hood = hood;
 
-    hood.setDefaultCommand(hood.tuckCommand(hood));
+    hood.setDefaultCommand(hood.tuckCommand(Presets.Hood.TUCK_POSITION));
     leftShooter.setDefaultCommand(leftShooter.stopCommand());
     rightShooter.setDefaultCommand(rightShooter.stopCommand());
   }
