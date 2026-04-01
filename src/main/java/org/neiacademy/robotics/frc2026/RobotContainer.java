@@ -297,7 +297,7 @@ public class RobotContainer {
             () -> -driverCon.getRightX()));
 
     // Switch to X pattern when X button is pressed
-    driverCon.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driverCon.x().whileTrue(Commands.run(drive::stopWithX, drive));
 
     // Reset gyro to 0 when povdown button is pressed
     driverCon
