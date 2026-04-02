@@ -76,25 +76,25 @@ public class DriveCommands {
 
   public static Rotation2d closestNormalAngle(Pose2d CurrentPose) {
     Rotation2d[] targets = {
-        Rotation2d.fromDegrees(0),
-        Rotation2d.fromDegrees(90),
-        Rotation2d.fromDegrees(180),
-        Rotation2d.fromDegrees(270)
+      Rotation2d.fromDegrees(0),
+      Rotation2d.fromDegrees(90),
+      Rotation2d.fromDegrees(180),
+      Rotation2d.fromDegrees(270)
     };
     Rotation2d current = CurrentPose.getRotation();
     Rotation2d best = targets[0];
     double bestError = Math.abs(MathUtil.angleModulus(current.minus(best).getRadians()));
     for (int i = 1; i < targets.length; i++) {
-        double err = Math.abs(MathUtil.angleModulus(current.minus(targets[i]).getRadians()));
-        if (err < bestError) {
-            bestError = err;
-            best = targets[i];
-        }
+      double err = Math.abs(MathUtil.angleModulus(current.minus(targets[i]).getRadians()));
+      if (err < bestError) {
+        bestError = err;
+        best = targets[i];
+      }
     }
     Logger.recordOutput("DriveCommands/ClosestNormalAngleDeg", best.getDegrees());
 
     return best;
-}
+  }
 
   /**
    * Field relative drive command using two joysticks (controlling linear and angular velocities).

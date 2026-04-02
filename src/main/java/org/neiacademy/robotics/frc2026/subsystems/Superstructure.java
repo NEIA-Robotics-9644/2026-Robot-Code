@@ -141,11 +141,10 @@ public class Superstructure extends SubsystemBase {
 
   public Command toggleIntake() {
     return new SequentialCommandGroup(
-      Commands.waitSeconds(Presets.Intake.SHOOTING_TOGGLE_SPEED_SEC.getAsDouble()),
-      this.deployIntake(),
-      Commands.waitSeconds(Presets.Intake.SHOOTING_TOGGLE_SPEED_SEC.getAsDouble()),
-      this.retractIntake()
-    );
+        Commands.waitSeconds(Presets.Intake.SHOOTING_TOGGLE_SPEED_SEC.getAsDouble()),
+        this.deployIntake(),
+        Commands.waitSeconds(Presets.Intake.SHOOTING_TOGGLE_SPEED_SEC.getAsDouble()),
+        this.retractIntake());
   }
 
   public Command stopAllRollersCommand() {
