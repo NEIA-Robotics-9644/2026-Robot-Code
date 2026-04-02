@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -294,10 +296,23 @@ public class RobotContainer {
             drive,
             () -> -driverCon.getLeftY(),
             () -> -driverCon.getLeftX(),
-            () -> -driverCon.getRightX()));
+            () -> -driverCon.getRightX() * 0.5));
 
     // Switch to X pattern when X button is pressed
     driverCon.x().whileTrue(Commands.run(drive::stopWithX, drive));
+
+    driverCon.b().whileTrue(new ParallelCommandGroup(
+        intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS), 
+        loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS),
+        spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS)));
+
+    // Lock to a parallel angle to shove balls
+    driverCon.a().whileTrue(DriveCommands.joystickDriveAtAngle(
+        drive, 
+        () -> -driverCon.getLeftY(), 
+        () -> -driverCon.getLeftX(),
+        () -> DriveCommands.closestNormalAngle(drive.getPose()), 
+        () -> new Rotation2d(0, 0)));
 
     // Reset gyro to 0 when povdown button is pressed
     driverCon
@@ -309,6 +324,7 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+    // auto shoot
     driverCon
         .rightTrigger()
         .and(inAllianceZone)
@@ -320,6 +336,21 @@ public class RobotContainer {
         .and(hood::atSetpoint)
         .whileTrue(superstructure.shootCommand())
         .onFalse(superstructure.endShootCommand());
+    //x lock shoot
+    driverCon
+        .rightTrigger()
+        .and(driverCon.x())
+        .and(inAllianceZone)
+        .whileTrue(
+            superstructure.hubAimCommand(() -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+        .and(leftShooter::atSetpoint)
+        .and(rightShooter::atSetpoint)
+        .and(DriveCommands::atAngleSetpoint)
+        .and(hood::atSetpoint)
+        .whileTrue(superstructure.shootCommand())
+        .whileTrue(Commands.run(drive::stopWithX, drive))
+        .onFalse(superstructure.endShootCommand());
+    // shuttle
     driverCon
         .rightTrigger()
         .and(inAllianceZone.negate())
@@ -331,35 +362,55 @@ public class RobotContainer {
         .and(DriveCommands::atAngleSetpoint)
         .whileTrue(superstructure.shootCommand())
         .onFalse(superstructure.endShootCommand());
-
+    
+    // fall back
     driverCon
         .rightBumper()
         .whileTrue(
+            new SequentialCommandGroup(
+            new ParallelCommandGroup(
+                hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
+                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)
+            ),
             new ParallelCommandGroup(
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
                 loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
                 leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)))
+                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)
+            )
+            )
+        )
         .onFalse(superstructure.endShootCommand());
 
+    // force shoot even if flywheels aren't fully spun up
+    driverCon
+        .povUp()
+        .whileTrue(
+            new ParallelCommandGroup(
+                hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
+                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS))
+        );
+        
     driverCon.leftTrigger().onTrue(superstructure.deployIntake());
     driverCon.leftTrigger().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
 
     driverCon.leftBumper().onTrue(superstructure.retractIntake());
-
-    driverCon.b().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
-    driverCon.b().whileTrue(loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS));
+    driverCon.leftBumper().whileTrue(superstructure.toggleIntake().repeatedly());
 
     // Tune shot
-    driverCon
-        .y()
-        .whileTrue(
-            new ParallelCommandGroup(
-                leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
-                rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
-                hood.runTrackedPositionCommand(Presets.Hood.TUNING_POSITION),
-                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
+    // driverCon
+    //     .y()
+    //     .whileTrue(
+    //         new ParallelCommandGroup(
+    //             leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
+    //             rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
+    //             hood.runTrackedPositionCommand(Presets.Hood.TUNING_POSITION),
+    //             spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+    //             loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
 
     operatorCon
         .start()

@@ -164,8 +164,8 @@ public final class Constants {
 
     public static final Distance LENGTH_MILLIMETERS = Millimeters.of(140);
     public static final LinearVelocity MAX_SPEED =
-        Millimeters.of(60)
-            .per(Second); // Tripled from 20 — software position estimate only, does not limit
+        Millimeters.of(20)
+            .per(Second); //software position estimate only, does not limit
     // physical servo speed
 
     public static final double MIN_POSITION = 0.01;

@@ -3,6 +3,7 @@ package org.neiacademy.robotics.frc2026.subsystems;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -81,7 +82,7 @@ public class Superstructure extends SubsystemBase {
     Logger.recordOutput(
         "DriveCommands/atDriveToPoseSetpoint", DriveCommands.atDriveToPoseSetpoint());
     Logger.recordOutput(
-        "TargetDistance",
+        "HubDistance",
         AllianceFlipUtil.apply(
                 new Pose2d(FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero))
             .getTranslation()
@@ -136,6 +137,15 @@ public class Superstructure extends SubsystemBase {
   public Command retractIntake() {
     return intakeDeploy.runTrackedPositionCommand(
         () -> Presets.Intake.TUCK_ANGLE_DEG.getAsDouble());
+  }
+
+  public Command toggleIntake() {
+    return new SequentialCommandGroup(
+      Commands.waitSeconds(Presets.Intake.SHOOTING_TOGGLE_SPEED_SEC.getAsDouble()),
+      this.deployIntake(),
+      Commands.waitSeconds(Presets.Intake.SHOOTING_TOGGLE_SPEED_SEC.getAsDouble()),
+      this.retractIntake()
+    );
   }
 
   public Command stopAllRollersCommand() {
