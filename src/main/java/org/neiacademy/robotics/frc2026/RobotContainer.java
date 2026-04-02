@@ -396,6 +396,14 @@ public class RobotContainer {
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
                 loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
 
+    // force shoot even if the tolerances aren't being met
+    driverCon
+        .povRight()
+        .whileTrue(
+            new ParallelCommandGroup(
+                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
+
     driverCon.leftTrigger().onTrue(superstructure.deployIntake());
     driverCon.leftTrigger().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
 
