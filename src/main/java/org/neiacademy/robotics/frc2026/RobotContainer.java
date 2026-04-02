@@ -9,6 +9,7 @@ package org.neiacademy.robotics.frc2026;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -399,7 +400,10 @@ public class RobotContainer {
     driverCon.leftTrigger().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
 
     driverCon.leftBumper().onTrue(superstructure.retractIntake());
-    driverCon.leftBumper().whileTrue(superstructure.toggleIntake().repeatedly());
+    driverCon
+        .leftBumper()
+        .debounce(0.25, DebounceType.kRising) // must be held 0.25s before true
+        .whileTrue(superstructure.toggleIntake().repeatedly());
 
     // Tune shot
     // driverCon
