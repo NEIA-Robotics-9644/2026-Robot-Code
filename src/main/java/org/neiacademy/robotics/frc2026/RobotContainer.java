@@ -301,6 +301,17 @@ public class RobotContainer {
     // Switch to X pattern when X button is pressed
     driverCon.x().whileTrue(Commands.run(drive::stopWithX, drive));
 
+    // Tune shot
+    // driverCon
+    //     .y()
+    //     .whileTrue(
+    //         new ParallelCommandGroup(
+    //             leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
+    //             rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
+    //             hood.runTrackedPositionCommand(Presets.Hood.TUNING_POSITION),
+    //             spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+    //             loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
+
     driverCon
         .b()
         .whileTrue(
@@ -385,7 +396,7 @@ public class RobotContainer {
                     rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))))
         .onFalse(superstructure.endShootCommand());
 
-    // force shoot even if flywheels aren't fully spun up
+    // force shoot fall back even if flywheels aren't fully spun up
     driverCon
         .povUp()
         .whileTrue(
@@ -412,17 +423,6 @@ public class RobotContainer {
         .leftBumper()
         .debounce(0.25, DebounceType.kRising) // must be held 0.25s before true
         .whileTrue(superstructure.toggleIntake().repeatedly());
-
-    // Tune shot
-    // driverCon
-    //     .y()
-    //     .whileTrue(
-    //         new ParallelCommandGroup(
-    //             leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
-    //             rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
-    //             hood.runTrackedPositionCommand(Presets.Hood.TUNING_POSITION),
-    //             spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-    //             loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
 
     operatorCon
         .start()
