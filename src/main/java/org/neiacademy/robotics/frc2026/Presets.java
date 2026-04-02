@@ -51,8 +51,8 @@ public final class Presets {
 
   public static class Hood {
     public static final LoggedTunableNumber TUNING_POSITION =
-        new LoggedTunableNumber("Setpoints/Intake/DeployTuningAngleDeg", 0.0);
+        new LoggedTunableNumber("Setpoints/Hood/DeployTuningAngleDeg", 0.5);
     public static final LoggedTunableNumber TUCK_POSITION =
-        new LoggedTunableNumber("Setpoints/Intake/DeployTuningAngleDeg", 0.7);
+        new LoggedTunableNumber("Setpoints/Hood/DeployTuningAngleDeg", 0.7);
   }
 }

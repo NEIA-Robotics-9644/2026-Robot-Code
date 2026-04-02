@@ -80,6 +80,12 @@ public class Superstructure extends SubsystemBase {
     Logger.recordOutput("DriveCommands/atAngleSetpoint", DriveCommands.atAngleSetpoint());
     Logger.recordOutput(
         "DriveCommands/atDriveToPoseSetpoint", DriveCommands.atDriveToPoseSetpoint());
+    Logger.recordOutput(
+        "TargetDistance",
+        AllianceFlipUtil.apply(
+                new Pose2d(FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero))
+            .getTranslation()
+            .getDistance(drive.getPose().getTranslation()));
   }
 
   public Command hubAimCommand(DoubleSupplier driveXSupplier, DoubleSupplier driveYSupplier) {
@@ -153,12 +159,14 @@ public class Superstructure extends SubsystemBase {
 
   public Command autoShoot() {
     return new ParallelCommandGroup(
-        hubAimCommand(() -> 0.0, () -> 0.0),
-        new SequentialCommandGroup(
-            new WaitUntilCommand(() -> leftShooter.atSetpoint() && rightShooter.atSetpoint()),
-            new ParallelCommandGroup(
-                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
-                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS))));
+            hubAimCommand(() -> 0.0, () -> 0.0),
+            new SequentialCommandGroup(
+                new WaitUntilCommand(() -> leftShooter.atSetpoint() && rightShooter.atSetpoint()),
+                new ParallelCommandGroup(
+                    loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
+                    spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS))))
+        .withTimeout(3.5)
+        .andThen(autoEndShootCommand());
   }
 
   public Command closeHubShoot() {

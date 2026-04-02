@@ -317,6 +317,7 @@ public class RobotContainer {
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
         .and(DriveCommands::atAngleSetpoint)
+        .and(hood::atSetpoint)
         .whileTrue(superstructure.shootCommand())
         .onFalse(superstructure.endShootCommand());
     driverCon
@@ -348,6 +349,17 @@ public class RobotContainer {
 
     driverCon.b().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
     driverCon.b().whileTrue(loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS));
+
+    // Tune shot
+    driverCon
+        .y()
+        .whileTrue(
+            new ParallelCommandGroup(
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
+                hood.runTrackedPositionCommand(Presets.Hood.TUNING_POSITION),
+                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
 
     operatorCon
         .start()

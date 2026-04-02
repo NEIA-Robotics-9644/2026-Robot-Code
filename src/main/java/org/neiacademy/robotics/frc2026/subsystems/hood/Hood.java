@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
+import org.neiacademy.robotics.frc2026.Constants;
+import org.neiacademy.robotics.frc2026.util.Util;
 
 public class Hood extends SubsystemBase {
 
@@ -41,5 +43,12 @@ public class Hood extends SubsystemBase {
 
   public Command tuckCommand(DoubleSupplier position) {
     return run(() -> io.setPositionNormalized(position.getAsDouble()));
+  }
+
+  public boolean atSetpoint() {
+    return Util.epsilonEquals(
+        inputs.leftNormalizedPosition,
+        inputs.leftSetpointPosition,
+        Constants.Hood.POSITION_TOLERANCE);
   }
 }

@@ -170,7 +170,7 @@ public final class Constants {
 
     public static final double MIN_POSITION = 0.01;
     public static final double MAX_POSITION = 0.5;
-    public static final double POSITION_TOLERANCE = 0.01;
+    public static final double POSITION_TOLERANCE = 0.05;
     public static final double INITIAL_POSITION = 0;
   }
 }
