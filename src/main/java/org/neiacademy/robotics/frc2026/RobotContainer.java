@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -422,7 +423,7 @@ public class RobotContainer {
     driverCon
         .leftBumper()
         .debounce(0.25, DebounceType.kRising) // must be held 0.25s before true
-        .whileTrue(superstructure.toggleIntake().repeatedly());
+        .whileTrue(new RepeatCommand(superstructure.toggleIntake()));
 
     operatorCon
         .start()

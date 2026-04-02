@@ -93,8 +93,8 @@ public final class Constants {
     public static final LoggedTunableNumber POSITION_TOLERANCE =
         new LoggedTunableNumber("PID/Intake/DeployToleranceDeg", 3.0);
 
-    public static final double ROLLER_GEAR_RATIO = 18 / 24;
-    public static final double DEPLOY_GEAR_RATIO = 20 * (40 / 18);
+    public static final double ROLLER_GEAR_RATIO = 18.0 / 24.0;
+    public static final double DEPLOY_GEAR_RATIO = 20.0 * (40.0 / 18.0);
 
     public static final Rotation2d GRAVITY_POSTION_OFFSET = Rotation2d.fromDegrees(90.0);
   }

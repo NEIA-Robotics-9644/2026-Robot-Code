@@ -29,7 +29,9 @@ public final class Presets {
         new LoggedTunableNumber("Setpoints/Intake/RollerTuningVolts", 0.0);
 
     public static final LoggedTunableNumber SHOOTING_TOGGLE_SPEED_SEC =
-        new LoggedTunableNumber("Setpoints/Intake/ShootingToggleSpeedSec", 0.8);
+        new LoggedTunableNumber("Setpoints/Intake/ShootingToggleSpeedSec", 0.1);
+    public static final LoggedTunableNumber SHOOTING_TOGGLE_TIMEOUT_SPEED_SEC =
+        new LoggedTunableNumber("Setpoints/Intake/ShootingToggleTimeoutSpeedSec", 0.4);
   }
 
   public static class Loader {
@@ -45,7 +47,7 @@ public final class Presets {
 
   public static class Shooter {
     public static final LoggedTunableNumber CLOSE_HUB_SPEED =
-        new LoggedTunableNumber("Setpoints/Shooter/CloseHubSpeedRadsPerSec", 300.0);
+        new LoggedTunableNumber("Setpoints/Shooter/CloseHubSpeedRadsPerSec", 290.0);
     public static final LoggedTunableNumber TUNING_SPEED =
         new LoggedTunableNumber("Setpoints/Shooter/TuningSpeedRadsPerSec", 0.0);
     public static final LoggedTunableNumber NO_SPEED =
@@ -54,9 +56,9 @@ public final class Presets {
 
   public static class Hood {
     public static final LoggedTunableNumber TUNING_POSITION =
-        new LoggedTunableNumber("Setpoints/Hood/TuningPos", 0.5);
+        new LoggedTunableNumber("Setpoints/Hood/TuningPos", 0);
     public static final LoggedTunableNumber TUCK_POSITION =
-        new LoggedTunableNumber("Setpoints/Hood/TuckPos", 0.7);
+        new LoggedTunableNumber("Setpoints/Hood/TuckPos", 0.55);
     public static final LoggedTunableNumber CLOSE_HUB_POSITION =
         new LoggedTunableNumber("Setpoints/Hood/CloseHubPos", 0.0);
   }
