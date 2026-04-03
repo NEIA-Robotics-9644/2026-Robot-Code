@@ -12,6 +12,8 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.RobotBase;
 import lombok.Setter;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.neiacademy.robotics.frc2026.util.LoggedTunableNumber;
 import org.neiacademy.robotics.frc2026.util.drivers.CANDeviceID;
 
@@ -24,9 +26,9 @@ public final class Constants {
   public static final Mode simMode = Mode.SIM;
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
-  @Setter public static boolean tuningMode = true;
+  @AutoLogOutput @Setter public static boolean tuningMode = true;
 
-  @Setter public static boolean manualMode = false;
+  @AutoLogOutput @Setter public static boolean manualMode = false;
 
   public static final boolean disableHAL = false;
 
