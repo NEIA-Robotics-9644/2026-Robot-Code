@@ -9,6 +9,7 @@ package org.neiacademy.robotics.frc2026;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -21,6 +22,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -79,13 +82,11 @@ public class RobotContainer {
   private final Hood hood;
   private final Superstructure superstructure;
 
-  //   private final LEDSubsystem led;
-
   private final Alert driverDisconnected =
       new Alert("Driver controller disconnected (port 0).", AlertType.kWarning);
   private final Alert operatorDisconnected =
       new Alert("Operator controller disconnected (port 1).", AlertType.kWarning);
-  private final Alert noAutoAlert = new Alert("Please select an auto routine!!!", AlertType.kError);
+  private final Alert noAutoAlert = new Alert("Select an auto routine!!!", AlertType.kError);
 
   private Command noAuto = Commands.none();
 
@@ -103,7 +104,6 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        // led = new LEDSubsystem(9);
         // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and a CANcoder
         drive =
             new Drive(
@@ -116,11 +116,7 @@ public class RobotContainer {
             new Vision(
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVision(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0)
-                // ,
-                // new VisionIOPhotonVision(
-                //     VisionConstants.camera1Name, VisionConstants.robotToCamera1)
-                );
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0));
 
         spindexer = new Spindexer(new SpindexerIOTalonFX());
         intakeDeploy = new IntakeDeploy(new IntakeDeployIOTalonFX());
@@ -149,7 +145,6 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        // led = null;
         drive =
             new Drive(
                 new GyroIO() {},
@@ -162,10 +157,7 @@ public class RobotContainer {
             new Vision(
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-                // new VisionIOPhotonVisionSim(
-                //     VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
-                );
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose));
 
         spindexer = new Spindexer(new SpindexerIO() {});
         intakeDeploy = new IntakeDeploy(new IntakeDeployIO() {});
@@ -179,8 +171,6 @@ public class RobotContainer {
 
       default:
         // Replayed robot, disable IO implementations
-        // led = null;
-
         drive =
             new Drive(
                 new GyroIO() {},
@@ -202,7 +192,7 @@ public class RobotContainer {
 
     superstructure =
         new Superstructure(
-            drive, spindexer, intakeDeploy, intakeRoller, loader, leftShooter, rightShooter);
+            drive, spindexer, intakeDeploy, intakeRoller, loader, leftShooter, rightShooter, hood);
 
     inAllianceZone =
         new Trigger(
@@ -214,28 +204,11 @@ public class RobotContainer {
     NamedCommands.registerCommand("shoot", superstructure.shootCommand().withTimeout(5));
     NamedCommands.registerCommand("autoShoot", superstructure.autoShoot());
     NamedCommands.registerCommand(
-        "intakeRoller", intakeRoller.runAutoVoltageCommand(Presets.Intake.INTAKE_VOLTS));
+        "intakeRoller", intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
     NamedCommands.registerCommand("intakeDeploy", superstructure.deployIntake());
     NamedCommands.registerCommand("intakeRetract", superstructure.retractIntake());
     NamedCommands.registerCommand(
         "runSpindexer", spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS));
-    NamedCommands.registerCommand(
-        "shuttleAimAndShoot",
-        Commands.run(
-                () ->
-                    inAllianceZone
-                        .negate()
-                        .whileTrue(
-                            superstructure.shuttleAimCommand(
-                                () -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
-                        .and(leftShooter::atSetpoint)
-                        .and(rightShooter::atSetpoint)
-                        .and(DriveCommands::atAngleSetpoint)
-                        .whileTrue(superstructure.shootCommand())
-                        .onFalse(superstructure.endShootCommand()),
-                leftShooter,
-                rightShooter)
-            .withTimeout(4));
     NamedCommands.registerCommand(
         "hubAimAndShoot",
         Commands.run(
@@ -298,7 +271,7 @@ public class RobotContainer {
                 () -> Units.degreesToRadians(Presets.Intake.TUNING_ANGLE_DEG.getAsDouble())),
             leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
             rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED)));
-    hood.runTrackedPositionCommand(Presets.Hood.TUNING_ANGLE);
+    hood.runTrackedPositionCommand(Presets.Hood.TUNING_POSITION);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -327,7 +300,37 @@ public class RobotContainer {
             () -> -driverCon.getRightX()));
 
     // Switch to X pattern when X button is pressed
-    driverCon.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driverCon.x().whileTrue(Commands.run(drive::stopWithX, drive));
+
+    // Tune shot
+    driverCon
+        .y()
+        .whileTrue(
+            new ParallelCommandGroup(
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
+                hood.runTrackedPositionCommand(Presets.Hood.TUNING_POSITION),
+                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
+
+    driverCon
+        .b()
+        .whileTrue(
+            new ParallelCommandGroup(
+                intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS),
+                spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS)));
+
+    // Lock to a parallel angle to shove balls
+    driverCon
+        .a()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                drive,
+                () -> -driverCon.getLeftY(),
+                () -> -driverCon.getLeftX(),
+                () -> DriveCommands.closestNormalAngle(drive.getPose()),
+                () -> new Rotation2d(0, 0)));
 
     // Reset gyro to 0 when povdown button is pressed
     driverCon
@@ -339,6 +342,11 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+    // auto shoot
+    driverCon
+        .rightTrigger()
+        .debounce(0.25, DebounceType.kRising)
+        .whileTrue(loader.runVoltageCommand(Presets.Loader.FEED_VOLTS));
     driverCon
         .rightTrigger()
         .and(inAllianceZone)
@@ -347,8 +355,24 @@ public class RobotContainer {
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
         .and(DriveCommands::atAngleSetpoint)
+        .and(hood::atSetpoint)
         .whileTrue(superstructure.shootCommand())
         .onFalse(superstructure.endShootCommand());
+    // x lock shoot
+    driverCon
+        .rightTrigger()
+        .and(driverCon.x())
+        .and(inAllianceZone)
+        .whileTrue(
+            superstructure.hubAimCommand(() -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+        .and(leftShooter::atSetpoint)
+        .and(rightShooter::atSetpoint)
+        .and(DriveCommands::atAngleSetpoint)
+        .and(hood::atSetpoint)
+        .whileTrue(superstructure.shootCommand())
+        .whileTrue(Commands.run(drive::stopWithX, drive))
+        .onFalse(superstructure.endShootCommand());
+    // shuttle
     driverCon
         .rightTrigger()
         .and(inAllianceZone.negate())
@@ -361,22 +385,49 @@ public class RobotContainer {
         .whileTrue(superstructure.shootCommand())
         .onFalse(superstructure.endShootCommand());
 
+    // fall back
     driverCon
         .rightBumper()
         .whileTrue(
+            new SequentialCommandGroup(
+                new ParallelCommandGroup(
+                    hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
+                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)),
+                new ParallelCommandGroup(
+                    spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+                    loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
+                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))))
+        .onFalse(superstructure.endShootCommand());
+
+    // force shoot fall back even if flywheels aren't fully spun up
+    driverCon
+        .povUp()
+        .whileTrue(
+            new ParallelCommandGroup(
+                hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
+                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
+
+    // force shoot even if the tolerances aren't being met
+    driverCon
+        .povRight()
+        .whileTrue(
             new ParallelCommandGroup(
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
-                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
 
     driverCon.leftTrigger().onTrue(superstructure.deployIntake());
     driverCon.leftTrigger().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
 
     driverCon.leftBumper().onTrue(superstructure.retractIntake());
-
-    driverCon.b().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
-    driverCon.b().whileTrue(loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS));
+    driverCon
+        .leftBumper()
+        .debounce(0.25, DebounceType.kRising) // must be held 0.25s before true
+        .whileTrue(new RepeatCommand(superstructure.toggleIntake()));
 
     operatorCon
         .start()

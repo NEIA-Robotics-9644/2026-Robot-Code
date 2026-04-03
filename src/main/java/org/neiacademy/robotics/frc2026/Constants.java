@@ -52,12 +52,12 @@ public final class Constants {
     public static final String CANBUS = "rio";
     public static final CANDeviceID MOTOR_ID = new CANDeviceID(30, "Drive");
 
-    public static final InvertedValue INVERTED = InvertedValue.Clockwise_Positive;
+    public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
     public static final double STATOR_LIMIT = 40.0;
     public static final double SUPPLY_LIMIT = 40.0;
 
-    public static final double GEAR_RATIO = 1.0;
+    public static final double GEAR_RATIO = 5.0;
   }
 
   public static class Intake {
@@ -81,10 +81,10 @@ public final class Constants {
     public static final double ROLLER_SUPPLY_LIMIT = 60.0;
 
     public static final double SOFT_LIMIT_FORWARD = 0.277;
-    public static final double SOFT_LIMIT_REVERSE = -0.14;
+    public static final double SOFT_LIMIT_REVERSE = -0.2;
 
-    public static final LoggedTunableNumber kP = new LoggedTunableNumber("PID/Intake/kP", 50);
-    public static final LoggedTunableNumber kD = new LoggedTunableNumber("PID/Intake/kD", 10);
+    public static final LoggedTunableNumber kP = new LoggedTunableNumber("PID/Intake/kP", 80);
+    public static final LoggedTunableNumber kD = new LoggedTunableNumber("PID/Intake/kD", 15);
     public static final LoggedTunableNumber kS = new LoggedTunableNumber("PID/Intake/kS", 0.0);
     public static final LoggedTunableNumber kG = new LoggedTunableNumber("PID/Intake/kG", 0);
     public static final LoggedTunableNumber kV = new LoggedTunableNumber("PID/Intake/kV", 0.0);
@@ -93,8 +93,8 @@ public final class Constants {
     public static final LoggedTunableNumber POSITION_TOLERANCE =
         new LoggedTunableNumber("PID/Intake/DeployToleranceDeg", 3.0);
 
-    public static final double ROLLER_GEAR_RATIO = 18 / 24;
-    public static final double DEPLOY_GEAR_RATIO = 20 * (40 / 18);
+    public static final double ROLLER_GEAR_RATIO = 18.0 / 24.0;
+    public static final double DEPLOY_GEAR_RATIO = 20.0 * (40.0 / 18.0);
 
     public static final Rotation2d GRAVITY_POSTION_OFFSET = Rotation2d.fromDegrees(90.0);
   }
@@ -147,7 +147,7 @@ public final class Constants {
         new LoggedTunableNumber("PID/Shooter/Right/kA", 0.0);
 
     public static final LoggedTunableNumber VELOCITY_TOLERANCE =
-        new LoggedTunableNumber("PID/Shooter/ToleranceRadsPerSec", 20.0);
+        new LoggedTunableNumber("PID/Shooter/ToleranceRadsPerSec", 35.0);
 
     public static final double GEAR_RATIO = 1;
   }
@@ -164,13 +164,12 @@ public final class Constants {
 
     public static final Distance LENGTH_MILLIMETERS = Millimeters.of(140);
     public static final LinearVelocity MAX_SPEED =
-        Millimeters.of(60)
-            .per(Second); // Tripled from 20 — software position estimate only, does not limit
+        Millimeters.of(20).per(Second); // software position estimate only, does not limit
     // physical servo speed
 
     public static final double MIN_POSITION = 0.01;
     public static final double MAX_POSITION = 0.5;
-    public static final double POSITION_TOLERANCE = 0.01;
+    public static final double POSITION_TOLERANCE = 0.05;
     public static final double INITIAL_POSITION = 0;
   }
 }

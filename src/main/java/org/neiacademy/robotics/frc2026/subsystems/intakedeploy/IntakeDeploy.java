@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import org.neiacademy.robotics.frc2026.Constants;
+import org.neiacademy.robotics.frc2026.Presets;
 import org.neiacademy.robotics.frc2026.util.Util;
 
 public class IntakeDeploy extends SubsystemBase {
@@ -61,6 +62,11 @@ public class IntakeDeploy extends SubsystemBase {
 
   public Command runPositionCommand(double positionRads) {
     return run(() -> io.runPosition(positionRads)).until(this::atSetpoint);
+  }
+
+  public Command runPositionCommandWithTimeout(double positionRads) {
+    return run(() -> io.runPosition(positionRads))
+        .withTimeout(Presets.Intake.SHOOTING_TOGGLE_TIMEOUT_SPEED_SEC.getAsDouble());
   }
 
   public Command runTrackedPositionCommand(DoubleSupplier positionRads) {
