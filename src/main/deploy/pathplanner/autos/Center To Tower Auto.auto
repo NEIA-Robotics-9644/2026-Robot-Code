@@ -65,6 +65,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Center Autos",
   "choreoAuto": false
 }

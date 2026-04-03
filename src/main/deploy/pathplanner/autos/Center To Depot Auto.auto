@@ -73,7 +73,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "runIntakeRoller"
+                  "name": "intakeRoller"
                 }
               }
             ]
@@ -114,6 +114,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Center Autos",
   "choreoAuto": false
 }
