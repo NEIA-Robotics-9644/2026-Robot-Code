@@ -82,7 +82,7 @@ public class LoggedTunableNumber implements DoubleSupplier {
       dashboardNumber.set(value);
     }
   }
-  
+
   public void adjustSetValue(double additive) {
     if (Constants.tuningMode) {
       dashboardNumber.set(getAsDouble() + additive);

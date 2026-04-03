@@ -9,6 +9,7 @@ package org.neiacademy.robotics.frc2026;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -260,6 +261,9 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Left Neutral Zone Steal And Shoot Auto",
+        new PathPlannerAuto("Right Neutral Zone Steal And Shoot Auto", true));
 
     SmartDashboard.putData(
         "RunEverythingForTuning",
@@ -432,23 +436,7 @@ public class RobotContainer {
     operatorCon
         .start()
         .onTrue(Commands.runOnce(() -> Constants.setManualMode(!Constants.manualMode)));
-    /*operatorCon
-    .back()
-    .and(isManualMode)
-    .onTrue(
-        Commands.runOnce(
-            () -> {
-              Presets.Shooter.CLOSE_HUB_SPEED.setDefault(
-                  Presets.Shooter.CLOSE_HUB_SPEED.getAsDouble());
-              if (intakeDeploy.isDeployed()) {
-                Presets.Intake.EXTEND_ANGLE_DEG.setDefault(
-                    Units.radiansToDegrees(intakeDeploy.getAngleRads()));
-              } else if (intakeDeploy.isDeployed() == false) {
-                Presets.Intake.TUCK_ANGLE_DEG.setDefault(
-                    Units.radiansToDegrees(intakeDeploy.getAngleRads()));
-              }
-            }));
-
+    /*
     operatorCon
         .povUp()
         .and(isManualMode)
