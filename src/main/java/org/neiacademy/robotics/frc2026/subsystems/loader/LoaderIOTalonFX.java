@@ -42,7 +42,7 @@ public class LoaderIOTalonFX implements LoaderIO {
     config.Feedback.SensorToMechanismRatio = Constants.Loader.GEAR_RATIO;
 
     config.MotorOutput.Inverted = Constants.Loader.INVERTED;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     PhoenixUtil.tryUntilOk(5, () -> loader.getConfigurator().apply(config));
 
