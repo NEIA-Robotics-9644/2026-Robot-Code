@@ -125,8 +125,11 @@ public class Superstructure extends SubsystemBase {
     return new SequentialCommandGroup(
         // leftShooter.runTrackedVelocityCommand(Presets.Shooter.NO_SPEED),
         // rightShooter.runTrackedVelocityCommand(Presets.Shooter.NO_SPEED),
-        loader.runVoltageCommand(Presets.Loader.SLOW_EXHAUST_VOLTS).withTimeout(0.5),
-        new ParallelCommandGroup(spindexer.stopCommand(), loader.stopCommand()));
+        // loader.runVoltageCommand(Presets.Loader.SLOW_EXHAUST_VOLTS).withTimeout(0.5),
+        new ParallelCommandGroup(
+            spindexer.stopCommand()
+            // , loader.stopCommand()
+            ));
   }
 
   public Command deployIntake() {
@@ -191,9 +194,7 @@ public class Superstructure extends SubsystemBase {
   public Command autoEndShootCommand() {
     return new ParallelCommandGroup(
         spindexer.stopCommand(),
-        new SequentialCommandGroup(
-            loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS).withTimeout(0.5),
-            loader.stopCommand()),
+        loader.stopCommand(),
         leftShooter.stopCommand(),
         rightShooter.stopCommand());
   }

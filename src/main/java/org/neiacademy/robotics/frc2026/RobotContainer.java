@@ -297,21 +297,21 @@ public class RobotContainer {
             drive,
             () -> -driverCon.getLeftY(),
             () -> -driverCon.getLeftX(),
-            () -> -driverCon.getRightX() * 0.5));
+            () -> -driverCon.getRightX()));
 
     // Switch to X pattern when X button is pressed
     driverCon.x().whileTrue(Commands.run(drive::stopWithX, drive));
 
     // Tune shot
-    // driverCon
-    //     .y()
-    //     .whileTrue(
-    //         new ParallelCommandGroup(
-    //             leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
-    //             rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
-    //             hood.runTrackedPositionCommand(Presets.Hood.TUNING_POSITION),
-    //             spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-    //             loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
+    driverCon
+        .y()
+        .whileTrue(
+            new ParallelCommandGroup(
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
+                hood.runTrackedPositionCommand(Presets.Hood.TUNING_POSITION),
+                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
 
     driverCon
         .b()
@@ -343,6 +343,10 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
     // auto shoot
+    driverCon
+        .rightTrigger()
+        .debounce(0.25, DebounceType.kRising)
+        .whileTrue(loader.runVoltageCommand(Presets.Loader.FEED_VOLTS));
     driverCon
         .rightTrigger()
         .and(inAllianceZone)
