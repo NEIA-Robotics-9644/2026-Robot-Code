@@ -28,6 +28,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.neiacademy.robotics.frc2026.Constants.*;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
@@ -93,12 +95,16 @@ public class RobotContainer {
 
   private Trigger inAllianceZone;
 
+  private Trigger isManualMode;
+
   // Controller
   private final CommandXboxController driverCon = new CommandXboxController(0);
   private final CommandXboxController operatorCon = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+
+  @AutoLogOutput boolean test = false;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -202,6 +208,12 @@ public class RobotContainer {
               return (robotPose.getX() <= FieldConstants.LinesVertical.allianceZone + 0.40);
             });
 
+    isManualMode =
+        new Trigger(
+            () -> {
+              return Constants.manualMode;
+            });
+
     NamedCommands.registerCommand("shoot", superstructure.shootCommand().withTimeout(5));
     NamedCommands.registerCommand("autoShoot", superstructure.autoShoot());
     NamedCommands.registerCommand(
@@ -277,6 +289,12 @@ public class RobotContainer {
             rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED)));
     hood.runTrackedPositionCommand(Presets.Hood.TUNING_POSITION);
 
+    SmartDashboard.putBoolean("ManualMode", Constants.manualMode);
+    SmartDashboard.putBoolean("TuningMode", Constants.tuningMode);
+
+    SmartDashboard.putData(
+        "test1", Commands.runOnce(() -> Logger.recordOutput("Debug/test", "some message")));
+    SmartDashboard.putData("test2", Commands.runOnce(() -> test = true));
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -288,12 +306,6 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-
-    Trigger isManualMode =
-        new Trigger(
-            () -> {
-              return Constants.manualMode;
-            });
 
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
