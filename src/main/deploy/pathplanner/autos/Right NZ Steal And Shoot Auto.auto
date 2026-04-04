@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RIght Neutral Zone Steal And Shoot"
+                  "pathName": "NZ Steal And Shoot-a"
                 }
               },
               {
@@ -42,18 +42,6 @@
                           }
                         ]
                       }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 4.25
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "intakeRetract"
-                      }
                     }
                   ]
                 }
@@ -68,7 +56,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 5.0
+                  "waitTime": 2.0
                 }
               },
               {
@@ -76,8 +64,20 @@
                 "data": {
                   "name": "autoShoot"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "toggleIntakeDeploy"
+                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeRetract"
           }
         },
         {
@@ -87,17 +87,17 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "TShoot-T-NZ"
+                  "pathName": "NZ Steal and Shoot-b"
                 }
               },
               {
-                "type": "sequential",
+                "type": "parallel",
                 "data": {
                   "commands": [
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.5
+                        "waitTime": 1.5
                       }
                     },
                     {
@@ -118,20 +118,8 @@
                           }
                         ]
                       }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 4.25
-                      }
                     }
                   ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intakeRetract"
                 }
               }
             ]
@@ -144,7 +132,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 5.0
+                  "waitTime": 2.0
                 }
               },
               {
@@ -152,8 +140,20 @@
                 "data": {
                   "name": "autoShoot"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "toggleIntakeDeploy"
+                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeRetract"
           }
         }
       ]

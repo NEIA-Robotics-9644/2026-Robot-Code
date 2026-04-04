@@ -11,15 +11,61 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "CenterToDepot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intakeDeploy"
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "CenterToDepot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "DepotToCenter"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.0
+                      }
+                    },
+                    {
+                      "type": "parallel",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "intakeDeploy"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "intakeRoller"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
@@ -29,34 +75,28 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.0
+                  "waitTime": 5.0
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "intakeRoller"
+                  "name": "autoShoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "toggleIntakeDeploy"
                 }
               }
             ]
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "DepotToCenter"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "intakeRetract"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "autoShoot"
           }
         }
       ]

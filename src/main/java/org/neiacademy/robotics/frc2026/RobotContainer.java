@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.neiacademy.robotics.frc2026.Constants.*;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
@@ -254,6 +253,9 @@ public class RobotContainer {
               leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
               rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
             }));
+
+    NamedCommands.registerCommand(
+        "toggleIntakeDeploy", new RepeatCommand(superstructure.toggleIntake()).withTimeout(6));
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -293,9 +295,6 @@ public class RobotContainer {
     SmartDashboard.putBoolean("ManualMode", Constants.manualMode);
     SmartDashboard.putBoolean("TuningMode", Constants.tuningMode);
 
-    SmartDashboard.putData(
-        "test1", Commands.runOnce(() -> Logger.recordOutput("Debug/test", "some message")));
-    SmartDashboard.putData("test2", Commands.runOnce(() -> test = true));
     // Configure the button bindings
     configureButtonBindings();
   }
