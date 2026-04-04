@@ -5,59 +5,21 @@
     "data": {
       "commands": [
         {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 2.0
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "spinShooterFlywheels"
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Center Path"
           }
         },
         {
-          "type": "deadline",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 3.0
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "shoot"
-                }
-              }
-            ]
+            "pathName": "CenterToDepot"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "intakeDeploy"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "CenterToDepot"
           }
         },
         {
@@ -92,28 +54,15 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 5.0
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "shoot"
-                }
-              }
-            ]
+            "name": "autoShoot"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Center Autos",
+  "folder": null,
   "choreoAuto": false
 }

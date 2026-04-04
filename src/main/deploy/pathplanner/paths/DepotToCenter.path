@@ -31,20 +31,7 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "intakeRetract",
-      "waypointRelativePos": 0.1602542123824452,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "spinShooterFlywheels",
-      "waypointRelativePos": 0.33724774686520387,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
