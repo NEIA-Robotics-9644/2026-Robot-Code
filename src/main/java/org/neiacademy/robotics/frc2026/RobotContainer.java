@@ -219,7 +219,8 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "intakeRoller", intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS).withTimeout(5));
     NamedCommands.registerCommand("intakeDeploy", superstructure.deployIntake().withTimeout(0.75));
-    NamedCommands.registerCommand("intakeRetract", superstructure.retractIntake().withTimeout(0.75));
+    NamedCommands.registerCommand(
+        "intakeRetract", superstructure.retractIntake().withTimeout(0.75));
     NamedCommands.registerCommand(
         "runSpindexer", spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS));
     NamedCommands.registerCommand(
