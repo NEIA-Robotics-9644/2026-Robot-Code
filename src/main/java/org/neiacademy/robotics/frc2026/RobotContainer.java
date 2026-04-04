@@ -278,8 +278,8 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption(
-        "Left Neutral Zone Steal And Shoot Auto",
-        new PathPlannerAuto("Right Neutral Zone Steal And Shoot Auto", true));
+        "Left NZ Steal And Shoot Auto",
+        new PathPlannerAuto("Right NZ Steal And Shoot Auto", true));
 
     SmartDashboard.putData(
         "RunEverythingForTuning",
@@ -476,30 +476,78 @@ public class RobotContainer {
                         () -> intakeDeploy.getAngleRads() + Units.degreesToRadians(1))));*/
 
     operatorCon
+        .b()
+        .whileTrue(
+            new ParallelCommandGroup(
+                intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS),
+                spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS)));
+
+    // auto shoot
+    operatorCon
+        .rightTrigger()
+        .debounce(0.25, DebounceType.kRising)
+        .whileTrue(loader.runVoltageCommand(Presets.Loader.FEED_VOLTS));
+
+    // fall back
+    operatorCon
         .rightBumper()
+        .whileTrue(
+            new SequentialCommandGroup(
+                new ParallelCommandGroup(
+                    hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
+                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)),
+                new ParallelCommandGroup(
+                    spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+                    loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
+                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))))
+        .onFalse(superstructure.endShootCommand());
+
+    // force shoot fall back even if flywheels aren't fully spun up
+    operatorCon
+        .povUp()
+        .whileTrue(
+            new ParallelCommandGroup(
+                hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
+                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
+
+    // force shoot even if the tolerances aren't being met
+    operatorCon
+        .povRight()
         .whileTrue(
             new ParallelCommandGroup(
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)))
-        .and(leftShooter::atSetpoint)
-        .and(rightShooter::atSetpoint)
-        .whileTrue(
-            new ParallelCommandGroup(
-                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
 
     operatorCon
         .rightTrigger()
-        .whileTrue(
-            new ParallelCommandGroup(
-                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
+        .and(inAllianceZone)
+        .whileTrue(superstructure.hubSpinFlywheelsCommand());
 
     operatorCon
-        .leftTrigger()
-        .whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
+        .rightTrigger()
+        .and(inAllianceZone.negate())
+        .whileTrue(superstructure.shuttleSpinFlywheelsCommand());
 
-    operatorCon.b().whileTrue(spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS));
+    operatorCon.leftTrigger().onTrue(superstructure.deployIntake());
+    operatorCon
+        .leftTrigger()
+        .whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
+
+    operatorCon.leftBumper().onTrue(superstructure.retractIntake());
+    operatorCon
+        .leftBumper()
+        .debounce(0.25, DebounceType.kRising) // must be held 0.25s before true
+        .whileTrue(new RepeatCommand(superstructure.toggleIntake()));
+
+    operatorCon
+        .start()
+        .onTrue(Commands.runOnce(() -> Constants.setManualMode(!Constants.manualMode)));
 
     operatorCon.x().onTrue(hood.positionCommand(1));
     operatorCon.y().onTrue(hood.positionCommand(0));
