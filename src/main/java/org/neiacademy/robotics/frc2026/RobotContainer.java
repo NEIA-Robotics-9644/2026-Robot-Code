@@ -278,8 +278,7 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption(
-        "Left NZ Steal And Shoot Auto",
-        new PathPlannerAuto("Right NZ Steal And Shoot Auto", true));
+        "Left NZ Steal And Shoot Auto", new PathPlannerAuto("Right NZ Steal And Shoot Auto", true));
 
     SmartDashboard.putData(
         "RunEverythingForTuning",
