@@ -58,7 +58,7 @@ public final class Constants {
     public static final double STATOR_LIMIT = 40.0;
     public static final double SUPPLY_LIMIT = 40.0;
 
-    public static final double GEAR_RATIO = 5.0;
+    public static final double GEAR_RATIO = 9.0;
   }
 
   public static class Intake {
