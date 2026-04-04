@@ -60,15 +60,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "parallel",
                 "data": {
-                  "name": "autoShoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "toggleIntakeDeploy"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "autoShoot"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "toggleIntakeDeploy"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -136,15 +143,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "parallel",
                 "data": {
-                  "name": "autoShoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "toggleIntakeDeploy"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "autoShoot"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "toggleIntakeDeploy"
+                      }
+                    }
+                  ]
                 }
               }
             ]
