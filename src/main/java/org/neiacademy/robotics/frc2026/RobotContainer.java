@@ -256,7 +256,7 @@ public class RobotContainer {
 
     NamedCommands.registerCommand(
         "toggleIntakeDeploy", new RepeatCommand(superstructure.toggleIntake()).withTimeout(6));
-        
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
