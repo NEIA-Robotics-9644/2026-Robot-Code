@@ -257,6 +257,11 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "toggleIntakeDeploy", new RepeatCommand(superstructure.toggleIntake()).withTimeout(6));
 
+    NamedCommands.registerCommand(
+        "xLock", new ParallelCommandGroup(Commands.run(drive::stopWithX, drive), 
+            Commands.run(() -> System.out.println("test"))));
+
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
