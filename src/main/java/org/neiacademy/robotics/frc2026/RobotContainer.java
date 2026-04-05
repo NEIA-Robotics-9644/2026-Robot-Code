@@ -258,9 +258,9 @@ public class RobotContainer {
         "toggleIntakeDeploy", new RepeatCommand(superstructure.toggleIntake()).withTimeout(6));
 
     NamedCommands.registerCommand(
-        "xLock", new ParallelCommandGroup(Commands.run(drive::stopWithX, drive), 
-            Commands.run(() -> System.out.println("test"))));
-
+        "xLock",
+        new ParallelCommandGroup(
+            Commands.run(drive::stopWithX, drive), Commands.run(() -> System.out.println("test"))));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -284,6 +284,8 @@ public class RobotContainer {
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption(
         "Left NZ Steal And Shoot Auto", new PathPlannerAuto("Right NZ Steal And Shoot Auto", true));
+    autoChooser.addOption(
+        "Right Trench X-Lock Auto", new PathPlannerAuto("Left Trench X-Lock Auto", true));
 
     SmartDashboard.putData(
         "RunEverythingForTuning",
