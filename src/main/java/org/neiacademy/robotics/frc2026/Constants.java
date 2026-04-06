@@ -55,8 +55,8 @@ public final class Constants {
 
     public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
-    public static final double STATOR_LIMIT = 40.0;
-    public static final double SUPPLY_LIMIT = 40.0;
+    public static final double STATOR_LIMIT = 80.0;
+    public static final double SUPPLY_LIMIT = 80.0;
 
     public static final double GEAR_RATIO = 9.0;
   }
