@@ -4,7 +4,8 @@
   "holonomicMode": true,
   "pathFolders": [],
   "autoFolders": [
-    "New Folder"
+    "Center Autos",
+    "Week 1"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

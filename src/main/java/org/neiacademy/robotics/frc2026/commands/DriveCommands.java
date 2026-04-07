@@ -74,14 +74,14 @@ public class DriveCommands {
         .getTranslation();
   }
 
-  public static Rotation2d closestNormalAngle(Pose2d CurrentPose) {
+  public static Rotation2d closestNormalAngle(Pose2d currentPose) {
     Rotation2d[] targets = {
       Rotation2d.fromDegrees(0),
       Rotation2d.fromDegrees(90),
       Rotation2d.fromDegrees(180),
       Rotation2d.fromDegrees(270)
     };
-    Rotation2d current = CurrentPose.getRotation();
+    Rotation2d current = currentPose.getRotation();
     Rotation2d best = targets[0];
     double bestError = Math.abs(MathUtil.angleModulus(current.minus(best).getRadians()));
     for (int i = 1; i < targets.length; i++) {

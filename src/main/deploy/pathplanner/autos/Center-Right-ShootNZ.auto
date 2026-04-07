@@ -26,13 +26,32 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Path"
+            "pathName": "Center-Right"
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "autoShoot"
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 7.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "autoShoot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightNZ"
           }
         }
       ]

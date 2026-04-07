@@ -115,6 +115,20 @@ public class Superstructure extends SubsystemBase {
         rightShooter.runTrackedVelocityCommand(this::getShuttleShootingSetpointShooterSpeed));
   }
 
+  public Command hubSpinFlywheelsCommand() {
+    return new ParallelCommandGroup(
+        hood.runTrackedPositionCommand(this::getHubShootingSetpointHoodAngle),
+        leftShooter.runTrackedVelocityCommand(this::getHubShootingSetpointShooterSpeed),
+        rightShooter.runTrackedVelocityCommand(this::getHubShootingSetpointShooterSpeed));
+  }
+
+  public Command shuttleSpinFlywheelsCommand() {
+    return new ParallelCommandGroup(
+        hood.runTrackedPositionCommand(this::getHubShootingSetpointHoodAngle),
+        leftShooter.runTrackedVelocityCommand(this::getHubShootingSetpointShooterSpeed),
+        rightShooter.runTrackedVelocityCommand(this::getHubShootingSetpointShooterSpeed));
+  }
+
   public Command shootCommand() {
     return new ParallelCommandGroup(
         spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
@@ -177,7 +191,7 @@ public class Superstructure extends SubsystemBase {
                 new ParallelCommandGroup(
                     loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
                     spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS))))
-        .withTimeout(3.5)
+        .withTimeout(6)
         .andThen(autoEndShootCommand());
   }
 

@@ -9,6 +9,7 @@ package org.neiacademy.robotics.frc2026;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -27,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.neiacademy.robotics.frc2026.Constants.*;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
@@ -92,12 +94,16 @@ public class RobotContainer {
 
   private Trigger inAllianceZone;
 
+  private Trigger isManualMode;
+
   // Controller
   private final CommandXboxController driverCon = new CommandXboxController(0);
   private final CommandXboxController operatorCon = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+
+  @AutoLogOutput boolean test = false;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -201,12 +207,19 @@ public class RobotContainer {
               return (robotPose.getX() <= FieldConstants.LinesVertical.allianceZone + 0.40);
             });
 
+    isManualMode =
+        new Trigger(
+            () -> {
+              return Constants.manualMode;
+            });
+
     NamedCommands.registerCommand("shoot", superstructure.shootCommand().withTimeout(5));
     NamedCommands.registerCommand("autoShoot", superstructure.autoShoot());
     NamedCommands.registerCommand(
-        "intakeRoller", intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
-    NamedCommands.registerCommand("intakeDeploy", superstructure.deployIntake());
-    NamedCommands.registerCommand("intakeRetract", superstructure.retractIntake());
+        "intakeRoller", intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS).withTimeout(5));
+    NamedCommands.registerCommand("intakeDeploy", superstructure.deployIntake().withTimeout(0.75));
+    NamedCommands.registerCommand(
+        "intakeRetract", superstructure.retractIntake().withTimeout(0.75));
     NamedCommands.registerCommand(
         "runSpindexer", spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS));
     NamedCommands.registerCommand(
@@ -240,6 +253,15 @@ public class RobotContainer {
               leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
               rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
             }));
+
+    NamedCommands.registerCommand(
+        "toggleIntakeDeploy", new RepeatCommand(superstructure.toggleIntake()).withTimeout(6));
+
+    NamedCommands.registerCommand(
+        "xLock",
+        new ParallelCommandGroup(
+            Commands.run(drive::stopWithX, drive), Commands.run(() -> System.out.println("test"))));
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -260,6 +282,10 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Left NZ Steal And Shoot Auto", new PathPlannerAuto("Right NZ Steal And Shoot Auto", true));
+    autoChooser.addOption(
+        "Right Trench X-Lock Auto", new PathPlannerAuto("Left Trench X-Lock Auto", true));
 
     SmartDashboard.putData(
         "RunEverythingForTuning",
@@ -273,6 +299,9 @@ public class RobotContainer {
             rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED)));
     hood.runTrackedPositionCommand(Presets.Hood.TUNING_POSITION);
 
+    SmartDashboard.putBoolean("ManualMode", Constants.manualMode);
+    SmartDashboard.putBoolean("TuningMode", Constants.tuningMode);
+
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -284,12 +313,6 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-
-    Trigger isManualMode =
-        new Trigger(
-            () -> {
-              return Constants.manualMode;
-            });
 
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
@@ -432,23 +455,7 @@ public class RobotContainer {
     operatorCon
         .start()
         .onTrue(Commands.runOnce(() -> Constants.setManualMode(!Constants.manualMode)));
-    /*operatorCon
-    .back()
-    .and(isManualMode)
-    .onTrue(
-        Commands.runOnce(
-            () -> {
-              Presets.Shooter.CLOSE_HUB_SPEED.setDefault(
-                  Presets.Shooter.CLOSE_HUB_SPEED.getAsDouble());
-              if (intakeDeploy.isDeployed()) {
-                Presets.Intake.EXTEND_ANGLE_DEG.setDefault(
-                    Units.radiansToDegrees(intakeDeploy.getAngleRads()));
-              } else if (intakeDeploy.isDeployed() == false) {
-                Presets.Intake.TUCK_ANGLE_DEG.setDefault(
-                    Units.radiansToDegrees(intakeDeploy.getAngleRads()));
-              }
-            }));
-
+    /*
     operatorCon
         .povUp()
         .and(isManualMode)
@@ -475,30 +482,78 @@ public class RobotContainer {
                         () -> intakeDeploy.getAngleRads() + Units.degreesToRadians(1))));*/
 
     operatorCon
+        .b()
+        .whileTrue(
+            new ParallelCommandGroup(
+                intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS),
+                spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS)));
+
+    // auto shoot
+    operatorCon
+        .rightTrigger()
+        .debounce(0.25, DebounceType.kRising)
+        .whileTrue(loader.runVoltageCommand(Presets.Loader.FEED_VOLTS));
+
+    // fall back
+    operatorCon
         .rightBumper()
+        .whileTrue(
+            new SequentialCommandGroup(
+                new ParallelCommandGroup(
+                    hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
+                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)),
+                new ParallelCommandGroup(
+                    spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+                    loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
+                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))))
+        .onFalse(superstructure.endShootCommand());
+
+    // force shoot fall back even if flywheels aren't fully spun up
+    operatorCon
+        .povUp()
+        .whileTrue(
+            new ParallelCommandGroup(
+                hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
+                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
+
+    // force shoot even if the tolerances aren't being met
+    operatorCon
+        .povRight()
         .whileTrue(
             new ParallelCommandGroup(
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)))
-        .and(leftShooter::atSetpoint)
-        .and(rightShooter::atSetpoint)
-        .whileTrue(
-            new ParallelCommandGroup(
-                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
 
     operatorCon
         .rightTrigger()
-        .whileTrue(
-            new ParallelCommandGroup(
-                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)));
+        .and(inAllianceZone)
+        .whileTrue(superstructure.hubSpinFlywheelsCommand());
 
     operatorCon
-        .leftTrigger()
-        .whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
+        .rightTrigger()
+        .and(inAllianceZone.negate())
+        .whileTrue(superstructure.shuttleSpinFlywheelsCommand());
 
-    operatorCon.b().whileTrue(spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS));
+    operatorCon.leftTrigger().onTrue(superstructure.deployIntake());
+    operatorCon
+        .leftTrigger()
+        .whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
+
+    operatorCon.leftBumper().onTrue(superstructure.retractIntake());
+    operatorCon
+        .leftBumper()
+        .debounce(0.25, DebounceType.kRising) // must be held 0.25s before true
+        .whileTrue(new RepeatCommand(superstructure.toggleIntake()));
+
+    operatorCon
+        .start()
+        .onTrue(Commands.runOnce(() -> Constants.setManualMode(!Constants.manualMode)));
 
     operatorCon.x().onTrue(hood.positionCommand(1));
     operatorCon.y().onTrue(hood.positionCommand(0));
