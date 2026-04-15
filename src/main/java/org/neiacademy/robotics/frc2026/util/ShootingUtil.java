@@ -21,7 +21,8 @@ public class ShootingUtil {
   private static double lastShuttleDriveAngleRads;
   private static double lastShuttlehoodPosition;
 
-  private static double fudgeFactor = 17;
+  private static double hubFudgeFactor = -17;
+  private static double shuttleFudgeFactor = + 25;
 
   public record ShooterSetpoint(
       Rotation2d driveAngleRads,
@@ -56,16 +57,16 @@ public class ShootingUtil {
     hubDistanceHoodAngleMap.put(5.0, 0.9);
     hubDistanceHoodAngleMap.put(5.5, 1.0);
 
-    hubDistanceShooterVelocityMap.put(0.00, 278.0 - fudgeFactor);
-    hubDistanceShooterVelocityMap.put(1.0, 283.0 - fudgeFactor);
-    hubDistanceShooterVelocityMap.put(1.53, 298.0 - fudgeFactor);
-    hubDistanceShooterVelocityMap.put(2.01, 313.0 - fudgeFactor);
-    hubDistanceShooterVelocityMap.put(2.49, 333.0 - fudgeFactor);
-    hubDistanceShooterVelocityMap.put(2.99, 353.0 - fudgeFactor);
-    hubDistanceShooterVelocityMap.put(3.48, 360.0 - fudgeFactor);
-    hubDistanceShooterVelocityMap.put(4.00, 370.0 - fudgeFactor);
-    hubDistanceShooterVelocityMap.put(4.50, 380.0 - fudgeFactor);
-    hubDistanceShooterVelocityMap.put(5.00, 390.0 - fudgeFactor);
+    hubDistanceShooterVelocityMap.put(0.00, 278.0 + hubFudgeFactor);
+    hubDistanceShooterVelocityMap.put(1.0, 283.0 + hubFudgeFactor);
+    hubDistanceShooterVelocityMap.put(1.53, 298.0 + hubFudgeFactor);
+    hubDistanceShooterVelocityMap.put(2.01, 313.0 + hubFudgeFactor);
+    hubDistanceShooterVelocityMap.put(2.49, 333.0 + hubFudgeFactor);
+    hubDistanceShooterVelocityMap.put(2.99, 353.0 + hubFudgeFactor);
+    hubDistanceShooterVelocityMap.put(3.48, 360.0 + hubFudgeFactor);
+    hubDistanceShooterVelocityMap.put(4.00, 370.0 + hubFudgeFactor);
+    hubDistanceShooterVelocityMap.put(4.50, 380.0 + hubFudgeFactor);
+    hubDistanceShooterVelocityMap.put(5.00, 390.0 + hubFudgeFactor);
 
     hubDistanceTimeOfFlightMap.put(0.0, 1.10);
     hubDistanceTimeOfFlightMap.put(1.0, 1.10);
@@ -77,16 +78,16 @@ public class ShootingUtil {
     shuttleDistanceHoodAngleMap.put(3.5, 1.0);
     shuttleDistanceHoodAngleMap.put(4.5, 1.0);
 
-    shuttleDistanceShooterVelocityMap.put(0.0, 300.0);
-    shuttleDistanceShooterVelocityMap.put(1.5, 300.0);
-    shuttleDistanceShooterVelocityMap.put(2.5, 300.0);
-    shuttleDistanceShooterVelocityMap.put(3.5, 300.0);
-    shuttleDistanceShooterVelocityMap.put(4.5, 335.0);
-    shuttleDistanceShooterVelocityMap.put(5.5, 365.0);
-    shuttleDistanceShooterVelocityMap.put(6.5, 405.0);
-    shuttleDistanceShooterVelocityMap.put(7.5, 445.0);
-    shuttleDistanceShooterVelocityMap.put(8.5, 450.0);
-    shuttleDistanceShooterVelocityMap.put(9.5, 450.0);
+    shuttleDistanceShooterVelocityMap.put(0.0, 300.0 + shuttleFudgeFactor);
+    shuttleDistanceShooterVelocityMap.put(1.5, 300.0 + shuttleFudgeFactor);
+    shuttleDistanceShooterVelocityMap.put(2.5, 300.0 + shuttleFudgeFactor);
+    shuttleDistanceShooterVelocityMap.put(3.5, 300.0 + shuttleFudgeFactor);
+    shuttleDistanceShooterVelocityMap.put(4.5, 335.0 + shuttleFudgeFactor);
+    shuttleDistanceShooterVelocityMap.put(5.5, 365.0 + shuttleFudgeFactor);
+    shuttleDistanceShooterVelocityMap.put(6.5, 405.0 + shuttleFudgeFactor);
+    shuttleDistanceShooterVelocityMap.put(7.5, 445.0 + shuttleFudgeFactor);
+    shuttleDistanceShooterVelocityMap.put(8.5, 450.0 + shuttleFudgeFactor);
+    shuttleDistanceShooterVelocityMap.put(9.5, 450.0 + shuttleFudgeFactor);
 
     shuttleDistanceTimeOfFlightMap.put(0.0, 0.75);
     shuttleDistanceTimeOfFlightMap.put(3.0, 0.75);
