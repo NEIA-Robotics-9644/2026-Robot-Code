@@ -21,6 +21,8 @@ public class ShootingUtil {
   private static double lastShuttleDriveAngleRads;
   private static double lastShuttlehoodPosition;
 
+  private static double fudgeFactor = 17;
+
   public record ShooterSetpoint(
       Rotation2d driveAngleRads,
       double hoodPosition,
@@ -48,24 +50,22 @@ public class ShootingUtil {
     hubDistanceHoodAngleMap.put(2.0, 0.4);
     hubDistanceHoodAngleMap.put(2.49, 0.4);
     hubDistanceHoodAngleMap.put(2.99, 0.5);
-    hubDistanceHoodAngleMap.put(3.375, 0.55);
     hubDistanceHoodAngleMap.put(3.52, 0.6);
     hubDistanceHoodAngleMap.put(4.0, 0.7);
     hubDistanceHoodAngleMap.put(4.5, 0.9);
     hubDistanceHoodAngleMap.put(5.0, 0.9);
     hubDistanceHoodAngleMap.put(5.5, 1.0);
 
-    hubDistanceShooterVelocityMap.put(0.00, 278.0);
-    hubDistanceShooterVelocityMap.put(1.0, 283.0);
-    hubDistanceShooterVelocityMap.put(1.53, 298.0);
-    hubDistanceShooterVelocityMap.put(2.01, 313.0);
-    hubDistanceShooterVelocityMap.put(2.49, 333.0);
-    hubDistanceShooterVelocityMap.put(2.99, 353.0);
-    hubDistanceShooterVelocityMap.put(3.375, 373.0);
-    hubDistanceShooterVelocityMap.put(3.48, 360.0);
-    hubDistanceShooterVelocityMap.put(4.00, 370.0);
-    hubDistanceShooterVelocityMap.put(4.50, 380.0);
-    hubDistanceShooterVelocityMap.put(5.00, 390.0);
+    hubDistanceShooterVelocityMap.put(0.00, 278.0 - fudgeFactor);
+    hubDistanceShooterVelocityMap.put(1.0, 283.0 - fudgeFactor);
+    hubDistanceShooterVelocityMap.put(1.53, 298.0 - fudgeFactor);
+    hubDistanceShooterVelocityMap.put(2.01, 313.0 - fudgeFactor);
+    hubDistanceShooterVelocityMap.put(2.49, 333.0 - fudgeFactor);
+    hubDistanceShooterVelocityMap.put(2.99, 353.0 - fudgeFactor);
+    hubDistanceShooterVelocityMap.put(3.48, 360.0 - fudgeFactor);
+    hubDistanceShooterVelocityMap.put(4.00, 370.0 - fudgeFactor);
+    hubDistanceShooterVelocityMap.put(4.50, 380.0 - fudgeFactor);
+    hubDistanceShooterVelocityMap.put(5.00, 390.0 - fudgeFactor);
 
     hubDistanceTimeOfFlightMap.put(0.0, 1.10);
     hubDistanceTimeOfFlightMap.put(1.0, 1.10);

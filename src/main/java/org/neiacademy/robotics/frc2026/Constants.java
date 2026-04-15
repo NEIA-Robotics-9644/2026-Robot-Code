@@ -51,7 +51,7 @@ public final class Constants {
 
   public static class Spindexer {
     public static final String CANBUS = "rio";
-    public static final CANDeviceID MOTOR_ID = new CANDeviceID(30, "Drive");
+    public static final CANDeviceID MOTOR_ID = new CANDeviceID(30, "rio");
 
     public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
@@ -63,12 +63,12 @@ public final class Constants {
 
   public static class Intake {
     public static final String CANBUS = "Drive";
-    public static final CANDeviceID DEPLOY_MOTOR_ID = new CANDeviceID(32, "Drive");
-    public static final CANDeviceID ENCODER_ID = new CANDeviceID(35, "Drive");
-    public static final CANDeviceID ROLLER_MOTOR_ID = new CANDeviceID(33, "Drive");
+    public static final CANDeviceID DEPLOY_MOTOR_ID = new CANDeviceID(32, "rio");
+    public static final CANDeviceID ENCODER_ID = new CANDeviceID(35, "rio");
+    public static final CANDeviceID ROLLER_MOTOR_ID = new CANDeviceID(33, "rio");
 
     public static final InvertedValue DEPLOY_INVERTED = InvertedValue.Clockwise_Positive;
-    public static final InvertedValue ROLLER_INVERTED = InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue ROLLER_INVERTED = InvertedValue.Clockwise_Positive;
 
     public static final SensorDirectionValue ENCODER_DIRECTION =
         SensorDirectionValue.Clockwise_Positive;
