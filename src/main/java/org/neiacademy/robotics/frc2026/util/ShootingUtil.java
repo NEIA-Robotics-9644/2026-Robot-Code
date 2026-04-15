@@ -22,7 +22,7 @@ public class ShootingUtil {
   private static double lastShuttlehoodPosition;
 
   private static double hubFudgeFactor = -17;
-  private static double shuttleFudgeFactor = + 25;
+  private static double shuttleFudgeFactor = +25;
 
   public record ShooterSetpoint(
       Rotation2d driveAngleRads,
