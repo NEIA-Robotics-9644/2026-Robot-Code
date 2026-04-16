@@ -60,6 +60,6 @@ public final class Presets {
     public static final LoggedTunableNumber TUCK_POSITION =
         new LoggedTunableNumber("Setpoints/Hood/TuckPos", 0.55);
     public static final LoggedTunableNumber CLOSE_HUB_POSITION =
-        new LoggedTunableNumber("Setpoints/Hood/CloseHubPos", 0.0);
+        new LoggedTunableNumber("Setpoints/Hood/CloseHubPos", 0.05);
   }
 }

@@ -45,7 +45,7 @@ public class ShootingUtil {
       new InterpolatingDoubleTreeMap();
 
   static {
-    hubDistanceHoodAngleMap.put(0.0, 0.0);
+    hubDistanceHoodAngleMap.put(0.0, 0.05);
     hubDistanceHoodAngleMap.put(1.0, 0.2);
     hubDistanceHoodAngleMap.put(1.53, 0.3);
     hubDistanceHoodAngleMap.put(2.0, 0.4);
