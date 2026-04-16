@@ -83,11 +83,11 @@ public class ShootingUtil {
     shuttleDistanceShooterVelocityMap.put(2.5, 300.0 + shuttleFudgeFactor);
     shuttleDistanceShooterVelocityMap.put(3.5, 300.0 + shuttleFudgeFactor);
     shuttleDistanceShooterVelocityMap.put(4.5, 335.0 + shuttleFudgeFactor);
-    shuttleDistanceShooterVelocityMap.put(5.5, 365.0 + shuttleFudgeFactor);
-    shuttleDistanceShooterVelocityMap.put(6.5, 405.0 + shuttleFudgeFactor);
-    shuttleDistanceShooterVelocityMap.put(7.5, 445.0 + shuttleFudgeFactor);
-    shuttleDistanceShooterVelocityMap.put(8.5, 450.0 + shuttleFudgeFactor);
-    shuttleDistanceShooterVelocityMap.put(9.5, 450.0 + shuttleFudgeFactor);
+    shuttleDistanceShooterVelocityMap.put(5.5, 385.0 + shuttleFudgeFactor);
+    shuttleDistanceShooterVelocityMap.put(6.5, 425.0 + shuttleFudgeFactor);
+    shuttleDistanceShooterVelocityMap.put(7.5, 465.0 + shuttleFudgeFactor);
+    shuttleDistanceShooterVelocityMap.put(8.5, 480.0 + shuttleFudgeFactor);
+    shuttleDistanceShooterVelocityMap.put(9.5, 480.0 + shuttleFudgeFactor);
 
     shuttleDistanceTimeOfFlightMap.put(0.0, 0.75);
     shuttleDistanceTimeOfFlightMap.put(3.0, 0.75);
