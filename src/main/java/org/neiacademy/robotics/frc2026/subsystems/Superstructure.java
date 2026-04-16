@@ -3,7 +3,6 @@ package org.neiacademy.robotics.frc2026.subsystems;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -158,10 +157,10 @@ public class Superstructure extends SubsystemBase {
 
   public Command toggleIntake() {
     return new SequentialCommandGroup(
-        Commands.waitSeconds(Presets.Intake.SHOOTING_TOGGLE_SPEED_SEC.getAsDouble()),
-        intakeDeploy.runPositionCommand(Presets.Intake.EXTEND_ANGLE_DEG.getAsDouble()),
-        Commands.waitSeconds(Presets.Intake.SHOOTING_TOGGLE_SPEED_SEC.getAsDouble()),
-        intakeDeploy.runPositionCommand(Presets.Intake.TUCK_ANGLE_DEG.getAsDouble()));
+            retractIntake().withTimeout(0.25), deployIntake().withTimeout(0.25))
+        .repeatedly()
+        .withTimeout(2.25)
+        .andThen(retractIntake());
   }
 
   public Command stopAllRollersCommand() {

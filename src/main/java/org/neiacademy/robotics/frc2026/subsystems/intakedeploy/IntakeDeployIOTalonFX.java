@@ -13,6 +13,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -39,6 +40,11 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
 
   private final VoltageOut voltageOut = new VoltageOut(0).withEnableFOC(true);
   private final PositionTorqueCurrentFOC positionTorqueCurrentFOC = new PositionTorqueCurrentFOC(0);
+  private final TrapezoidProfile positionProfile =
+      new TrapezoidProfile(
+          new TrapezoidProfile.Constraints(
+              Constants.Intake.MAX_VELOCITY.getAsDouble(),
+              Constants.Intake.MAX_ACCEL.getAsDouble()));
 
   public IntakeDeployIOTalonFX() {
     deploy =

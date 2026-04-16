@@ -213,7 +213,15 @@ public class RobotContainer {
               return Constants.manualMode;
             });
 
+    // manual shoot (close hub, center only auto)
     NamedCommands.registerCommand("shoot", superstructure.shootCommand().withTimeout(5));
+    NamedCommands.registerCommand(
+        "spinShooterFlywheels",
+        Commands.parallel(
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))
+            .withTimeout(5));
+
     NamedCommands.registerCommand("autoShoot", superstructure.autoShoot());
     NamedCommands.registerCommand(
         "intakeRoller", intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS).withTimeout(5));
@@ -238,13 +246,6 @@ public class RobotContainer {
             .withTimeout(4));
 
     NamedCommands.registerCommand(
-        "spinShooterFlywheels",
-        Commands.parallel(
-                leftShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                rightShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))
-            .withTimeout(5));
-
-    NamedCommands.registerCommand(
         "closeHubShoot",
         Commands.run(
             () -> {
@@ -258,9 +259,7 @@ public class RobotContainer {
         "toggleIntakeDeploy", new RepeatCommand(superstructure.toggleIntake()).withTimeout(6));
 
     NamedCommands.registerCommand(
-        "xLock",
-        new ParallelCommandGroup(
-            Commands.run(drive::stopWithX, drive), Commands.run(() -> System.out.println("test"))));
+        "xLock", new ParallelCommandGroup(Commands.run(drive::stopWithX, drive)));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
