@@ -17,8 +17,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -284,10 +282,10 @@ public class RobotContainer {
     autoChooser.addOption(
         "Left NZ Steal And Shoot Auto", new PathPlannerAuto("Right NZ Steal And Shoot Auto", true));
     autoChooser.addOption(
-        "Left NZ Trench Wait Steal And Shoot Auto", 
+        "Left NZ Trench Wait Steal And Shoot Auto",
         new PathPlannerAuto("Right NZ Trench Wait Steal And Shoot Auto", true));
     autoChooser.addOption(
-        "Left NZ Bump Wait Steal And Shoot Auto", 
+        "Left NZ Bump Wait Steal And Shoot Auto",
         new PathPlannerAuto("Right NZ Bump Wait Steal And Shoot Auto", true));
 
     SmartDashboard.putData(
@@ -308,7 +306,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
   }
-  
+
   private void configureButtonBindings() {
 
     // Default command, normal field-relative drive
