@@ -133,16 +133,16 @@ public class ShootingUtil {
     fixedShuttleDistanceHoodAngleMap.put(0.0, 0.0);
     fixedShuttleDistanceHoodAngleMap.put(1.0, 0.0);
 
-    fixedShuttleDistanceShooterVelocityMap.put(0.0, 300.0 + fixedShuttleFudgeFactor);
-    fixedShuttleDistanceShooterVelocityMap.put(1.5, 300.0 + fixedShuttleFudgeFactor);
-    fixedShuttleDistanceShooterVelocityMap.put(2.5, 300.0 + fixedShuttleFudgeFactor);
-    fixedShuttleDistanceShooterVelocityMap.put(3.5, 300.0 + fixedShuttleFudgeFactor);
-    fixedShuttleDistanceShooterVelocityMap.put(4.5, 335.0 + fixedShuttleFudgeFactor);
-    fixedShuttleDistanceShooterVelocityMap.put(5.5, 385.0 + fixedShuttleFudgeFactor);
-    fixedShuttleDistanceShooterVelocityMap.put(6.5, 425.0 + fixedShuttleFudgeFactor);
-    fixedShuttleDistanceShooterVelocityMap.put(7.5, 465.0 + fixedShuttleFudgeFactor);
-    fixedShuttleDistanceShooterVelocityMap.put(8.5, 480.0 + fixedShuttleFudgeFactor);
-    fixedShuttleDistanceShooterVelocityMap.put(9.5, 480.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(0.0, 325.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(1.5, 325.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(2.5, 325.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(3.5, 325.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(4.5, 350.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(5.5, 425.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(6.5, 465.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(7.5, 505.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(8.5, 520.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(9.5, 520.0 + fixedShuttleFudgeFactor);
 
     fixedShuttleDistanceTimeOfFlightMap.put(0.0, 0.75);
     fixedShuttleDistanceTimeOfFlightMap.put(3.0, 0.75);
