@@ -284,8 +284,11 @@ public class RobotContainer {
     autoChooser.addOption(
         "Left NZ Steal And Shoot Auto", new PathPlannerAuto("Right NZ Steal And Shoot Auto", true));
     autoChooser.addOption(
-        "Trench - Left NZ Wait Steal And Shoot Auto", 
-        new PathPlannerAuto("Trench - Right NZ Wait Steal And Shoot Auto", true));
+        "Left NZ Trench Wait Steal And Shoot Auto", 
+        new PathPlannerAuto("Right NZ Trench Wait Steal And Shoot Auto", true));
+    autoChooser.addOption(
+        "Left NZ Bump Wait Steal And Shoot Auto", 
+        new PathPlannerAuto("Right NZ Bump Wait Steal And Shoot Auto", true));
 
     SmartDashboard.putData(
         "RunEverythingForTuning",
@@ -305,13 +308,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
   }
-
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
+  
   private void configureButtonBindings() {
 
     // Default command, normal field-relative drive
