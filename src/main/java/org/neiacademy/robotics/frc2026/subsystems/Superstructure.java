@@ -2,11 +2,17 @@ package org.neiacademy.robotics.frc2026.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import org.neiacademy.robotics.frc2026.FieldConstants;
@@ -36,6 +42,15 @@ public class Superstructure extends SubsystemBase {
   private ShooterSetpoint hubShootingSetpoint;
   private ShooterSetpoint shuttleShootingSetpoint;
 
+  private final GenericEntry isFixedEntry = Shuffleboard.getTab("Shooter")
+    .add("Fixed?", false)
+    .withWidget(BuiltInWidgets.kToggleSwitch)
+    .getEntry();
+
+  BooleanSupplier isFixed = () -> isFixedEntry.getBoolean(false);
+
+
+
   public Superstructure(
       Drive drive,
       Spindexer spindexer,
@@ -59,8 +74,8 @@ public class Superstructure extends SubsystemBase {
             drive,
             AllianceFlipUtil.apply(
                 new Pose2d(
-                    FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)));
-    shuttleShootingSetpoint = ShootingUtil.makeShuttleSetpoint(drive, getShuttleTargetPose());
+                    FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)), isFixed);
+    shuttleShootingSetpoint = ShootingUtil.makeShuttleSetpoint(drive, getShuttleTargetPose(), isFixed);
 
     hood.setDefaultCommand(hood.tuckCommand(Presets.Hood.TUCK_POSITION));
     leftShooter.setDefaultCommand(leftShooter.stopCommand());
@@ -74,8 +89,10 @@ public class Superstructure extends SubsystemBase {
             drive,
             AllianceFlipUtil.apply(
                 new Pose2d(
-                    FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)));
-    shuttleShootingSetpoint = ShootingUtil.makeShuttleSetpoint(drive, getShuttleTargetPose());
+                    FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)), isFixed);
+    shuttleShootingSetpoint = ShootingUtil.makeShuttleSetpoint(drive, getShuttleTargetPose(), isFixed);
+
+    Logger.recordOutput("Shooter/Fixed", isFixed.getAsBoolean());
 
     Logger.recordOutput("DriveCommands/atAngleSetpoint", DriveCommands.atAngleSetpoint());
     Logger.recordOutput(

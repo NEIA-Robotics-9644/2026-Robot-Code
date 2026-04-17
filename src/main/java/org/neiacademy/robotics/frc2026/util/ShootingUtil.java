@@ -6,6 +6,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+
+import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.Logger;
 import org.neiacademy.robotics.frc2026.Constants;
 import org.neiacademy.robotics.frc2026.subsystems.drive.Drive;
@@ -23,6 +26,9 @@ public class ShootingUtil {
 
   private static double hubFudgeFactor = -17;
   private static double shuttleFudgeFactor = +25;
+
+    private static double fixedShuttleFudgeFactor = 0;
+
 
   public record ShooterSetpoint(
       Rotation2d driveAngleRads,
@@ -42,6 +48,20 @@ public class ShootingUtil {
   private static final InterpolatingDoubleTreeMap shuttleDistanceShooterVelocityMap =
       new InterpolatingDoubleTreeMap();
   private static final InterpolatingDoubleTreeMap shuttleDistanceTimeOfFlightMap =
+      new InterpolatingDoubleTreeMap();
+
+  private static final InterpolatingDoubleTreeMap fixedHubDistanceHoodAngleMap =
+      new InterpolatingDoubleTreeMap();
+  private static final InterpolatingDoubleTreeMap fixedHubDistanceShooterVelocityMap =
+      new InterpolatingDoubleTreeMap();
+  private static final InterpolatingDoubleTreeMap fixedHubDistanceTimeOfFlightMap =
+      new InterpolatingDoubleTreeMap();
+
+  private static final InterpolatingDoubleTreeMap fixedShuttleDistanceHoodAngleMap =
+      new InterpolatingDoubleTreeMap();
+  private static final InterpolatingDoubleTreeMap fixedShuttleDistanceShooterVelocityMap =
+      new InterpolatingDoubleTreeMap();
+  private static final InterpolatingDoubleTreeMap fixedShuttleDistanceTimeOfFlightMap =
       new InterpolatingDoubleTreeMap();
 
   static {
@@ -93,9 +113,47 @@ public class ShootingUtil {
     shuttleDistanceTimeOfFlightMap.put(3.0, 0.75);
     shuttleDistanceTimeOfFlightMap.put(5.0, 1.00);
     shuttleDistanceTimeOfFlightMap.put(10.0, 1.5);
+
+    fixedHubDistanceHoodAngleMap.put(0.0, 0.0);
+    fixedHubDistanceHoodAngleMap.put(1.0, 0.0);
+
+    fixedHubDistanceShooterVelocityMap.put(0.00, 278.0 );
+    fixedHubDistanceShooterVelocityMap.put(1.0, 283.0 );
+    fixedHubDistanceShooterVelocityMap.put(1.53, 298.0 );
+    fixedHubDistanceShooterVelocityMap.put(2.01, 313.0 );
+    fixedHubDistanceShooterVelocityMap.put(2.49, 333.0 );
+    fixedHubDistanceShooterVelocityMap.put(2.99, 353.0 );
+    fixedHubDistanceShooterVelocityMap.put(3.48, 360.0 );
+    fixedHubDistanceShooterVelocityMap.put(4.00, 365.0 );
+    fixedHubDistanceShooterVelocityMap.put(4.50, 375.0 );
+    fixedHubDistanceShooterVelocityMap.put(5.00, 385.0 );
+
+    fixedHubDistanceTimeOfFlightMap.put(0.0, 1.10);
+    fixedHubDistanceTimeOfFlightMap.put(1.0, 1.10);
+    fixedHubDistanceTimeOfFlightMap.put(3.0, 1.15);
+    fixedHubDistanceTimeOfFlightMap.put(5.0, 1.20);
+
+    fixedShuttleDistanceHoodAngleMap.put(0.0, 0.0);
+    fixedShuttleDistanceHoodAngleMap.put(1.0, 0.0);
+
+    fixedShuttleDistanceShooterVelocityMap.put(0.0, 300.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(1.5, 300.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(2.5, 300.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(3.5, 300.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(4.5, 335.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(5.5, 385.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(6.5, 425.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(7.5, 465.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(8.5, 480.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(9.5, 480.0 + fixedShuttleFudgeFactor);
+
+    fixedShuttleDistanceTimeOfFlightMap.put(0.0, 0.75);
+    fixedShuttleDistanceTimeOfFlightMap.put(3.0, 0.75);
+    fixedShuttleDistanceTimeOfFlightMap.put(5.0, 1.00);
+    fixedShuttleDistanceTimeOfFlightMap.put(10.0, 1.5);
   }
 
-  public static ShooterSetpoint makeHubSetpoint(Drive drive, Pose2d target) {
+  public static ShooterSetpoint makeHubSetpoint(Drive drive, Pose2d target, BooleanSupplier isFixed) {
 
     double driveAngleRads = Double.NaN;
     double hoodPosition = Double.NaN;
@@ -112,7 +170,7 @@ public class ShootingUtil {
 
     // iterate over timeOfFlight for each new future pose because it would be slightly different
     for (int i = 0; i < 25; i++) {
-      timeOfFlight = hubDistanceTimeOfFlightMap.get(futurePosetoTargetDistance);
+      timeOfFlight = isFixed.getAsBoolean() ? fixedHubDistanceTimeOfFlightMap.get(futurePosetoTargetDistance) : hubDistanceTimeOfFlightMap.get(futurePosetoTargetDistance);
       futurePose =
           new Pose2d(
               drive.getPose().getX() + fieldRelativeVelocity.vxMetersPerSecond * timeOfFlight,
@@ -123,8 +181,8 @@ public class ShootingUtil {
 
     driveAngleRads =
         target.getTranslation().minus(futurePose.getTranslation()).getAngle().getRadians();
-    hoodPosition = hubDistanceHoodAngleMap.get(futurePosetoTargetDistance);
-    shooterSpeedRadsPerSec = hubDistanceShooterVelocityMap.get(futurePosetoTargetDistance);
+    hoodPosition = isFixed.getAsBoolean() ? fixedHubDistanceHoodAngleMap.get(futurePosetoTargetDistance) : hubDistanceHoodAngleMap.get(futurePosetoTargetDistance);
+    shooterSpeedRadsPerSec = isFixed.getAsBoolean() ? fixedHubDistanceShooterVelocityMap.get(futurePosetoTargetDistance) : hubDistanceShooterVelocityMap.get(futurePosetoTargetDistance);
 
     if (Double.isNaN(lastHubDriveAngleRads)) lastHubDriveAngleRads = driveAngleRads;
     if (Double.isNaN(lastHubhoodPosition)) lastHubhoodPosition = hoodPosition;
@@ -159,7 +217,7 @@ public class ShootingUtil {
   }
 
   // doesn't use SOTM for shuttling
-  public static ShooterSetpoint makeShuttleSetpoint(Drive drive, Pose2d target) {
+  public static ShooterSetpoint makeShuttleSetpoint(Drive drive, Pose2d target, BooleanSupplier isFixed) {
     double driveAngleRads = Double.NaN;
     double hoodPosition = Double.NaN;
     double shooterSpeedRadsPerSec;
@@ -170,8 +228,8 @@ public class ShootingUtil {
 
     driveAngleRads =
         target.getTranslation().minus(drive.getPose().getTranslation()).getAngle().getRadians();
-    hoodPosition = shuttleDistanceHoodAngleMap.get(robotPosetoTargetDistance);
-    shooterSpeedRadsPerSec = shuttleDistanceShooterVelocityMap.get(robotPosetoTargetDistance);
+    hoodPosition = isFixed.getAsBoolean() ? fixedShuttleDistanceHoodAngleMap.get(robotPosetoTargetDistance) : shuttleDistanceHoodAngleMap.get(robotPosetoTargetDistance);
+    shooterSpeedRadsPerSec = isFixed.getAsBoolean() ? fixedShuttleDistanceShooterVelocityMap.get(robotPosetoTargetDistance) : shuttleDistanceShooterVelocityMap.get(robotPosetoTargetDistance);
 
     if (Double.isNaN(lastShuttleDriveAngleRads)) lastShuttleDriveAngleRads = driveAngleRads;
     if (Double.isNaN(lastShuttlehoodPosition)) lastShuttlehoodPosition = hoodPosition;
