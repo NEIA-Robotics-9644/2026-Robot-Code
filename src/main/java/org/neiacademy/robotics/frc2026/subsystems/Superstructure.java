@@ -6,6 +6,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -147,9 +148,11 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Command shootCommand() {
-    return new ParallelCommandGroup(
-        spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-        loader.runVoltageCommand(Presets.Loader.FEED_VOLTS));
+    return new SequentialCommandGroup(
+        Commands.waitSeconds(0.1),
+        new ParallelCommandGroup(
+            spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+            loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
   }
 
   public Command endShootCommand() {
