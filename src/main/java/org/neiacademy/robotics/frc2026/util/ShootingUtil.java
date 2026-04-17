@@ -117,7 +117,7 @@ public class ShootingUtil {
     fixedHubDistanceShooterVelocityMap.put(0.0, 250.0);
     fixedHubDistanceShooterVelocityMap.put(1.0, 260.0);
     fixedHubDistanceShooterVelocityMap.put(1.5, 275.0);
-    fixedHubDistanceShooterVelocityMap.put(2.0, 390.0);
+    fixedHubDistanceShooterVelocityMap.put(2.0, 290.0);
     fixedHubDistanceShooterVelocityMap.put(2.5, 303.0);
     fixedHubDistanceShooterVelocityMap.put(3.0, 321.0);
     fixedHubDistanceShooterVelocityMap.put(3.5, 338.0);

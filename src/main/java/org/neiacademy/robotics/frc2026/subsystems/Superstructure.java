@@ -152,7 +152,8 @@ public class Superstructure extends SubsystemBase {
         Commands.waitSeconds(0.1),
         new ParallelCommandGroup(
             spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-            loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));}
+            loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
+  }
 
   public Command endShootCommand() {
     return new SequentialCommandGroup(
