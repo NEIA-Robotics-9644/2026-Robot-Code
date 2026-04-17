@@ -6,9 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-
 import java.util.function.BooleanSupplier;
-
 import org.littletonrobotics.junction.Logger;
 import org.neiacademy.robotics.frc2026.Constants;
 import org.neiacademy.robotics.frc2026.subsystems.drive.Drive;
@@ -27,8 +25,7 @@ public class ShootingUtil {
   private static double hubFudgeFactor = -17;
   private static double shuttleFudgeFactor = +25;
 
-    private static double fixedShuttleFudgeFactor = 0;
-
+  private static double fixedShuttleFudgeFactor = 0;
 
   public record ShooterSetpoint(
       Rotation2d driveAngleRads,
@@ -117,16 +114,16 @@ public class ShootingUtil {
     fixedHubDistanceHoodAngleMap.put(0.0, 0.0);
     fixedHubDistanceHoodAngleMap.put(1.0, 0.0);
 
-    fixedHubDistanceShooterVelocityMap.put(0.00, 278.0 );
-    fixedHubDistanceShooterVelocityMap.put(1.0, 283.0 );
-    fixedHubDistanceShooterVelocityMap.put(1.53, 298.0 );
-    fixedHubDistanceShooterVelocityMap.put(2.01, 313.0 );
-    fixedHubDistanceShooterVelocityMap.put(2.49, 333.0 );
-    fixedHubDistanceShooterVelocityMap.put(2.99, 353.0 );
-    fixedHubDistanceShooterVelocityMap.put(3.48, 360.0 );
-    fixedHubDistanceShooterVelocityMap.put(4.00, 365.0 );
-    fixedHubDistanceShooterVelocityMap.put(4.50, 375.0 );
-    fixedHubDistanceShooterVelocityMap.put(5.00, 385.0 );
+    fixedHubDistanceShooterVelocityMap.put(0.00, 278.0);
+    fixedHubDistanceShooterVelocityMap.put(1.0, 283.0);
+    fixedHubDistanceShooterVelocityMap.put(1.53, 298.0);
+    fixedHubDistanceShooterVelocityMap.put(2.01, 313.0);
+    fixedHubDistanceShooterVelocityMap.put(2.49, 333.0);
+    fixedHubDistanceShooterVelocityMap.put(2.99, 353.0);
+    fixedHubDistanceShooterVelocityMap.put(3.48, 360.0);
+    fixedHubDistanceShooterVelocityMap.put(4.00, 365.0);
+    fixedHubDistanceShooterVelocityMap.put(4.50, 375.0);
+    fixedHubDistanceShooterVelocityMap.put(5.00, 385.0);
 
     fixedHubDistanceTimeOfFlightMap.put(0.0, 1.10);
     fixedHubDistanceTimeOfFlightMap.put(1.0, 1.10);
@@ -153,7 +150,8 @@ public class ShootingUtil {
     fixedShuttleDistanceTimeOfFlightMap.put(10.0, 1.5);
   }
 
-  public static ShooterSetpoint makeHubSetpoint(Drive drive, Pose2d target, BooleanSupplier isFixed) {
+  public static ShooterSetpoint makeHubSetpoint(
+      Drive drive, Pose2d target, BooleanSupplier isFixed) {
 
     double driveAngleRads = Double.NaN;
     double hoodPosition = Double.NaN;
@@ -170,7 +168,10 @@ public class ShootingUtil {
 
     // iterate over timeOfFlight for each new future pose because it would be slightly different
     for (int i = 0; i < 25; i++) {
-      timeOfFlight = isFixed.getAsBoolean() ? fixedHubDistanceTimeOfFlightMap.get(futurePosetoTargetDistance) : hubDistanceTimeOfFlightMap.get(futurePosetoTargetDistance);
+      timeOfFlight =
+          isFixed.getAsBoolean()
+              ? fixedHubDistanceTimeOfFlightMap.get(futurePosetoTargetDistance)
+              : hubDistanceTimeOfFlightMap.get(futurePosetoTargetDistance);
       futurePose =
           new Pose2d(
               drive.getPose().getX() + fieldRelativeVelocity.vxMetersPerSecond * timeOfFlight,
@@ -181,8 +182,14 @@ public class ShootingUtil {
 
     driveAngleRads =
         target.getTranslation().minus(futurePose.getTranslation()).getAngle().getRadians();
-    hoodPosition = isFixed.getAsBoolean() ? fixedHubDistanceHoodAngleMap.get(futurePosetoTargetDistance) : hubDistanceHoodAngleMap.get(futurePosetoTargetDistance);
-    shooterSpeedRadsPerSec = isFixed.getAsBoolean() ? fixedHubDistanceShooterVelocityMap.get(futurePosetoTargetDistance) : hubDistanceShooterVelocityMap.get(futurePosetoTargetDistance);
+    hoodPosition =
+        isFixed.getAsBoolean()
+            ? fixedHubDistanceHoodAngleMap.get(futurePosetoTargetDistance)
+            : hubDistanceHoodAngleMap.get(futurePosetoTargetDistance);
+    shooterSpeedRadsPerSec =
+        isFixed.getAsBoolean()
+            ? fixedHubDistanceShooterVelocityMap.get(futurePosetoTargetDistance)
+            : hubDistanceShooterVelocityMap.get(futurePosetoTargetDistance);
 
     if (Double.isNaN(lastHubDriveAngleRads)) lastHubDriveAngleRads = driveAngleRads;
     if (Double.isNaN(lastHubhoodPosition)) lastHubhoodPosition = hoodPosition;
@@ -217,7 +224,8 @@ public class ShootingUtil {
   }
 
   // doesn't use SOTM for shuttling
-  public static ShooterSetpoint makeShuttleSetpoint(Drive drive, Pose2d target, BooleanSupplier isFixed) {
+  public static ShooterSetpoint makeShuttleSetpoint(
+      Drive drive, Pose2d target, BooleanSupplier isFixed) {
     double driveAngleRads = Double.NaN;
     double hoodPosition = Double.NaN;
     double shooterSpeedRadsPerSec;
@@ -228,8 +236,14 @@ public class ShootingUtil {
 
     driveAngleRads =
         target.getTranslation().minus(drive.getPose().getTranslation()).getAngle().getRadians();
-    hoodPosition = isFixed.getAsBoolean() ? fixedShuttleDistanceHoodAngleMap.get(robotPosetoTargetDistance) : shuttleDistanceHoodAngleMap.get(robotPosetoTargetDistance);
-    shooterSpeedRadsPerSec = isFixed.getAsBoolean() ? fixedShuttleDistanceShooterVelocityMap.get(robotPosetoTargetDistance) : shuttleDistanceShooterVelocityMap.get(robotPosetoTargetDistance);
+    hoodPosition =
+        isFixed.getAsBoolean()
+            ? fixedShuttleDistanceHoodAngleMap.get(robotPosetoTargetDistance)
+            : shuttleDistanceHoodAngleMap.get(robotPosetoTargetDistance);
+    shooterSpeedRadsPerSec =
+        isFixed.getAsBoolean()
+            ? fixedShuttleDistanceShooterVelocityMap.get(robotPosetoTargetDistance)
+            : shuttleDistanceShooterVelocityMap.get(robotPosetoTargetDistance);
 
     if (Double.isNaN(lastShuttleDriveAngleRads)) lastShuttleDriveAngleRads = driveAngleRads;
     if (Double.isNaN(lastShuttlehoodPosition)) lastShuttlehoodPosition = hoodPosition;
