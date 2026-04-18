@@ -81,7 +81,7 @@ public final class Constants {
     public static final double ROLLER_STATOR_LIMIT = 80.0;
     public static final double ROLLER_SUPPLY_LIMIT = 45.0;
 
-    public static final double SOFT_LIMIT_FORWARD = 0.277;
+    public static final double SOFT_LIMIT_FORWARD = 0.5;
     public static final double SOFT_LIMIT_REVERSE = -0.2;
 
     public static final LoggedTunableNumber kP = new LoggedTunableNumber("PID/Intake/kP", 80);
