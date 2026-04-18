@@ -282,17 +282,17 @@ public class RobotContainer {
     autoChooser.addOption(
         "Left NZ Steal And Shoot Auto", new PathPlannerAuto("Right NZ Steal And Shoot Auto", true));
     autoChooser.addOption(
-        "Left NZ Trench Wait Steal And Shoot Auto",
-        new PathPlannerAuto("Right NZ Trench Wait Steal And Shoot Auto", true));
+        "Left NZ Trench Wait Steal and Shoot Auto",
+        new PathPlannerAuto("Right NZ Trench Wait Steal and Shoot Auto", true));
     autoChooser.addOption(
-        "Left NZ Bump Wait Steal And Shoot Auto",
-        new PathPlannerAuto("Right NZ Bump Wait Steal And Shoot Auto", true));
+        "Left NZ Bump Wait Steal and Shoot Auto",
+        new PathPlannerAuto("Right NZ Bump Wait Steal and Shoot Auto", true));
     autoChooser.addOption(
-        "Left NZ Trench No Cross Wait Steal And Shoot Auto",
-        new PathPlannerAuto("Right NZ Trench No Cross Wait Steal And Shoot Auto", true));
+        "Left NZ Trench No Cross Wait Steal and Shoot Auto",
+        new PathPlannerAuto("Right NZ Trench No Cross Wait Steal and Shoot Auto", true));
     autoChooser.addOption(
-        "Left NZ Bump No Cross Wait Steal And Shoot Auto",
-        new PathPlannerAuto("Right NZ Bump No Cross Wait Steal And Shoot Auto", true));
+        "Left NZ Bump No Cross Wait Steal and Shoot Auto",
+        new PathPlannerAuto("Right NZ Bump No Cross Wait Steal and Shoot Auto", true));
 
     SmartDashboard.putData(
         "RunEverythingForTuning",
