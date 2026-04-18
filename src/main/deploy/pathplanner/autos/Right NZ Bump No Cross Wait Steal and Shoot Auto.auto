@@ -29,7 +29,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Right NZ Trench Wait Steal and Shoot"
+                  "pathName": "Right NZ Bump No Cross Wait Steal and Shoot"
                 }
               },
               {
@@ -43,16 +43,9 @@
                       }
                     },
                     {
-                      "type": "parallel",
+                      "type": "named",
                       "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "intakeRoller"
-                            }
-                          }
-                        ]
+                        "name": "intakeRoller"
                       }
                     }
                   ]
@@ -85,6 +78,30 @@
                       "type": "sequential",
                       "data": {
                         "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "intakeRetract"
+                            }
+                          },
+                          {
+                            "type": "wait",
+                            "data": {
+                              "waitTime": 0.25
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "intakeDeploy"
+                            }
+                          },
+                          {
+                            "type": "wait",
+                            "data": {
+                              "waitTime": 0.25
+                            }
+                          },
                           {
                             "type": "named",
                             "data": {

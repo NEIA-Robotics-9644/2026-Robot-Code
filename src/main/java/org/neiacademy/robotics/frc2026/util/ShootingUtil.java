@@ -142,7 +142,7 @@ public class ShootingUtil {
     fixedShuttleDistanceShooterVelocityMap.put(6.5, 465.0 + fixedShuttleFudgeFactor);
     fixedShuttleDistanceShooterVelocityMap.put(7.5, 505.0 + fixedShuttleFudgeFactor);
     fixedShuttleDistanceShooterVelocityMap.put(8.5, 520.0 + fixedShuttleFudgeFactor);
-    fixedShuttleDistanceShooterVelocityMap.put(9.5, 520.0 + fixedShuttleFudgeFactor);
+    fixedShuttleDistanceShooterVelocityMap.put(9.5, 550.0 + fixedShuttleFudgeFactor);
 
     fixedShuttleDistanceTimeOfFlightMap.put(0.0, 0.75);
     fixedShuttleDistanceTimeOfFlightMap.put(3.0, 0.75);

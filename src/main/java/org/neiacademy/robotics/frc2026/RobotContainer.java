@@ -287,6 +287,12 @@ public class RobotContainer {
     autoChooser.addOption(
         "Left NZ Bump Wait Steal And Shoot Auto",
         new PathPlannerAuto("Right NZ Bump Wait Steal And Shoot Auto", true));
+    autoChooser.addOption(
+        "Left NZ Trench No Cross Wait Steal And Shoot Auto",
+        new PathPlannerAuto("Right NZ Trench No Cross Wait Steal And Shoot Auto", true));
+    autoChooser.addOption(
+        "Left NZ Bump No Cross Wait Steal And Shoot Auto",
+        new PathPlannerAuto("Right NZ Bump No Cross Wait Steal And Shoot Auto", true));
 
     SmartDashboard.putData(
         "RunEverythingForTuning",
