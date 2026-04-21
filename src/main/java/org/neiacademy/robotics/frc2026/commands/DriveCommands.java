@@ -41,14 +41,14 @@ public class DriveCommands {
   private static final double ANGLE_MAX_VELOCITY = 12.0;
   private static final double ANGLE_MAX_ACCELERATION = 30.0;
   private static final LoggedTunableNumber ANGLE_TOLERANCE =
-      new LoggedTunableNumber("DriveCommands/AngleToleranceDeg", 3.0);
+      new LoggedTunableNumber("DriveCommands/AngleToleranceDeg", 10.0);
 
   private static final double DRIVE_KP = 3.5;
   private static final double DRIVE_KD = 0.0;
   private static final double DRIVE_MAX_VELOCITY = 4.0;
   private static final double DRIVE_MAX_ACCELERATION = 20.0;
   private static final LoggedTunableNumber DRIVE_TOLERANCE =
-      new LoggedTunableNumber("DriveCommands/PositionToleranceMeters", 0.025);
+      new LoggedTunableNumber("DriveCommands/PositionToleranceMeters", 0.1);
 
   private static final double FF_START_DELAY = 2.0; // Secs
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
