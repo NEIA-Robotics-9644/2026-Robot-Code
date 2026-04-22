@@ -17,8 +17,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -213,7 +211,15 @@ public class RobotContainer {
               return Constants.manualMode;
             });
 
+    // manual shoot (close hub, center only auto)
     NamedCommands.registerCommand("shoot", superstructure.shootCommand().withTimeout(5));
+    NamedCommands.registerCommand(
+        "spinShooterFlywheels",
+        Commands.parallel(
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))
+            .withTimeout(5));
+
     NamedCommands.registerCommand("autoShoot", superstructure.autoShoot());
     NamedCommands.registerCommand(
         "intakeRoller", intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS).withTimeout(5));
@@ -238,13 +244,6 @@ public class RobotContainer {
             .withTimeout(4));
 
     NamedCommands.registerCommand(
-        "spinShooterFlywheels",
-        Commands.parallel(
-                leftShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                rightShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))
-            .withTimeout(5));
-
-    NamedCommands.registerCommand(
         "closeHubShoot",
         Commands.run(
             () -> {
@@ -258,9 +257,7 @@ public class RobotContainer {
         "toggleIntakeDeploy", new RepeatCommand(superstructure.toggleIntake()).withTimeout(6));
 
     NamedCommands.registerCommand(
-        "xLock",
-        new ParallelCommandGroup(
-            Commands.run(drive::stopWithX, drive), Commands.run(() -> System.out.println("test"))));
+        "xLock", new ParallelCommandGroup(Commands.run(drive::stopWithX, drive)));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -284,6 +281,18 @@ public class RobotContainer {
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption(
         "Left NZ Steal And Shoot Auto", new PathPlannerAuto("Right NZ Steal And Shoot Auto", true));
+    autoChooser.addOption(
+        "Left NZ Trench Wait Steal and Shoot Auto",
+        new PathPlannerAuto("Right NZ Trench Wait Steal and Shoot Auto", true));
+    autoChooser.addOption(
+        "Left NZ Bump Wait Steal and Shoot Auto",
+        new PathPlannerAuto("Right NZ Bump Wait Steal and Shoot Auto", true));
+    autoChooser.addOption(
+        "Left NZ Trench No Cross Wait Steal and Shoot Auto",
+        new PathPlannerAuto("Right NZ Trench No Cross Wait Steal and Shoot Auto", true));
+    autoChooser.addOption(
+        "Left NZ Bump No Cross Wait Steal and Shoot Auto",
+        new PathPlannerAuto("Right NZ Bump No Cross Wait Steal and Shoot Auto", true));
 
     SmartDashboard.putData(
         "RunEverythingForTuning",
@@ -304,12 +313,6 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
   private void configureButtonBindings() {
 
     // Default command, normal field-relative drive

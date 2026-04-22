@@ -2,12 +2,16 @@ package org.neiacademy.robotics.frc2026.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import org.neiacademy.robotics.frc2026.FieldConstants;
@@ -37,6 +41,14 @@ public class Superstructure extends SubsystemBase {
   private ShooterSetpoint hubShootingSetpoint;
   private ShooterSetpoint shuttleShootingSetpoint;
 
+  private final GenericEntry isFixedEntry =
+      Shuffleboard.getTab("Shooter")
+          .add("Fixed?", false)
+          .withWidget(BuiltInWidgets.kToggleSwitch)
+          .getEntry();
+
+  BooleanSupplier isFixed = () -> isFixedEntry.getBoolean(false);
+
   public Superstructure(
       Drive drive,
       Spindexer spindexer,
@@ -60,8 +72,10 @@ public class Superstructure extends SubsystemBase {
             drive,
             AllianceFlipUtil.apply(
                 new Pose2d(
-                    FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)));
-    shuttleShootingSetpoint = ShootingUtil.makeShuttleSetpoint(drive, getShuttleTargetPose());
+                    FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)),
+            isFixed);
+    shuttleShootingSetpoint =
+        ShootingUtil.makeShuttleSetpoint(drive, getShuttleTargetPose(), isFixed);
 
     hood.setDefaultCommand(hood.tuckCommand(Presets.Hood.TUCK_POSITION));
     leftShooter.setDefaultCommand(leftShooter.stopCommand());
@@ -75,8 +89,12 @@ public class Superstructure extends SubsystemBase {
             drive,
             AllianceFlipUtil.apply(
                 new Pose2d(
-                    FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)));
-    shuttleShootingSetpoint = ShootingUtil.makeShuttleSetpoint(drive, getShuttleTargetPose());
+                    FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)),
+            isFixed);
+    shuttleShootingSetpoint =
+        ShootingUtil.makeShuttleSetpoint(drive, getShuttleTargetPose(), isFixed);
+
+    Logger.recordOutput("Shooter/Fixed", isFixed.getAsBoolean());
 
     Logger.recordOutput("DriveCommands/atAngleSetpoint", DriveCommands.atAngleSetpoint());
     Logger.recordOutput(
@@ -130,9 +148,11 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Command shootCommand() {
-    return new ParallelCommandGroup(
-        spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-        loader.runVoltageCommand(Presets.Loader.FEED_VOLTS));
+    return new SequentialCommandGroup(
+        Commands.waitSeconds(0.1),
+        new ParallelCommandGroup(
+            spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+            loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
   }
 
   public Command endShootCommand() {
@@ -158,10 +178,10 @@ public class Superstructure extends SubsystemBase {
 
   public Command toggleIntake() {
     return new SequentialCommandGroup(
-        Commands.waitSeconds(Presets.Intake.SHOOTING_TOGGLE_SPEED_SEC.getAsDouble()),
-        intakeDeploy.runPositionCommand(Presets.Intake.EXTEND_ANGLE_DEG.getAsDouble()),
-        Commands.waitSeconds(Presets.Intake.SHOOTING_TOGGLE_SPEED_SEC.getAsDouble()),
-        intakeDeploy.runPositionCommand(Presets.Intake.TUCK_ANGLE_DEG.getAsDouble()));
+            retractIntake().withTimeout(0.25), deployIntake().withTimeout(0.25))
+        .repeatedly()
+        .withTimeout(2.25)
+        .andThen(retractIntake());
   }
 
   public Command stopAllRollersCommand() {

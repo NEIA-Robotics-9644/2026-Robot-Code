@@ -5,13 +5,31 @@
     "data": {
       "commands": [
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeDeploy"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.5
+          }
+        },
+        {
           "type": "deadline",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "NZ Steal And ShootA"
+                  "pathName": "Right NZ Trench Wait Steal and Shoot"
                 }
               },
               {
@@ -21,19 +39,13 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.51
+                        "waitTime": 0.25
                       }
                     },
                     {
                       "type": "parallel",
                       "data": {
                         "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "intakeDeploy"
-                            }
-                          },
                           {
                             "type": "named",
                             "data": {
@@ -56,7 +68,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 3.5
+                  "waitTime": 4.0
                 }
               },
               {
@@ -114,108 +126,6 @@
                             "data": {
                               "name": "intakeDeploy"
                             }
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intakeRetract"
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "NZ Steal and ShootB"
-                }
-              },
-              {
-                "type": "parallel",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.55
-                      }
-                    },
-                    {
-                      "type": "parallel",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "intakeDeploy"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "intakeRoller"
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 8.0
-                }
-              },
-              {
-                "type": "parallel",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "autoShoot"
-                      }
-                    },
-                    {
-                      "type": "sequential",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "intakeRetract"
-                            }
-                          },
-                          {
-                            "type": "wait",
-                            "data": {
-                              "waitTime": 0.25
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "intakeDeploy"
-                            }
                           },
                           {
                             "type": "wait",
@@ -239,6 +149,12 @@
                             "type": "named",
                             "data": {
                               "name": "intakeDeploy"
+                            }
+                          },
+                          {
+                            "type": "wait",
+                            "data": {
+                              "waitTime": 0.25
                             }
                           }
                         ]
