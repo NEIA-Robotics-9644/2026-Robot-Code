@@ -326,16 +326,21 @@ public class RobotContainer {
     // Switch to X pattern when X button is pressed
     driverCon.x().whileTrue(Commands.run(drive::stopWithX, drive));
 
-    // Tune shot
+    // fall back
     driverCon
         .y()
         .whileTrue(
-            new ParallelCommandGroup(
-                leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
-                rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
-                hood.runTrackedPositionCommand(Presets.Hood.TUNING_POSITION),
-                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
+            new SequentialCommandGroup(
+                new ParallelCommandGroup(
+                    hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
+                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)),
+                new ParallelCommandGroup(
+                    spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+                    loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
+                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))))
+        .onFalse(superstructure.endShootCommand());
 
     driverCon
         .b()
@@ -356,20 +361,10 @@ public class RobotContainer {
                 () -> DriveCommands.closestNormalAngle(drive.getPose()),
                 () -> new Rotation2d(0, 0)));
 
-    // Reset gyro to 0 when povdown button is pressed
-    driverCon
-        .povDown()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-                    drive)
-                .ignoringDisable(true));
     // auto shoot
     driverCon
         .rightTrigger()
-        .debounce(0.25, DebounceType.kRising)
+        .debounce(0.1, DebounceType.kRising)
         .whileTrue(loader.runVoltageCommand(Presets.Loader.FEED_VOLTS));
     driverCon
         .rightTrigger()
@@ -405,25 +400,17 @@ public class RobotContainer {
                 () -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
-        .and(DriveCommands::atAngleSetpoint)
+        // .and(DriveCommands::atAngleSetpoint)
         .whileTrue(superstructure.shootCommand())
         .onFalse(superstructure.endShootCommand());
 
-    // fall back
+    // force shoot even if the tolerances aren't being met
     driverCon
         .rightBumper()
         .whileTrue(
-            new SequentialCommandGroup(
-                new ParallelCommandGroup(
-                    hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
-                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)),
-                new ParallelCommandGroup(
-                    spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-                    loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
-                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))))
-        .onFalse(superstructure.endShootCommand());
+            new ParallelCommandGroup(
+                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
 
     // force shoot fall back even if flywheels aren't fully spun up
     driverCon
@@ -436,11 +423,25 @@ public class RobotContainer {
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
                 loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
 
-    // force shoot even if the tolerances aren't being met
+    // Reset gyro to 0 when povdown button is pressed
     driverCon
-        .povRight()
+        .povDown()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        drive.setPose(
+                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+                    drive)
+                .ignoringDisable(true));
+
+    // Tune shot
+    driverCon
+        .povLeft()
         .whileTrue(
             new ParallelCommandGroup(
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
+                hood.runTrackedPositionCommand(Presets.Hood.TUNING_POSITION),
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
                 loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
 
@@ -448,10 +449,6 @@ public class RobotContainer {
     driverCon.leftTrigger().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
 
     driverCon.leftBumper().onTrue(superstructure.retractIntake());
-    driverCon
-        .leftBumper()
-        .debounce(0.25, DebounceType.kRising) // must be held 0.25s before true
-        .whileTrue(new RepeatCommand(superstructure.toggleIntake()));
 
     operatorCon
         .start()

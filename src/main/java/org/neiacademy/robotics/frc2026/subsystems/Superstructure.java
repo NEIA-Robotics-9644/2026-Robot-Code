@@ -3,8 +3,11 @@ package org.neiacademy.robotics.frc2026.subsystems;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -13,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.neiacademy.robotics.frc2026.FieldConstants;
 import org.neiacademy.robotics.frc2026.Presets;
@@ -25,6 +29,7 @@ import org.neiacademy.robotics.frc2026.subsystems.loader.Loader;
 import org.neiacademy.robotics.frc2026.subsystems.shooter.Shooter;
 import org.neiacademy.robotics.frc2026.subsystems.spindexer.Spindexer;
 import org.neiacademy.robotics.frc2026.util.AllianceFlipUtil;
+import org.neiacademy.robotics.frc2026.util.HubShiftUtil;
 import org.neiacademy.robotics.frc2026.util.ShootingUtil;
 import org.neiacademy.robotics.frc2026.util.ShootingUtil.ShooterSetpoint;
 
@@ -41,12 +46,19 @@ public class Superstructure extends SubsystemBase {
   private ShooterSetpoint hubShootingSetpoint;
   private ShooterSetpoint shuttleShootingSetpoint;
 
+  @AutoLogOutput(key = "Overrides")
+  private double shooterRadFudgeFactor;
+
+  @AutoLogOutput(key = "Overrides")
+  private boolean shiftOverride = false;
+
+  private Alert shiftOverrideAlert = new Alert("Shift Override", AlertType.kInfo);
+
   private final GenericEntry isFixedEntry =
       Shuffleboard.getTab("Shooter")
-          .add("Fixed?", false)
+          .add("Fixed?", true)
           .withWidget(BuiltInWidgets.kToggleSwitch)
           .getEntry();
-
   BooleanSupplier isFixed = () -> isFixedEntry.getBoolean(false);
 
   public Superstructure(
@@ -73,13 +85,18 @@ public class Superstructure extends SubsystemBase {
             AllianceFlipUtil.apply(
                 new Pose2d(
                     FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)),
-            isFixed);
+            isFixed,
+            shooterRadFudgeFactor);
     shuttleShootingSetpoint =
-        ShootingUtil.makeShuttleSetpoint(drive, getShuttleTargetPose(), isFixed);
+        ShootingUtil.makeShuttleSetpoint(
+            drive, getShuttleTargetPose(), isFixed, shooterRadFudgeFactor);
 
     hood.setDefaultCommand(hood.tuckCommand(Presets.Hood.TUCK_POSITION));
     leftShooter.setDefaultCommand(leftShooter.stopCommand());
     rightShooter.setDefaultCommand(rightShooter.stopCommand());
+    SmartDashboard.putData("Overrides/Shift", enableShiftOverride());
+    SmartDashboard.putData("Overrides/ShooterFudgePlus1", fudgeShooterSpeed(1));
+    SmartDashboard.putData("Overrides/ShooterFudgeMinus1", fudgeShooterSpeed(-1));
   }
 
   @Override
@@ -90,21 +107,44 @@ public class Superstructure extends SubsystemBase {
             AllianceFlipUtil.apply(
                 new Pose2d(
                     FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)),
-            isFixed);
+            isFixed,
+            shooterRadFudgeFactor);
     shuttleShootingSetpoint =
-        ShootingUtil.makeShuttleSetpoint(drive, getShuttleTargetPose(), isFixed);
+        ShootingUtil.makeShuttleSetpoint(
+            drive, getShuttleTargetPose(), isFixed, shooterRadFudgeFactor);
 
-    Logger.recordOutput("Shooter/Fixed", isFixed.getAsBoolean());
+    Logger.recordOutput("Shooter/isFixed", isFixed.getAsBoolean());
 
     Logger.recordOutput("DriveCommands/atAngleSetpoint", DriveCommands.atAngleSetpoint());
     Logger.recordOutput(
         "DriveCommands/atDriveToPoseSetpoint", DriveCommands.atDriveToPoseSetpoint());
     Logger.recordOutput(
-        "HubDistance",
+        "Tuning/HubDistance",
         AllianceFlipUtil.apply(
                 new Pose2d(FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero))
             .getTranslation()
             .getDistance(drive.getPose().getTranslation()));
+
+    Logger.recordOutput(
+        "Superstructure/Shift Time", HubShiftUtil.getOfficialShiftInfo().remainingTime());
+  }
+
+  public Command enableShiftOverride() {
+    return Commands.startEnd(
+            () -> {
+              shiftOverride = true;
+              shiftOverrideAlert.set(true);
+            },
+            () -> {
+              shiftOverride = false;
+              shiftOverrideAlert.set(false);
+            })
+        .ignoringDisable(true)
+        .withName("Override Shift");
+  }
+
+  public Command fudgeShooterSpeed(double fudgeFactor) {
+    return Commands.run(() -> shooterRadFudgeFactor = shooterRadFudgeFactor + fudgeFactor);
   }
 
   public Command hubAimCommand(DoubleSupplier driveXSupplier, DoubleSupplier driveYSupplier) {

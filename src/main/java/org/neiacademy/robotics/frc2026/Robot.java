@@ -24,6 +24,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.neiacademy.robotics.BuildConstants;
 import org.neiacademy.robotics.frc2026.generated.TunerConstants;
+import org.neiacademy.robotics.frc2026.util.Elastic;
+import org.neiacademy.robotics.frc2026.util.HubShiftUtil;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -158,6 +160,10 @@ public class Robot extends LoggedRobot {
     // this line or comment it out.
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
+    }
+    HubShiftUtil.initialize();
+    if (isReal()) {
+      Elastic.selectTab("Teleoperated");
     }
   }
 

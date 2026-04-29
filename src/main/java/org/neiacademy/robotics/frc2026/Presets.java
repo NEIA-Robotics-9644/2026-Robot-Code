@@ -10,7 +10,7 @@ public final class Presets {
     public static final LoggedTunableNumber EXHAUST_VOLTS =
         new LoggedTunableNumber("Setpoints/Spindexer/ExhaustVolts", -12.0);
     public static final LoggedTunableNumber TUNING_VOLTS =
-        new LoggedTunableNumber("Setpoints/Spindexer/TuningVolts", 0.0);
+        new LoggedTunableNumber("Tuning/SpindexerTuningVolts", 0.0);
   }
 
   public static class Intake {
@@ -19,19 +19,19 @@ public final class Presets {
     public static final LoggedTunableNumber EXTEND_ANGLE_DEG =
         new LoggedTunableNumber("Setpoints/Intake/DeployExtendAngleDeg", -0.2);
     public static final LoggedTunableNumber TUNING_ANGLE_DEG =
-        new LoggedTunableNumber("Setpoints/Intake/DeployTuningAngleDeg", 0.0);
+        new LoggedTunableNumber("Tuning/IntakeDeployTuningAngleDeg", 0.0);
 
     public static final LoggedTunableNumber INTAKE_VOLTS =
         new LoggedTunableNumber("Setpoints/Intake/RollerIntakeVolts", 7.5);
     public static final LoggedTunableNumber EXHAUST_VOLTS =
         new LoggedTunableNumber("Setpoints/Intake/RollerExhaustVolts", -6.0);
     public static final LoggedTunableNumber TUNING_VOLTS =
-        new LoggedTunableNumber("Setpoints/Intake/RollerTuningVolts", 0.0);
+        new LoggedTunableNumber("Tuning/IntakeRollerTuningVolts", 0.0);
 
     public static final LoggedTunableNumber SHOOTING_TOGGLE_SPEED_SEC =
         new LoggedTunableNumber("Setpoints/Intake/ShootingToggleSpeedSec", 0.1);
     public static final LoggedTunableNumber SHOOTING_TOGGLE_TIMEOUT_SPEED_SEC =
-        new LoggedTunableNumber("Setpoints/Intake/ShootingToggleTimeoutSpeedSec", 0.4);
+        new LoggedTunableNumber("Tuning/IntakeShootingToggleTimeoutSpeedSec", 0.4);
   }
 
   public static class Loader {
@@ -42,7 +42,7 @@ public final class Presets {
     public static final LoggedTunableNumber SLOW_EXHAUST_VOLTS =
         new LoggedTunableNumber("Setpoints/Loader/SlowExhaustVolts", -6.0);
     public static final LoggedTunableNumber TUNING_VOLTS =
-        new LoggedTunableNumber("Setpoints/Loader/TuningVolts", 0.0);
+        new LoggedTunableNumber("Tuning/LoaderTuningVolts", 0.0);
   }
 
   public static class Shooter {
@@ -51,12 +51,12 @@ public final class Presets {
     public static final LoggedTunableNumber TUNING_SPEED =
         new LoggedTunableNumber("Setpoints/Shooter/TuningSpeedRadsPerSec", 0.0);
     public static final LoggedTunableNumber NO_SPEED =
-        new LoggedTunableNumber("Setpoints/Shooter/TuningSpeedRadsPerSec", 0.0);
+        new LoggedTunableNumber("Tuning/ShooterTuningSpeedRadsPerSec", 0.0);
   }
 
   public static class Hood {
     public static final LoggedTunableNumber TUNING_POSITION =
-        new LoggedTunableNumber("Setpoints/Hood/TuningPos", 0);
+        new LoggedTunableNumber("Tuning/HoodTuningPos", 0);
     public static final LoggedTunableNumber TUCK_POSITION =
         new LoggedTunableNumber("Setpoints/Hood/TuckPos", 0.49);
     public static final LoggedTunableNumber CLOSE_HUB_POSITION =

@@ -151,7 +151,7 @@ public class ShootingUtil {
   }
 
   public static ShooterSetpoint makeHubSetpoint(
-      Drive drive, Pose2d target, BooleanSupplier isFixed) {
+      Drive drive, Pose2d target, BooleanSupplier isFixed, double fudgeFactor) {
 
     double driveAngleRads = Double.NaN;
     double hoodPosition = Double.NaN;
@@ -220,12 +220,12 @@ public class ShootingUtil {
         Rotation2d.fromRadians(driveAngleRads),
         hoodPosition,
         Rotation2d.fromRadians(driveVelocityRadsPerSec),
-        shooterSpeedRadsPerSec);
+        shooterSpeedRadsPerSec + fudgeFactor);
   }
 
   // doesn't use SOTM for shuttling
   public static ShooterSetpoint makeShuttleSetpoint(
-      Drive drive, Pose2d target, BooleanSupplier isFixed) {
+      Drive drive, Pose2d target, BooleanSupplier isFixed, double fudgeFactor) {
     double driveAngleRads = Double.NaN;
     double hoodPosition = Double.NaN;
     double shooterSpeedRadsPerSec;
@@ -273,6 +273,6 @@ public class ShootingUtil {
         Rotation2d.fromRadians(driveAngleRads),
         hoodPosition,
         Rotation2d.fromRadians(driveVelocityRadsPerSec),
-        shooterSpeedRadsPerSec);
+        shooterSpeedRadsPerSec + fudgeFactor);
   }
 }
