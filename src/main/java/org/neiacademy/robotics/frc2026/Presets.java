@@ -20,6 +20,8 @@ public final class Presets {
         new LoggedTunableNumber("Setpoints/Intake/DeployExtendAngleDeg", -0.2);
     public static final LoggedTunableNumber TUNING_ANGLE_DEG =
         new LoggedTunableNumber("Tuning/IntakeDeployTuningAngleDeg", 0.0);
+    public static final LoggedTunableNumber PIVOT_MANUAL_MOVEMENT_TOTAL_TIME =
+        new LoggedTunableNumber("Setpoints/Intake/PivotManualMovementTotalTime", 1.5);
 
     public static final LoggedTunableNumber INTAKE_VOLTS =
         new LoggedTunableNumber("Setpoints/Intake/RollerIntakeVolts", 7.5);
@@ -48,6 +50,12 @@ public final class Presets {
   public static class Shooter {
     public static final LoggedTunableNumber CLOSE_HUB_SPEED =
         new LoggedTunableNumber("Setpoints/Shooter/CloseHubSpeedRadsPerSec", 290.0);
+    public static final LoggedTunableNumber TRENCH_SPEED =
+        new LoggedTunableNumber("Setpoints/Shooter/TrenchSpeedRadsPerSec", 290.0);
+    public static final LoggedTunableNumber CORNER_SPEED =
+        new LoggedTunableNumber("Setpoints/Shooter/CornerSpeedRadsPerSec", 290.0);
+    public static final LoggedTunableNumber TOWER_SPEED =
+        new LoggedTunableNumber("Setpoints/Shooter/TowerSpeedRadsPerSec", 290.0);
     public static final LoggedTunableNumber TUNING_SPEED =
         new LoggedTunableNumber("Setpoints/Shooter/TuningSpeedRadsPerSec", 0.0);
     public static final LoggedTunableNumber NO_SPEED =

@@ -60,7 +60,6 @@ public class FieldConstants {
     public static final double leftTrenchOpenEnd = leftBumpStart + Units.inchesToMeters(12.0);
     public static final double leftTrenchOpenStart = fieldWidth;
   }
-
   /** Hub related constants */
   public static class Hub {
 

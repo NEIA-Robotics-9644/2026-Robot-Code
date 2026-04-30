@@ -417,7 +417,6 @@ public class RobotContainer {
         .povUp()
         .whileTrue(
             new ParallelCommandGroup(
-                hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
                 leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
                 rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
@@ -451,35 +450,6 @@ public class RobotContainer {
     driverCon.leftBumper().onTrue(superstructure.retractIntake());
 
     operatorCon
-        .start()
-        .onTrue(Commands.runOnce(() -> Constants.setManualMode(!Constants.manualMode)));
-    /*
-    operatorCon
-        .povUp()
-        .and(isManualMode)
-        .onTrue(Commands.runOnce(() -> Presets.Shooter.CLOSE_HUB_SPEED.adjustSetValue(1)));
-    operatorCon
-        .povDown()
-        .and(isManualMode)
-        .onTrue(Commands.runOnce(() -> Presets.Shooter.CLOSE_HUB_SPEED.adjustSetValue(-1)));
-    operatorCon
-        .povLeft()
-        .and(isManualMode)
-        .onTrue(
-            Commands.runOnce(
-                () ->
-                    intakeDeploy.runPositionCommand(
-                        () -> intakeDeploy.getAngleRads() + Units.degreesToRadians(-1))));
-    operatorCon
-        .povRight()
-        .and(isManualMode)
-        .onTrue(
-            Commands.runOnce(
-                () ->
-                    intakeDeploy.runPositionCommand(
-                        () -> intakeDeploy.getAngleRads() + Units.degreesToRadians(1))));*/
-
-    operatorCon
         .b()
         .whileTrue(
             new ParallelCommandGroup(
@@ -487,6 +457,19 @@ public class RobotContainer {
                 loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS),
                 spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS)));
 
+    operatorCon.a().onTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
+    operatorCon.x().onTrue(loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS));
+    operatorCon.y().onTrue(spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS));
+
+    operatorCon
+        .leftBumper()
+        .whileTrue(
+            intakeDeploy.runPositionCommand(
+                intakeDeploy.getAngleRads()
+                    + (((Math.abs(Presets.Intake.TUCK_ANGLE_DEG.get())
+                                + Math.abs(Presets.Intake.EXTEND_ANGLE_DEG.get()))
+                            / (Presets.Intake.PIVOT_MANUAL_MOVEMENT_TOTAL_TIME.get() * 50))
+                        * operatorCon.getLeftY())));
     // auto shoot
     operatorCon
         .rightTrigger()
@@ -497,32 +480,50 @@ public class RobotContainer {
     operatorCon
         .rightBumper()
         .whileTrue(
-            new SequentialCommandGroup(
-                new ParallelCommandGroup(
-                    hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
-                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)),
-                new ParallelCommandGroup(
-                    spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-                    loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
-                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))))
+            new ParallelCommandGroup(
+                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)))
+        .and(leftShooter::atSetpoint)
+        .and(rightShooter::atSetpoint)
+        .whileTrue(superstructure.shootCommand())
         .onFalse(superstructure.endShootCommand());
 
-    // force shoot fall back even if flywheels aren't fully spun up
     operatorCon
-        .povUp()
+        .rightBumper()
         .whileTrue(
             new ParallelCommandGroup(
-                hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
-                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
+                leftShooter.runVelocityCommand(Presets.Shooter.TRENCH_SPEED),
+                rightShooter.runVelocityCommand(Presets.Shooter.TRENCH_SPEED)))
+        .and(leftShooter::atSetpoint)
+        .and(rightShooter::atSetpoint)
+        .whileTrue(superstructure.shootCommand())
+        .onFalse(superstructure.endShootCommand());
+
+    operatorCon
+        .rightBumper()
+        .whileTrue(
+            new ParallelCommandGroup(
+                leftShooter.runVelocityCommand(Presets.Shooter.CORNER_SPEED),
+                rightShooter.runVelocityCommand(Presets.Shooter.CORNER_SPEED)))
+        .and(leftShooter::atSetpoint)
+        .and(rightShooter::atSetpoint)
+        .whileTrue(superstructure.shootCommand())
+        .onFalse(superstructure.endShootCommand());
+
+    operatorCon
+        .rightBumper()
+        .whileTrue(
+            new ParallelCommandGroup(
+                leftShooter.runVelocityCommand(Presets.Shooter.TOWER_SPEED),
+                rightShooter.runVelocityCommand(Presets.Shooter.TOWER_SPEED)))
+        .and(leftShooter::atSetpoint)
+        .and(rightShooter::atSetpoint)
+        .whileTrue(superstructure.shootCommand())
+        .onFalse(superstructure.endShootCommand());
 
     // force shoot even if the tolerances aren't being met
     operatorCon
-        .povRight()
+        .rightBumper()
         .whileTrue(
             new ParallelCommandGroup(
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
@@ -537,25 +538,6 @@ public class RobotContainer {
         .rightTrigger()
         .and(inAllianceZone.negate())
         .whileTrue(superstructure.shuttleSpinFlywheelsCommand());
-
-    operatorCon.leftTrigger().onTrue(superstructure.deployIntake());
-    operatorCon
-        .leftTrigger()
-        .whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
-
-    operatorCon.leftBumper().onTrue(superstructure.retractIntake());
-    operatorCon
-        .leftBumper()
-        .debounce(0.25, DebounceType.kRising) // must be held 0.25s before true
-        .whileTrue(new RepeatCommand(superstructure.toggleIntake()));
-
-    operatorCon
-        .start()
-        .onTrue(Commands.runOnce(() -> Constants.setManualMode(!Constants.manualMode)));
-
-    operatorCon.x().onTrue(hood.positionCommand(1));
-    operatorCon.y().onTrue(hood.positionCommand(0));
-    operatorCon.a().onTrue(hood.positionCommand(0.5));
   }
 
   /**
