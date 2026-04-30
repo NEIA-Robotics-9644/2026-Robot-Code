@@ -481,7 +481,7 @@ public class RobotContainer {
 
     // fall back
     operatorCon
-        .rightBumper()
+        .povUp()
         .whileTrue(
             new ParallelCommandGroup(
                 leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
@@ -492,7 +492,7 @@ public class RobotContainer {
         .onFalse(superstructure.endShootCommand());
 
     operatorCon
-        .rightBumper()
+        .povRight()
         .whileTrue(
             new ParallelCommandGroup(
                 leftShooter.runVelocityCommand(Presets.Shooter.TRENCH_SPEED),
@@ -503,7 +503,7 @@ public class RobotContainer {
         .onFalse(superstructure.endShootCommand());
 
     operatorCon
-        .rightBumper()
+        .povLeft()
         .whileTrue(
             new ParallelCommandGroup(
                 leftShooter.runVelocityCommand(Presets.Shooter.CORNER_SPEED),
@@ -514,7 +514,7 @@ public class RobotContainer {
         .onFalse(superstructure.endShootCommand());
 
     operatorCon
-        .rightBumper()
+        .povDown()
         .whileTrue(
             new ParallelCommandGroup(
                 leftShooter.runVelocityCommand(Presets.Shooter.TOWER_SPEED),
@@ -561,7 +561,7 @@ public class RobotContainer {
     noAutoAlert.set(
         DriverStation.isAutonomous() && !DriverStation.isEnabled() && autoChooser.get() == noAuto);
   }
-  //will stay until java gets updated for this
+  // will stay until java gets updated for this
   private double clamp(double value, double min, double max) {
     return Math.max(min, Math.min(max, value));
   }
