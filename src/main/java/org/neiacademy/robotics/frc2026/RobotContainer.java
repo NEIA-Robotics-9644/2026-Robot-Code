@@ -429,6 +429,27 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+    driverCon
+        .start()
+        .whileTrue(
+            new ParallelCommandGroup(
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.HALF_SHUTTLE_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.HALF_SHUTTLE_SPEED)))
+        .and(leftShooter::atSetpoint)
+        .and(rightShooter::atSetpoint)
+        .whileTrue(superstructure.shootCommand())
+        .onFalse(superstructure.endShootCommand());
+
+    driverCon
+        .back()
+        .whileTrue(
+            new ParallelCommandGroup(
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.FULL_SHUTTLE_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.FULL_SHUTTLE_SPEED)))
+        .and(leftShooter::atSetpoint)
+        .and(rightShooter::atSetpoint)
+        .whileTrue(superstructure.shootCommand())
+        .onFalse(superstructure.endShootCommand());
 
     // Tune shot
     driverCon

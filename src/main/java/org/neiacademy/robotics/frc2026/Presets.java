@@ -56,6 +56,10 @@ public final class Presets {
         new LoggedTunableNumber("Setpoints/Shooter/CornerSpeedRadsPerSec", 290.0);
     public static final LoggedTunableNumber TOWER_SPEED =
         new LoggedTunableNumber("Setpoints/Shooter/TowerSpeedRadsPerSec", 290.0);
+    public static final LoggedTunableNumber HALF_SHUTTLE_SPEED =
+        new LoggedTunableNumber("Setpoints/Shooter/HalfShuttleSpeedRadsPerSec", 425.0);
+    public static final LoggedTunableNumber FULL_SHUTTLE_SPEED =
+        new LoggedTunableNumber("Setpoints/Shooter/FullShuttleSpeedRadsPerSec", 550.0);
     public static final LoggedTunableNumber TUNING_SPEED =
         new LoggedTunableNumber("Setpoints/Shooter/TuningSpeedRadsPerSec", 0.0);
     public static final LoggedTunableNumber NO_SPEED =
