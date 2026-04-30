@@ -457,19 +457,22 @@ public class RobotContainer {
                 loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS),
                 spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS)));
 
-    operatorCon.a().onTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
-    operatorCon.x().onTrue(loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS));
-    operatorCon.y().onTrue(spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS));
+    operatorCon.a().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
+    operatorCon.x().whileTrue(loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS));
+    operatorCon.y().whileTrue(spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS));
 
     operatorCon
         .leftBumper()
         .whileTrue(
             intakeDeploy.runPositionCommand(
-                intakeDeploy.getAngleRads()
-                    + (((Math.abs(Presets.Intake.TUCK_ANGLE_DEG.get())
-                                + Math.abs(Presets.Intake.EXTEND_ANGLE_DEG.get()))
-                            / (Presets.Intake.PIVOT_MANUAL_MOVEMENT_TOTAL_TIME.get() * 50))
-                        * operatorCon.getLeftY())));
+                clamp(
+                    intakeDeploy.getAngleRads()
+                        + (((Math.abs(Presets.Intake.TUCK_ANGLE_DEG.get())
+                                    + Math.abs(Presets.Intake.EXTEND_ANGLE_DEG.get()))
+                                / (Presets.Intake.PIVOT_MANUAL_MOVEMENT_TOTAL_TIME.get() * 50))
+                            * operatorCon.getLeftY()),
+                    Presets.Intake.TUCK_ANGLE_DEG.get(),
+                    Presets.Intake.EXTEND_ANGLE_DEG.get())));
     // auto shoot
     operatorCon
         .rightTrigger()
@@ -557,5 +560,9 @@ public class RobotContainer {
     // Auto alert
     noAutoAlert.set(
         DriverStation.isAutonomous() && !DriverStation.isEnabled() && autoChooser.get() == noAuto);
+  }
+  //will stay until java gets updated for this
+  private double clamp(double value, double min, double max) {
+    return Math.max(min, Math.min(max, value));
   }
 }
