@@ -345,7 +345,13 @@ public class RobotContainer {
                     rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))))
         .onFalse(superstructure.endShootCommand());
 
-    driverCon.b().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
+    driverCon
+        .b()
+        .whileTrue(
+            new ParallelCommandGroup(
+                intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS),
+                spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS)));
 
     // Lock to a parallel angle to shove balls
     driverCon
@@ -481,6 +487,7 @@ public class RobotContainer {
 
     operatorCon
         .leftBumper()
+        .and(operatorCon.leftStick())
         .whileTrue(
             intakeDeploy.runTrackedPositionCommand(
                 () ->
@@ -492,11 +499,6 @@ public class RobotContainer {
                                 * operatorCon.getLeftY()),
                         Presets.Intake.TUCK_ANGLE_DEG.get(),
                         Presets.Intake.EXTEND_ANGLE_DEG.get())));
-    // auto shoot
-    operatorCon
-        .rightTrigger()
-        .debounce(0.25, DebounceType.kRising)
-        .whileTrue(loader.runVoltageCommand(Presets.Loader.FEED_VOLTS));
 
     // fall back
     operatorCon
@@ -550,16 +552,6 @@ public class RobotContainer {
             new ParallelCommandGroup(
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
                 loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
-
-    operatorCon
-        .rightTrigger()
-        .and(inAllianceZone)
-        .whileTrue(superstructure.hubSpinFlywheelsCommand());
-
-    operatorCon
-        .rightTrigger()
-        .and(inAllianceZone.negate())
-        .whileTrue(superstructure.shuttleSpinFlywheelsCommand());
   }
 
   /**
@@ -582,6 +574,6 @@ public class RobotContainer {
   }
   // will stay until java gets updated for this
   private double clamp(double value, double min, double max) {
-    return Math.max(min, Math.min(max, value));
+    return Math.max(min > max ? min : max, Math.min(max > min ? max : min, value));
   }
 }
