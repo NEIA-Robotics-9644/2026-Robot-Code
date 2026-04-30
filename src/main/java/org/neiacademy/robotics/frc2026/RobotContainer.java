@@ -344,11 +344,7 @@ public class RobotContainer {
 
     driverCon
         .b()
-        .whileTrue(
-            new ParallelCommandGroup(
-                intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS),
-                loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS),
-                spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS)));
+        .whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
 
     // Lock to a parallel angle to shove balls
     driverCon
