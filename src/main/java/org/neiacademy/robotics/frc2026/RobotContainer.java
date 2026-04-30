@@ -342,9 +342,7 @@ public class RobotContainer {
                     rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))))
         .onFalse(superstructure.endShootCommand());
 
-    driverCon
-        .b()
-        .whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
+    driverCon.b().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
 
     // Lock to a parallel angle to shove balls
     driverCon
