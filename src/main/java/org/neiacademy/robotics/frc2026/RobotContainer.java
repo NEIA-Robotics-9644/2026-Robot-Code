@@ -461,15 +461,16 @@ public class RobotContainer {
     operatorCon
         .leftBumper()
         .whileTrue(
-            intakeDeploy.runPositionCommand(
-                clamp(
-                    intakeDeploy.getAngleRads()
-                        + (((Math.abs(Presets.Intake.TUCK_ANGLE_DEG.get())
-                                    + Math.abs(Presets.Intake.EXTEND_ANGLE_DEG.get()))
-                                / (Presets.Intake.PIVOT_MANUAL_MOVEMENT_TOTAL_TIME.get() * 50))
-                            * operatorCon.getLeftY()),
-                    Presets.Intake.TUCK_ANGLE_DEG.get(),
-                    Presets.Intake.EXTEND_ANGLE_DEG.get())));
+            intakeDeploy.runTrackedPositionCommand(
+                () ->
+                    clamp(
+                        intakeDeploy.getAngleRads()
+                            + (((Math.abs(Presets.Intake.TUCK_ANGLE_DEG.get())
+                                        + Math.abs(Presets.Intake.EXTEND_ANGLE_DEG.get()))
+                                    / (Presets.Intake.PIVOT_MANUAL_MOVEMENT_TOTAL_TIME.get() * 50))
+                                * operatorCon.getLeftY()),
+                        Presets.Intake.TUCK_ANGLE_DEG.get(),
+                        Presets.Intake.EXTEND_ANGLE_DEG.get())));
     // auto shoot
     operatorCon
         .rightTrigger()
@@ -481,8 +482,8 @@ public class RobotContainer {
         .povUp()
         .whileTrue(
             new ParallelCommandGroup(
-                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)))
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)))
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
         .whileTrue(superstructure.shootCommand())
@@ -492,8 +493,8 @@ public class RobotContainer {
         .povRight()
         .whileTrue(
             new ParallelCommandGroup(
-                leftShooter.runVelocityCommand(Presets.Shooter.TRENCH_SPEED),
-                rightShooter.runVelocityCommand(Presets.Shooter.TRENCH_SPEED)))
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.TRENCH_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.TRENCH_SPEED)))
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
         .whileTrue(superstructure.shootCommand())
@@ -503,8 +504,8 @@ public class RobotContainer {
         .povLeft()
         .whileTrue(
             new ParallelCommandGroup(
-                leftShooter.runVelocityCommand(Presets.Shooter.CORNER_SPEED),
-                rightShooter.runVelocityCommand(Presets.Shooter.CORNER_SPEED)))
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.CORNER_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.CORNER_SPEED)))
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
         .whileTrue(superstructure.shootCommand())
@@ -514,8 +515,8 @@ public class RobotContainer {
         .povDown()
         .whileTrue(
             new ParallelCommandGroup(
-                leftShooter.runVelocityCommand(Presets.Shooter.TOWER_SPEED),
-                rightShooter.runVelocityCommand(Presets.Shooter.TOWER_SPEED)))
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.TOWER_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.TOWER_SPEED)))
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
         .whileTrue(superstructure.shootCommand())
