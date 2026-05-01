@@ -259,6 +259,21 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "xLock", new ParallelCommandGroup(Commands.run(drive::stopWithX, drive)));
 
+    NamedCommands.registerCommand(
+        "forceShoot",
+        new ParallelCommandGroup(
+                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS))
+            .withTimeout(0.5));
+
+    NamedCommands.registerCommand(
+        "unjam",
+        new ParallelCommandGroup(
+                intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS),
+                spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS))
+            .withTimeout(0.25));
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -282,20 +297,11 @@ public class RobotContainer {
     autoChooser.addOption(
         "Left NZ Steal And Shoot Auto", new PathPlannerAuto("Right NZ Steal And Shoot Auto", true));
     autoChooser.addOption(
-        "Left NZ Trench Wait Steal and Shoot Auto",
-        new PathPlannerAuto("Right NZ Trench Wait Steal and Shoot Auto", true));
-    autoChooser.addOption(
-        "Left NZ Bump Wait Steal and Shoot Auto",
-        new PathPlannerAuto("Right NZ Bump Wait Steal and Shoot Auto", true));
-    autoChooser.addOption(
         "Left NZ Trench No Cross Wait Steal and Shoot Auto",
         new PathPlannerAuto("Right NZ Trench No Cross Wait Steal and Shoot Auto", true));
     autoChooser.addOption(
         "Left NZ Bump No Cross Wait Steal and Shoot Auto",
         new PathPlannerAuto("Right NZ Bump No Cross Wait Steal and Shoot Auto", true));
-    autoChooser.addOption(
-        "M37 Left NZ Bump No Cross Wait Steal and Shoot Auto",
-        new PathPlannerAuto("M37 Right NZ Bump No Cross Wait Steal and Shoot Auto", true));
 
     SmartDashboard.putData(
         "RunEverythingForTuning",
@@ -574,6 +580,6 @@ public class RobotContainer {
   }
   // will stay until java gets updated for this
   private double clamp(double value, double min, double max) {
-    return Math.max(min > max ? min : max, Math.min(max > min ? max : min, value));
+    return Math.max(min >= max ? min : max, Math.min(max >= min ? max : min, value));
   }
 }
