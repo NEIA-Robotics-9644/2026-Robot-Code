@@ -259,6 +259,21 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "xLock", new ParallelCommandGroup(Commands.run(drive::stopWithX, drive)));
 
+    NamedCommands.registerCommand(
+        "forceShoot",
+        new ParallelCommandGroup(
+                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS))
+            .withTimeout(0.5));
+
+    NamedCommands.registerCommand(
+        "unjam",
+        new ParallelCommandGroup(
+                intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS),
+                spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS))
+            .withTimeout(0.25));
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -281,12 +296,6 @@ public class RobotContainer {
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption(
         "Left NZ Steal And Shoot Auto", new PathPlannerAuto("Right NZ Steal And Shoot Auto", true));
-    autoChooser.addOption(
-        "Left NZ Trench Wait Steal and Shoot Auto",
-        new PathPlannerAuto("Right NZ Trench Wait Steal and Shoot Auto", true));
-    autoChooser.addOption(
-        "Left NZ Bump Wait Steal and Shoot Auto",
-        new PathPlannerAuto("Right NZ Bump Wait Steal and Shoot Auto", true));
     autoChooser.addOption(
         "Left NZ Trench No Cross Wait Steal and Shoot Auto",
         new PathPlannerAuto("Right NZ Trench No Cross Wait Steal and Shoot Auto", true));
@@ -417,7 +426,6 @@ public class RobotContainer {
         .povUp()
         .whileTrue(
             new ParallelCommandGroup(
-                hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
                 leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
                 rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
@@ -433,6 +441,27 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+    driverCon
+        .start()
+        .whileTrue(
+            new ParallelCommandGroup(
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.HALF_SHUTTLE_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.HALF_SHUTTLE_SPEED)))
+        .and(leftShooter::atSetpoint)
+        .and(rightShooter::atSetpoint)
+        .whileTrue(superstructure.shootCommand())
+        .onFalse(superstructure.endShootCommand());
+
+    driverCon
+        .back()
+        .whileTrue(
+            new ParallelCommandGroup(
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.FULL_SHUTTLE_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.FULL_SHUTTLE_SPEED)))
+        .and(leftShooter::atSetpoint)
+        .and(rightShooter::atSetpoint)
+        .whileTrue(superstructure.shootCommand())
+        .onFalse(superstructure.endShootCommand());
 
     // Tune shot
     driverCon
@@ -451,35 +480,6 @@ public class RobotContainer {
     driverCon.leftBumper().onTrue(superstructure.retractIntake());
 
     operatorCon
-        .start()
-        .onTrue(Commands.runOnce(() -> Constants.setManualMode(!Constants.manualMode)));
-    /*
-    operatorCon
-        .povUp()
-        .and(isManualMode)
-        .onTrue(Commands.runOnce(() -> Presets.Shooter.CLOSE_HUB_SPEED.adjustSetValue(1)));
-    operatorCon
-        .povDown()
-        .and(isManualMode)
-        .onTrue(Commands.runOnce(() -> Presets.Shooter.CLOSE_HUB_SPEED.adjustSetValue(-1)));
-    operatorCon
-        .povLeft()
-        .and(isManualMode)
-        .onTrue(
-            Commands.runOnce(
-                () ->
-                    intakeDeploy.runPositionCommand(
-                        () -> intakeDeploy.getAngleRads() + Units.degreesToRadians(-1))));
-    operatorCon
-        .povRight()
-        .and(isManualMode)
-        .onTrue(
-            Commands.runOnce(
-                () ->
-                    intakeDeploy.runPositionCommand(
-                        () -> intakeDeploy.getAngleRads() + Units.degreesToRadians(1))));*/
-
-    operatorCon
         .b()
         .whileTrue(
             new ParallelCommandGroup(
@@ -487,75 +487,77 @@ public class RobotContainer {
                 loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS),
                 spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS)));
 
-    // auto shoot
+    operatorCon.a().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
+    operatorCon.x().whileTrue(loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS));
+    operatorCon.y().whileTrue(spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS));
+
     operatorCon
-        .rightTrigger()
-        .debounce(0.25, DebounceType.kRising)
-        .whileTrue(loader.runVoltageCommand(Presets.Loader.FEED_VOLTS));
+        .leftBumper()
+        .and(operatorCon.leftStick())
+        .whileTrue(
+            intakeDeploy.runTrackedPositionCommand(
+                () ->
+                    clamp(
+                        intakeDeploy.getAngleRads()
+                            + (((Math.abs(Presets.Intake.TUCK_ANGLE_DEG.get())
+                                        + Math.abs(Presets.Intake.EXTEND_ANGLE_DEG.get()))
+                                    / (Presets.Intake.PIVOT_MANUAL_MOVEMENT_TOTAL_TIME.get() * 50))
+                                * operatorCon.getLeftY()),
+                        Presets.Intake.TUCK_ANGLE_DEG.get(),
+                        Presets.Intake.EXTEND_ANGLE_DEG.get())));
 
     // fall back
-    operatorCon
-        .rightBumper()
-        .whileTrue(
-            new SequentialCommandGroup(
-                new ParallelCommandGroup(
-                    hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
-                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)),
-                new ParallelCommandGroup(
-                    spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-                    loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
-                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))))
-        .onFalse(superstructure.endShootCommand());
-
-    // force shoot fall back even if flywheels aren't fully spun up
     operatorCon
         .povUp()
         .whileTrue(
             new ParallelCommandGroup(
-                hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
-                leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)))
+        .and(leftShooter::atSetpoint)
+        .and(rightShooter::atSetpoint)
+        .whileTrue(superstructure.shootCommand())
+        .onFalse(superstructure.endShootCommand());
 
-    // force shoot even if the tolerances aren't being met
     operatorCon
         .povRight()
         .whileTrue(
             new ParallelCommandGroup(
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.TRENCH_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.TRENCH_SPEED)))
+        .and(leftShooter::atSetpoint)
+        .and(rightShooter::atSetpoint)
+        .whileTrue(superstructure.shootCommand())
+        .onFalse(superstructure.endShootCommand());
+
+    operatorCon
+        .povLeft()
+        .whileTrue(
+            new ParallelCommandGroup(
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.CORNER_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.CORNER_SPEED)))
+        .and(leftShooter::atSetpoint)
+        .and(rightShooter::atSetpoint)
+        .whileTrue(superstructure.shootCommand())
+        .onFalse(superstructure.endShootCommand());
+
+    operatorCon
+        .povDown()
+        .whileTrue(
+            new ParallelCommandGroup(
+                leftShooter.runTrackedVelocityCommand(Presets.Shooter.TOWER_SPEED),
+                rightShooter.runTrackedVelocityCommand(Presets.Shooter.TOWER_SPEED)))
+        .and(leftShooter::atSetpoint)
+        .and(rightShooter::atSetpoint)
+        .whileTrue(superstructure.shootCommand())
+        .onFalse(superstructure.endShootCommand());
+
+    // force shoot even if the tolerances aren't being met
+    operatorCon
+        .rightBumper()
+        .whileTrue(
+            new ParallelCommandGroup(
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
                 loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
-
-    operatorCon
-        .rightTrigger()
-        .and(inAllianceZone)
-        .whileTrue(superstructure.hubSpinFlywheelsCommand());
-
-    operatorCon
-        .rightTrigger()
-        .and(inAllianceZone.negate())
-        .whileTrue(superstructure.shuttleSpinFlywheelsCommand());
-
-    operatorCon.leftTrigger().onTrue(superstructure.deployIntake());
-    operatorCon
-        .leftTrigger()
-        .whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
-
-    operatorCon.leftBumper().onTrue(superstructure.retractIntake());
-    operatorCon
-        .leftBumper()
-        .debounce(0.25, DebounceType.kRising) // must be held 0.25s before true
-        .whileTrue(new RepeatCommand(superstructure.toggleIntake()));
-
-    operatorCon
-        .start()
-        .onTrue(Commands.runOnce(() -> Constants.setManualMode(!Constants.manualMode)));
-
-    operatorCon.x().onTrue(hood.positionCommand(1));
-    operatorCon.y().onTrue(hood.positionCommand(0));
-    operatorCon.a().onTrue(hood.positionCommand(0.5));
   }
 
   /**
@@ -575,5 +577,9 @@ public class RobotContainer {
     // Auto alert
     noAutoAlert.set(
         DriverStation.isAutonomous() && !DriverStation.isEnabled() && autoChooser.get() == noAuto);
+  }
+  // will stay until java gets updated for this
+  private double clamp(double value, double min, double max) {
+    return Math.max(min >= max ? min : max, Math.min(max >= min ? max : min, value));
   }
 }
