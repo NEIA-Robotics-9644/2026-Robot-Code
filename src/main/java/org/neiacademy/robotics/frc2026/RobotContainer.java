@@ -370,11 +370,6 @@ public class RobotContainer {
                 () -> DriveCommands.closestNormalAngle(drive.getPose()),
                 () -> new Rotation2d(0, 0)));
 
-    // auto shoot
-    driverCon
-        .rightTrigger()
-        .debounce(0.1, DebounceType.kRising)
-        .whileTrue(loader.runVoltageCommand(Presets.Loader.FEED_VOLTS));
     driverCon
         .rightTrigger()
         .and(inAllianceZone)
