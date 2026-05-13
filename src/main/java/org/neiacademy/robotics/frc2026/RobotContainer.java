@@ -10,7 +10,6 @@ package org.neiacademy.robotics.frc2026;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -26,7 +25,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.neiacademy.robotics.frc2026.Constants.*;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
@@ -92,16 +90,12 @@ public class RobotContainer {
 
   private Trigger inAllianceZone;
 
-  private Trigger isManualMode;
-
   // Controller
   private final CommandXboxController driverCon = new CommandXboxController(0);
   private final CommandXboxController operatorCon = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-
-  @AutoLogOutput boolean test = false;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -203,12 +197,6 @@ public class RobotContainer {
             () -> {
               Pose2d robotPose = AllianceFlipUtil.apply(drive.getPose());
               return (robotPose.getX() <= FieldConstants.LinesVertical.allianceZone + 0.40);
-            });
-
-    isManualMode =
-        new Trigger(
-            () -> {
-              return Constants.manualMode;
             });
 
     // manual shoot (close hub, center only auto)
@@ -317,6 +305,8 @@ public class RobotContainer {
 
     SmartDashboard.putBoolean("ManualMode", Constants.manualMode);
     SmartDashboard.putBoolean("TuningMode", Constants.tuningMode);
+    SmartDashboard.putBoolean("ConstantFlywheelsMode", Constants.constantFlywheelsMode);
+    SmartDashboard.putBoolean("FixedShooterMode", Constants.fixedShooterMode);
 
     // Configure the button bindings
     configureButtonBindings();

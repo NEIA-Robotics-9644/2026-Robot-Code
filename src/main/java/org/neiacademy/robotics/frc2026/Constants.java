@@ -29,6 +29,10 @@ public final class Constants {
 
   @AutoLogOutput @Setter public static boolean manualMode = false;
 
+  @AutoLogOutput @Setter public static boolean constantFlywheelsMode = false;
+
+  @AutoLogOutput @Setter public static boolean fixedShooterMode = true;
+
   public static final boolean disableHAL = false;
 
   public static final CANDeviceID kPDH_ID = new CANDeviceID(0, "rio");
