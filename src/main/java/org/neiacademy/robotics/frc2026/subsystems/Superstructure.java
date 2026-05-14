@@ -126,9 +126,6 @@ public class Superstructure extends SubsystemBase {
               }
             },
             rightShooter));
-
-    leftShooter.setDefaultCommand(leftShooter.stopCommand());
-    rightShooter.setDefaultCommand(rightShooter.stopCommand());
     SmartDashboard.putData("Overrides/Shift", enableShiftOverride());
     SmartDashboard.putData("Overrides/ShooterFudgePlus1", fudgeShooterSpeed(1));
     SmartDashboard.putData("Overrides/ShooterFudgeMinus1", fudgeShooterSpeed(-1));
