@@ -10,7 +10,6 @@ package org.neiacademy.robotics.frc2026;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -27,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.neiacademy.robotics.frc2026.Constants.*;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
@@ -549,20 +547,14 @@ public class RobotContainer {
         .onFalse(superstructure.endShootCommand());
 
     // force shoot even if the tolerances aren't being met
-    operatorCon
-        .rightBumper()
-        .and(inAllianceZone)
-        .onTrue(superstructure.fudgeShooterSpeedShoot(1));
+    operatorCon.rightBumper().and(inAllianceZone).onTrue(superstructure.fudgeShooterSpeedShoot(1));
 
     operatorCon
         .rightBumper()
         .and(inAllianceZone.negate())
         .onTrue(superstructure.fudgeShooterSpeedShuttle(1));
 
-    operatorCon
-        .rightBumper()
-        .and(inAllianceZone)
-        .onTrue(superstructure.fudgeShooterSpeedShoot(-1));
+    operatorCon.rightBumper().and(inAllianceZone).onTrue(superstructure.fudgeShooterSpeedShoot(-1));
 
     operatorCon
         .leftBumper()
