@@ -20,16 +20,16 @@ public class VisionConstants {
 
   // Camera names, must match names configured on coprocessor
   public static String camera0Name = "frontcam"; // location
-  //   public static String camera1Name = "rightcam"; // location
+  //   public static String camera1Name = "rightcam"; // location`
 
   // Robot to camera transforms
   // (Not used by Limelight, configure in web UI instead)
   public static Transform3d robotToCamera0 =
       new Transform3d(
           Units.inchesToMeters(0),
-          Units.inchesToMeters(-21),
-          Units.inchesToMeters(17.8 + 2.75),
-          new Rotation3d(Math.toRadians(55), 0, 0));
+          Units.inchesToMeters(-21-5.2),
+          Units.inchesToMeters(17.8 + 2.75 - 1.270),
+          new Rotation3d(Math.toRadians(60), 0, 0));
   //   public static Transform3d robotToCamera1 =
   //       new Transform3d(
   //           Units.inchesToMeters(-11.2),

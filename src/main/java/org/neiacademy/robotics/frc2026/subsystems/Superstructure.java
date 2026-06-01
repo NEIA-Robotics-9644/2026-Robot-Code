@@ -46,8 +46,10 @@ public class Superstructure extends SubsystemBase {
   private ShooterSetpoint hubShootingSetpoint;
   private ShooterSetpoint shuttleShootingSetpoint;
 
-  @AutoLogOutput(key = "Overrides")
-  private double shooterRadFudgeFactor;
+  
+  @AutoLogOutput(key = "Overrides") private double shooterRadFudgeFactorShuttle = 0;
+  @AutoLogOutput(key = "Overrides") private double shooterRadFudgeFactorShoot = 0;
+
 
   @AutoLogOutput(key = "Overrides")
   private boolean shiftOverride = false;
@@ -86,17 +88,19 @@ public class Superstructure extends SubsystemBase {
                 new Pose2d(
                     FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)),
             isFixed,
-            shooterRadFudgeFactor);
+            shooterRadFudgeFactorShoot);
     shuttleShootingSetpoint =
         ShootingUtil.makeShuttleSetpoint(
-            drive, getShuttleTargetPose(), isFixed, shooterRadFudgeFactor);
+            drive, getShuttleTargetPose(), isFixed, shooterRadFudgeFactorShoot);
 
     hood.setDefaultCommand(hood.tuckCommand(Presets.Hood.TUCK_POSITION));
     leftShooter.setDefaultCommand(leftShooter.stopCommand());
     rightShooter.setDefaultCommand(rightShooter.stopCommand());
     SmartDashboard.putData("Overrides/Shift", enableShiftOverride());
-    SmartDashboard.putData("Overrides/ShooterFudgePlus1", fudgeShooterSpeed(1));
-    SmartDashboard.putData("Overrides/ShooterFudgeMinus1", fudgeShooterSpeed(-1));
+    SmartDashboard.putData("Overrides/ShooterFudgePlus1", fudgeShooterSpeedShoot(1));
+    SmartDashboard.putData("Overrides/ShooterFudgeMinus1", fudgeShooterSpeedShoot(-1));
+    SmartDashboard.putData("Overrides/ShuttleFudgePlus1", fudgeShooterSpeedShuttle(1));
+    SmartDashboard.putData("Overrides/ShuttleFudgeMinus1", fudgeShooterSpeedShuttle(-1));
   }
 
   @Override
@@ -108,10 +112,10 @@ public class Superstructure extends SubsystemBase {
                 new Pose2d(
                     FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)),
             isFixed,
-            shooterRadFudgeFactor);
+            shooterRadFudgeFactorShoot);
     shuttleShootingSetpoint =
         ShootingUtil.makeShuttleSetpoint(
-            drive, getShuttleTargetPose(), isFixed, shooterRadFudgeFactor);
+            drive, getShuttleTargetPose(), isFixed, shooterRadFudgeFactorShoot);
 
     Logger.recordOutput("Shooter/isFixed", isFixed.getAsBoolean());
 
@@ -143,8 +147,12 @@ public class Superstructure extends SubsystemBase {
         .withName("Override Shift");
   }
 
-  public Command fudgeShooterSpeed(double fudgeFactor) {
-    return Commands.run(() -> shooterRadFudgeFactor = shooterRadFudgeFactor + fudgeFactor);
+  public Command fudgeShooterSpeedShuttle(double fudgeFactor) {
+    return Commands.run(() -> shooterRadFudgeFactorShuttle = shooterRadFudgeFactorShuttle + fudgeFactor);
+  }
+
+  public Command fudgeShooterSpeedShoot(double fudgeFactor) {
+    return Commands.run(() -> shooterRadFudgeFactorShoot = shooterRadFudgeFactorShoot + fudgeFactor);
   }
 
   public Command hubAimCommand(DoubleSupplier driveXSupplier, DoubleSupplier driveYSupplier) {

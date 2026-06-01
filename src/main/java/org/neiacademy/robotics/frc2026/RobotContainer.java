@@ -17,6 +17,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -101,10 +102,11 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  @AutoLogOutput boolean test = false;
-
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    RobotController.setBrownoutVoltage(6.0);
+
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -549,10 +551,23 @@ public class RobotContainer {
     // force shoot even if the tolerances aren't being met
     operatorCon
         .rightBumper()
-        .whileTrue(
-            new ParallelCommandGroup(
-                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
+        .and(inAllianceZone)
+        .onTrue(superstructure.fudgeShooterSpeedShoot(1));
+
+    operatorCon
+        .rightBumper()
+        .and(inAllianceZone.negate())
+        .onTrue(superstructure.fudgeShooterSpeedShuttle(1));
+
+    operatorCon
+        .rightBumper()
+        .and(inAllianceZone)
+        .onTrue(superstructure.fudgeShooterSpeedShoot(-1));
+
+    operatorCon
+        .leftBumper()
+        .and(inAllianceZone.negate())
+        .onTrue(superstructure.fudgeShooterSpeedShuttle(-1));
   }
 
   /**
