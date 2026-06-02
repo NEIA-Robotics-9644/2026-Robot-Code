@@ -98,19 +98,19 @@ public final class Constants {
     public static final double ROLLER_SUPPLY_LIMIT = 45.0;
 
     public static final double SOFT_LIMIT_FORWARD = 0.5;
-    public static final double SOFT_LIMIT_REVERSE = -0.2;
+    public static final double SOFT_LIMIT_REVERSE = 0;
 
     public static final LoggedTunableNumber kP = new LoggedTunableNumber("PID/Intake/kP", 80);
-    public static final LoggedTunableNumber kD = new LoggedTunableNumber("PID/Intake/kD", 15);
+    public static final LoggedTunableNumber kD = new LoggedTunableNumber("PID/Intake/kD", 25);
     public static final LoggedTunableNumber kS = new LoggedTunableNumber("PID/Intake/kS", 0.0);
     public static final LoggedTunableNumber kG = new LoggedTunableNumber("PID/Intake/kG", 0);
     public static final LoggedTunableNumber kV = new LoggedTunableNumber("PID/Intake/kV", 0.0);
     public static final LoggedTunableNumber kA = new LoggedTunableNumber("PID/Intake/kA", 0.0);
 
     public static final LoggedTunableNumber MAX_VELOCITY =
-        new LoggedTunableNumber("PID/Intake/MaxVelocity", 0.5);
+        new LoggedTunableNumber("PID/Intake/MaxVelocity", 4);
     public static final LoggedTunableNumber MAX_ACCEL =
-        new LoggedTunableNumber("PID/Intake/MaxAccel", 1.5);
+        new LoggedTunableNumber("PID/Intake/MaxAccel", 4);
 
     public static final LoggedTunableNumber POSITION_TOLERANCE =
         new LoggedTunableNumber("PID/Intake/DeployToleranceDeg", 3.0);
