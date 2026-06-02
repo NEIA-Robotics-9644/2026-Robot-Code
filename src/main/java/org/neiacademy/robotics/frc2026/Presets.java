@@ -1,8 +1,24 @@
 package org.neiacademy.robotics.frc2026;
 
+import org.neiacademy.robotics.frc2026.generated.TunerConstants;
 import org.neiacademy.robotics.frc2026.util.LoggedTunableNumber;
 
 public final class Presets {
+  public static class Drive {
+    public static final LoggedTunableNumber DRIVE_kP = TunerConstants.DRIVE_kP;
+    public static final LoggedTunableNumber DRIVE_kI = TunerConstants.DRIVE_kI;
+    public static final LoggedTunableNumber DRIVE_kD = TunerConstants.DRIVE_kD;
+    public static final LoggedTunableNumber DRIVE_kS = TunerConstants.DRIVE_kS;
+    public static final LoggedTunableNumber DRIVE_kV = TunerConstants.DRIVE_kV;
+    public static final LoggedTunableNumber DRIVE_kA = TunerConstants.DRIVE_kA;
+
+    public static final LoggedTunableNumber STEER_kP = TunerConstants.STEER_kP;
+    public static final LoggedTunableNumber STEER_kI = TunerConstants.STEER_kI;
+    public static final LoggedTunableNumber STEER_kD = TunerConstants.STEER_kD;
+    public static final LoggedTunableNumber STEER_kS = TunerConstants.STEER_kS;
+    public static final LoggedTunableNumber STEER_kV = TunerConstants.STEER_kV;
+    public static final LoggedTunableNumber STEER_kA = TunerConstants.STEER_kA;
+  }
 
   public static class Spindexer {
     public static final LoggedTunableNumber FEED_VOLTS =
