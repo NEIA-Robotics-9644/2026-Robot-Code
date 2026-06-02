@@ -46,10 +46,11 @@ public class Superstructure extends SubsystemBase {
   private ShooterSetpoint hubShootingSetpoint;
   private ShooterSetpoint shuttleShootingSetpoint;
 
-  
-  @AutoLogOutput(key = "Overrides") private double shooterRadFudgeFactorShuttle = 0;
-  @AutoLogOutput(key = "Overrides") private double shooterRadFudgeFactorShoot = 0;
+  @AutoLogOutput(key = "Overrides")
+  private double shooterRadFudgeFactorShuttle = 0;
 
+  @AutoLogOutput(key = "Overrides")
+  private double shooterRadFudgeFactorShoot = 0;
 
   @AutoLogOutput(key = "Overrides")
   private boolean shiftOverride = false;
@@ -148,11 +149,13 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Command fudgeShooterSpeedShuttle(double fudgeFactor) {
-    return Commands.run(() -> shooterRadFudgeFactorShuttle = shooterRadFudgeFactorShuttle + fudgeFactor);
+    return Commands.run(
+        () -> shooterRadFudgeFactorShuttle = shooterRadFudgeFactorShuttle + fudgeFactor);
   }
 
   public Command fudgeShooterSpeedShoot(double fudgeFactor) {
-    return Commands.run(() -> shooterRadFudgeFactorShoot = shooterRadFudgeFactorShoot + fudgeFactor);
+    return Commands.run(
+        () -> shooterRadFudgeFactorShoot = shooterRadFudgeFactorShoot + fudgeFactor);
   }
 
   public Command hubAimCommand(DoubleSupplier driveXSupplier, DoubleSupplier driveYSupplier) {
