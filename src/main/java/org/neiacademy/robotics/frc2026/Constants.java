@@ -61,6 +61,22 @@ public final class Constants {
     public static final double GEAR_RATIO = 9.0;
   }
 
+  public static class Drive {
+    public static final LoggedTunableNumber STEER_kP = new LoggedTunableNumber("PID/Drive/Steer/kP", 3600);
+    public static final LoggedTunableNumber STEER_kI = new LoggedTunableNumber("PID/Drive/Steer/kI", 0);
+    public static final LoggedTunableNumber STEER_kD = new LoggedTunableNumber("PID/Drive/Steer/kD", 70);
+    public static final LoggedTunableNumber STEER_kS = new LoggedTunableNumber("PID/Drive/Steer/kS", 0);
+    public static final LoggedTunableNumber STEER_kV = new LoggedTunableNumber("PID/Drive/Steer/kV", 0);
+    public static final LoggedTunableNumber STEER_kA = new LoggedTunableNumber("PID/Drive/Steer/kA", 0);
+
+    public static final LoggedTunableNumber DRIVE_kP = new LoggedTunableNumber("PID/Drive/Propulsion/kP", 40);
+    public static final LoggedTunableNumber DRIVE_kI = new LoggedTunableNumber("PID/Drive/Propulsion/kI", 0);
+    public static final LoggedTunableNumber DRIVE_kD = new LoggedTunableNumber("PID/Drive/Propulsion/kD", 0);
+    public static final LoggedTunableNumber DRIVE_kS = new LoggedTunableNumber("PID/Drive/Propulsion/kS", 8);
+    public static final LoggedTunableNumber DRIVE_kV = new LoggedTunableNumber("PID/Drive/Propulsion/kV", 0.4);
+    public static final LoggedTunableNumber DRIVE_kA = new LoggedTunableNumber("PID/Drive/Propulsion/kA", 0);
+  }
+
   public static class Intake {
     public static final String CANBUS = "Drive";
     public static final CANDeviceID DEPLOY_MOTOR_ID = new CANDeviceID(32, "rio");
