@@ -310,7 +310,7 @@ public class RobotContainer {
             spindexer.runVoltageCommand(Presets.Spindexer.TUNING_VOLTS),
             intakeRoller.runVoltageCommand(Presets.Intake.TUNING_VOLTS),
             intakeDeploy.runTrackedPositionCommand(
-                () -> Units.degreesToRadians(Presets.Intake.TUNING_ANGLE_DEG.getAsDouble())),
+                () -> Units.degreesToRotations(Presets.Intake.TUNING_ANGLE_DEG.getAsDouble())),
             leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
             rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED)));
     hood.runTrackedPositionCommand(Presets.Hood.TUNING_POSITION);
@@ -493,7 +493,7 @@ public class RobotContainer {
             intakeDeploy.runTrackedPositionCommand(
                 () ->
                     clamp(
-                        intakeDeploy.getAngleRads()
+                        intakeDeploy.getPositionRotations()
                             + (((Math.abs(Presets.Intake.TUCK_ANGLE_DEG.get())
                                         + Math.abs(Presets.Intake.EXTEND_ANGLE_DEG.get()))
                                     / (Presets.Intake.PIVOT_MANUAL_MOVEMENT_TOTAL_TIME.get() * 50))

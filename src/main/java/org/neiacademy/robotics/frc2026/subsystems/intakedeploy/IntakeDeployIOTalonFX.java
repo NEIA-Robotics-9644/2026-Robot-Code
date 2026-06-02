@@ -43,7 +43,7 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
 
   private TrapezoidProfile.State profileSetpoint = new TrapezoidProfile.State();
   private boolean profileInitialized = false;
-  private double positionGoalRads = 0.0;
+  private double positionGoalRotations = 0.0;
 
   public IntakeDeployIOTalonFX() {
     deploy =
@@ -144,7 +144,7 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
     inputs.rotorPositionRads = Units.rotationsToRadians(rotorPosition.getValueAsDouble());
     inputs.positionSetpointRads =
         profileInitialized
-            ? positionGoalRads
+            ? Units.rotationsToRadians(positionGoalRotations)
             : Units.rotationsToRadians(positionSetpoint.getValueAsDouble());
     inputs.velocityRadsPerSec = Units.rotationsToRadians(velocity.getValueAsDouble());
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
@@ -159,11 +159,11 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
   }
 
   @Override
-  public void runPosition(double positionRads) {
+  public void runPosition(double positionRotations) {
     if (!profileInitialized) {
       resetProfileToCurrentState();
     }
-    positionGoalRads = positionRads;
+    positionGoalRotations = positionRotations;
 
     var positionProfile =
         new TrapezoidProfile(
@@ -174,12 +174,12 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
         positionProfile.calculate(
             Constants.loopTime,
             profileSetpoint,
-            new TrapezoidProfile.State(positionGoalRads, 0.0));
+            new TrapezoidProfile.State(positionGoalRotations, 0.0));
 
     deploy.setControl(
         positionTorqueCurrentFOC
-            .withPosition(Units.radiansToRotations(profileSetpoint.position))
-            .withVelocity(Units.radiansToRotations(profileSetpoint.velocity)));
+            .withPosition(profileSetpoint.position)
+            .withVelocity(profileSetpoint.velocity));
   }
 
   @Override
@@ -207,8 +207,8 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
   private void resetProfileToCurrentState() {
     profileSetpoint =
         new TrapezoidProfile.State(
-            Units.rotationsToRadians(rotorPosition.getValueAsDouble()),
-            Units.rotationsToRadians(velocity.getValueAsDouble()));
+            rotorPosition.getValueAsDouble(),
+            velocity.getValueAsDouble());
     profileInitialized = true;
   }
 }
