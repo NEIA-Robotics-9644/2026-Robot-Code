@@ -9,7 +9,6 @@ package org.neiacademy.robotics.frc2026;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -61,6 +60,7 @@ import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIO;
 import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVision;
 import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVisionSim;
 import org.neiacademy.robotics.frc2026.util.AllianceFlipUtil;
+import org.neiacademy.robotics.frc2026.util.AutoMirroringUtil;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -294,14 +294,7 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Left NZ Steal And Shoot Auto", new PathPlannerAuto("Right NZ Steal And Shoot Auto", true));
-    autoChooser.addOption(
-        "Left NZ Trench No Cross Wait Steal and Shoot Auto",
-        new PathPlannerAuto("Right NZ Trench No Cross Wait Steal and Shoot Auto", true));
-    autoChooser.addOption(
-        "Left NZ Bump No Cross Wait Steal and Shoot Auto",
-        new PathPlannerAuto("Right NZ Bump No Cross Wait Steal and Shoot Auto", true));
+    AutoMirroringUtil.addMirroredAutos(autoChooser);
 
     SmartDashboard.putData(
         "RunEverythingForTuning",
