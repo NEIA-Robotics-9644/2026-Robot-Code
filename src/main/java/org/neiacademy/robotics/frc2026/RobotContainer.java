@@ -294,6 +294,7 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // auto mirrors ANY pathplanner auto that begins with right/left (case insensitive)
     AutoMirroringUtil.addMirroredAutos(autoChooser);
 
     SmartDashboard.putData(
@@ -328,21 +329,13 @@ public class RobotContainer {
     // Switch to X pattern when X button is pressed
     driverCon.x().whileTrue(Commands.run(drive::stopWithX, drive));
 
-    // fall back
+    // force shoot even if the tolerances aren't being met
     driverCon
         .y()
         .whileTrue(
-            new SequentialCommandGroup(
-                new ParallelCommandGroup(
-                    hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
-                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)),
-                new ParallelCommandGroup(
-                    spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-                    loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
-                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
-                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))))
-        .onFalse(superstructure.endShootCommand());
+            new ParallelCommandGroup(
+                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
 
     driverCon
         .b()
@@ -401,13 +394,21 @@ public class RobotContainer {
         .whileTrue(superstructure.shootCommand())
         .onFalse(superstructure.endShootCommand());
 
-    // force shoot even if the tolerances aren't being met
+    // fall back
     driverCon
         .rightBumper()
         .whileTrue(
-            new ParallelCommandGroup(
-                spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
-                loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
+            new SequentialCommandGroup(
+                new ParallelCommandGroup(
+                    hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
+                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)),
+                new ParallelCommandGroup(
+                    spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
+                    loader.runVoltageCommand(Presets.Loader.FEED_VOLTS),
+                    leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
+                    rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED))))
+        .onFalse(superstructure.endShootCommand());
 
     // force shoot fall back even if flywheels aren't fully spun up
     driverCon

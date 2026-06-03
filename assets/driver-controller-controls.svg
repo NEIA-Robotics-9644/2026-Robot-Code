@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1200" viewBox="0 0 1800 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Driver Xbox Controller Controls</title>
+  <desc id="desc">Annotated driver controller control map generated from RobotContainer driver button bindings.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f5f7fb; }
+      .panel { fill: #ffffff; stroke: #cad3df; stroke-width: 3; }
+      .controller { fill: #2f3742; stroke: #151a20; stroke-width: 5; }
+      .grip { fill: #252c35; }
+      .button { fill: #111827; stroke: #0b111a; stroke-width: 3; }
+      .buttonText { fill: #ffffff; font: 700 26px Arial, sans-serif; text-anchor: middle; dominant-baseline: central; }
+      .stick { fill: #151a20; stroke: #55606f; stroke-width: 7; }
+      .stickTop { fill: #222a33; stroke: #8994a3; stroke-width: 4; }
+      .trigger { fill: #475569; stroke: #1f2937; stroke-width: 4; }
+      .labelBox { fill: #ffffff; stroke: #334155; stroke-width: 2.5; rx: 10; }
+      .labelTitle { fill: #0f172a; font: 700 28px Arial, sans-serif; }
+      .labelText { fill: #1f2937; font: 22px Arial, sans-serif; }
+      .smallText { fill: #334155; font: 18px Arial, sans-serif; }
+      .line { fill: none; stroke: #ef4444; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+      .dot { fill: #ef4444; }
+      .heading { fill: #0f172a; font: 800 44px Arial, sans-serif; }
+      .subheading { fill: #475569; font: 22px Arial, sans-serif; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1800" height="1200"/>
+  <text class="heading" x="900" y="72" text-anchor="middle">Driver Controller Controls</text>
+  <text class="subheading" x="900" y="108" text-anchor="middle">From RobotContainer driver bindings</text>
+
+  <!-- Controller body -->
+  <path class="controller" d="M565 360
+    C510 355 458 383 433 433
+    L333 640
+    C295 719 323 812 396 855
+    C459 892 535 875 577 816
+    L641 727
+    C668 689 711 667 758 667
+    L1042 667
+    C1089 667 1132 689 1159 727
+    L1223 816
+    C1265 875 1341 892 1404 855
+    C1477 812 1505 719 1467 640
+    L1367 433
+    C1342 383 1290 355 1235 360
+    C1171 365 1117 406 1097 466
+    L803 466
+    C783 406 729 365 665 360
+    Z"/>
+  <path class="grip" d="M419 603 C363 711 400 805 477 807 C519 808 551 783 574 742 L618 665 C548 671 482 649 419 603 Z"/>
+  <path class="grip" d="M1381 603 C1437 711 1400 805 1323 807 C1281 808 1249 783 1226 742 L1182 665 C1252 671 1318 649 1381 603 Z"/>
+
+  <!-- Triggers and bumpers -->
+  <rect class="trigger" x="505" y="257" width="230" height="62" rx="24"/>
+  <text class="buttonText" x="620" y="288">LB</text>
+  <rect class="trigger" x="510" y="183" width="220" height="60" rx="22"/>
+  <text class="buttonText" x="620" y="213">LT</text>
+  <rect class="trigger" x="1065" y="257" width="230" height="62" rx="24"/>
+  <text class="buttonText" x="1180" y="288">RB</text>
+  <rect class="trigger" x="1070" y="183" width="220" height="60" rx="22"/>
+  <text class="buttonText" x="1180" y="213">RT</text>
+
+  <!-- Sticks -->
+  <circle class="stick" cx="660" cy="562" r="76"/>
+  <circle class="stickTop" cx="660" cy="562" r="48"/>
+  <circle class="stick" cx="1020" cy="650" r="76"/>
+  <circle class="stickTop" cx="1020" cy="650" r="48"/>
+
+  <!-- D-pad -->
+  <rect class="button" x="755" y="630" width="48" height="138" rx="12"/>
+  <rect class="button" x="710" y="675" width="138" height="48" rx="12"/>
+  <text class="buttonText" x="779" y="699">+</text>
+
+  <!-- Center buttons -->
+  <rect class="button" x="785" y="526" width="80" height="38" rx="18"/>
+  <text class="buttonText" x="825" y="545">Back</text>
+  <rect class="button" x="935" y="526" width="80" height="38" rx="18"/>
+  <text class="buttonText" x="975" y="545">Start</text>
+
+  <!-- Face buttons -->
+  <circle class="button" cx="1205" cy="510" r="38"/>
+  <text class="buttonText" x="1205" y="510">Y</text>
+  <circle class="button" cx="1135" cy="580" r="38"/>
+  <text class="buttonText" x="1135" y="580">X</text>
+  <circle class="button" cx="1275" cy="580" r="38"/>
+  <text class="buttonText" x="1275" y="580">B</text>
+  <circle class="button" cx="1205" cy="650" r="38"/>
+  <text class="buttonText" x="1205" y="650">A</text>
+
+  <!-- Callout boxes -->
+  <rect class="labelBox" x="80" y="168" width="390" height="130"/>
+  <text class="labelTitle" x="105" y="210">Left Trigger</text>
+  <text class="labelText" x="105" y="246">Deploy intake</text>
+  <text class="labelText" x="105" y="278">Run intake roller</text>
+  <path class="line" d="M470 233 L560 213"/><circle class="dot" cx="560" cy="213" r="7"/>
+
+  <rect class="labelBox" x="80" y="325" width="390" height="105"/>
+  <text class="labelTitle" x="105" y="367">Left Bumper</text>
+  <text class="labelText" x="105" y="403">Retract intake</text>
+  <path class="line" d="M470 377 L555 288"/><circle class="dot" cx="555" cy="288" r="7"/>
+
+  <rect class="labelBox" x="80" y="455" width="390" height="145"/>
+  <text class="labelTitle" x="105" y="497">Left Stick</text>
+  <text class="labelText" x="105" y="533">Drive translation</text>
+  <text class="smallText" x="105" y="566">Forward/back and strafe</text>
+  <path class="line" d="M470 525 L610 562"/><circle class="dot" cx="610" cy="562" r="7"/>
+
+  <rect class="labelBox" x="80" y="630" width="430" height="155"/>
+  <text class="labelTitle" x="105" y="672">D-Pad</text>
+  <text class="labelText" x="105" y="708">Up: fallback close-hub shot</text>
+  <text class="labelText" x="105" y="740">Left: tuning shot</text>
+  <text class="labelText" x="105" y="772">Down: reset gyro heading to 0</text>
+  <path class="line" d="M510 710 L730 700"/><circle class="dot" cx="730" cy="700" r="7"/>
+
+  <rect class="labelBox" x="80" y="815" width="430" height="120"/>
+  <text class="labelTitle" x="105" y="857">Back</text>
+  <text class="labelText" x="105" y="893">Full shuttle speed</text>
+  <text class="labelText" x="105" y="925">Shoot when flywheels ready</text>
+  <path class="line" d="M510 872 L785 545"/><circle class="dot" cx="785" cy="545" r="7"/>
+
+  <rect class="labelBox" x="560" y="845" width="400" height="120"/>
+  <text class="labelTitle" x="585" y="887">Right Stick</text>
+  <text class="labelText" x="585" y="923">Drive rotation</text>
+  <text class="smallText" x="585" y="952">Used with left stick in drive commands</text>
+  <path class="line" d="M900 845 L1000 700"/><circle class="dot" cx="1000" cy="700" r="7"/>
+
+  <rect class="labelBox" x="1010" y="845" width="430" height="120"/>
+  <text class="labelTitle" x="1035" y="887">Start</text>
+  <text class="labelText" x="1035" y="923">Half shuttle speed</text>
+  <text class="labelText" x="1035" y="955">Shoot when flywheels ready</text>
+  <path class="line" d="M1040 845 L975 545"/><circle class="dot" cx="975" cy="545" r="7"/>
+
+  <rect class="labelBox" x="1465" y="158" width="355" height="165"/>
+  <text class="labelTitle" x="1490" y="200">Right Trigger</text>
+  <text class="labelText" x="1490" y="236">Alliance zone: hub aim</text>
+  <text class="labelText" x="1490" y="268">and shoot when ready</text>
+  <text class="labelText" x="1490" y="300">Outside zone: shuttle shot</text>
+  <path class="line" d="M1465 245 L1235 213"/><circle class="dot" cx="1235" cy="213" r="7"/>
+
+  <rect class="labelBox" x="1465" y="350" width="355" height="105"/>
+  <text class="labelTitle" x="1490" y="392">Right Bumper</text>
+  <text class="labelText" x="1490" y="428">Force feed/shoot</text>
+  <path class="line" d="M1465 400 L1245 288"/><circle class="dot" cx="1245" cy="288" r="7"/>
+
+  <rect class="labelBox" x="1465" y="485" width="355" height="220"/>
+  <text class="labelTitle" x="1490" y="527">Face Buttons</text>
+  <text class="labelText" x="1490" y="563">A: lock to closest normal</text>
+  <text class="labelText" x="1490" y="595">B: exhaust intake/loader/spindexer</text>
+  <text class="labelText" x="1490" y="627">X: stop with X</text>
+  <text class="labelText" x="1490" y="659">Y: fallback close-hub shot</text>
+  <path class="line" d="M1465 600 L1275 580"/><circle class="dot" cx="1275" cy="580" r="7"/>
+  <path class="line" d="M1465 625 L1205 650"/><circle class="dot" cx="1205" cy="650" r="7"/>
+  <path class="line" d="M1465 650 L1135 580"/><circle class="dot" cx="1135" cy="580" r="7"/>
+  <path class="line" d="M1465 675 L1205 510"/><circle class="dot" cx="1205" cy="510" r="7"/>
+
+  <rect class="labelBox" x="1465" y="735" width="355" height="130"/>
+  <text class="labelTitle" x="1490" y="777">RT + X</text>
+  <text class="labelText" x="1490" y="813">Hub aim and shoot</text>
+  <text class="labelText" x="1490" y="845">while holding X-lock</text>
+  <path class="line" d="M1465 800 L1235 213"/><circle class="dot" cx="1235" cy="213" r="7"/>
+  <path class="line" d="M1465 830 L1135 580"/><circle class="dot" cx="1135" cy="580" r="7"/>
+
+  <rect class="panel" x="545" y="985" width="710" height="110" rx="12"/>
+  <text class="labelTitle" x="575" y="1025">Default Drive</text>
+  <text class="labelText" x="575" y="1061">Left stick controls translation. Right stick controls rotation.</text>
+  <text class="smallText" x="575" y="1088">All labels reflect driver controller port 0 bindings in RobotContainer.</text>
+</svg>
