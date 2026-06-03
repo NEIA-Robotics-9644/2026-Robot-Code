@@ -12,6 +12,7 @@ import static org.neiacademy.robotics.frc2026.util.PhoenixUtil.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -260,5 +261,15 @@ public class ModuleIOTalonFX implements ModuleIO {
           case TorqueCurrentFOC -> positionTorqueCurrentRequest.withPosition(
               rotation.getRotations());
         });
+  }
+
+  @Override
+  public void setDriveGains(Slot0Configs gains) {
+    driveTalon.getConfigurator().apply(gains);
+  }
+
+  @Override
+  public void setTurnGains(Slot0Configs gains) {
+    turnTalon.getConfigurator().apply(gains);
   }
 }

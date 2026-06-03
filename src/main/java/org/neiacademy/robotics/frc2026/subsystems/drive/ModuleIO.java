@@ -7,6 +7,7 @@
 
 package org.neiacademy.robotics.frc2026.subsystems.drive;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
@@ -46,4 +47,10 @@ public interface ModuleIO {
 
   /** Run the turn motor to the specified rotation. */
   public default void setTurnPosition(Rotation2d rotation) {}
+
+  /** Updates the drive motor closed-loop gains. */
+  public default void setDriveGains(Slot0Configs gains) {}
+
+  /** Updates the turn motor closed-loop gains. */
+  public default void setTurnGains(Slot0Configs gains) {}
 }
