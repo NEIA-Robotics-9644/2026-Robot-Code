@@ -84,7 +84,7 @@ public final class Constants {
     public static final CANDeviceID ROLLER_MOTOR_ID = new CANDeviceID(33, "rio");
 
     public static final InvertedValue DEPLOY_INVERTED = InvertedValue.Clockwise_Positive;
-    public static final InvertedValue ROLLER_INVERTED = InvertedValue.Clockwise_Positive;
+    public static final InvertedValue ROLLER_INVERTED = InvertedValue.CounterClockwise_Positive;
 
     public static final SensorDirectionValue ENCODER_DIRECTION =
         SensorDirectionValue.Clockwise_Positive;

@@ -23,7 +23,7 @@ public final class Presets {
         new LoggedTunableNumber("Setpoints/Intake/PivotManualMovementTotalTime", 1.5);
 
     public static final LoggedTunableNumber INTAKE_VOLTS =
-        new LoggedTunableNumber("Setpoints/Intake/RollerIntakeVolts", 7.5);
+        new LoggedTunableNumber("Setpoints/Intake/RollerIntakeVolts", 12);
     public static final LoggedTunableNumber EXHAUST_VOLTS =
         new LoggedTunableNumber("Setpoints/Intake/RollerExhaustVolts", -6.0);
     public static final LoggedTunableNumber TUNING_VOLTS =
