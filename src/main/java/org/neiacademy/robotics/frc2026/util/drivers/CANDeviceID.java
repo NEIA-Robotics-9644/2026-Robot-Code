@@ -7,7 +7,14 @@
 
 package org.neiacademy.robotics.frc2026.util.drivers;
 
+import com.ctre.phoenix6.CANBus;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import org.neiacademy.robotics.frc2026.generated.TunerConstants;
+
 public class CANDeviceID {
+  private static final Map<String, CANBus> CAN_BUSES = new ConcurrentHashMap<>();
+
   private final int deviceNumber;
   private final String bus;
 
@@ -27,6 +34,17 @@ public class CANDeviceID {
 
   public String getBus() {
     return bus;
+  }
+
+  public CANBus getCANBus() {
+    if (bus.equals("Drive")) {
+      return TunerConstants.kCANBus;
+    }
+    return CAN_BUSES.computeIfAbsent(bus, CANDeviceID::createCANBus);
+  }
+
+  private static CANBus createCANBus(String bus) {
+    return bus.equals("rio") ? CANBus.roboRIO() : new CANBus(bus);
   }
 
   @SuppressWarnings("NonOverridingEquals")

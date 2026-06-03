@@ -48,10 +48,10 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
   public IntakeDeployIOTalonFX() {
     deploy =
         new TalonFX(
-            Constants.Intake.DEPLOY_MOTOR_ID.getID(), Constants.Intake.DEPLOY_MOTOR_ID.getBus());
+            Constants.Intake.DEPLOY_MOTOR_ID.getID(), Constants.Intake.DEPLOY_MOTOR_ID.getCANBus());
 
     cancoder =
-        new CANcoder(Constants.Intake.ENCODER_ID.getID(), Constants.Intake.ENCODER_ID.getBus());
+        new CANcoder(Constants.Intake.ENCODER_ID.getID(), Constants.Intake.ENCODER_ID.getCANBus());
     deployConfig = new TalonFXConfiguration();
 
     deployConfig.CurrentLimits.StatorCurrentLimitEnable = true;
@@ -206,9 +206,7 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
 
   private void resetProfileToCurrentState() {
     profileSetpoint =
-        new TrapezoidProfile.State(
-            rotorPosition.getValueAsDouble(),
-            velocity.getValueAsDouble());
+        new TrapezoidProfile.State(rotorPosition.getValueAsDouble(), velocity.getValueAsDouble());
     profileInitialized = true;
   }
 }
