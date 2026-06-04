@@ -9,9 +9,12 @@
 # 2026-Robot-Code
 2026 REBUILT&trade; Code Base
 
-<p align="center">
-  <img src="assets/logo.png" width="50%" height="50%">
-</p>
+<table>
+  <tr>
+    <td><img src="assets/logo.png" alt="Team logo" style="border-radius: 12px;"></td>
+    <td><img src="assets/dcmp2fullhopper.jpg" alt="Robot" style="border-radius: 12px;"></td>
+  </tr>
+</table>
 
 ## Repository and Contribution Rules
 The ```main``` branch is protected.
