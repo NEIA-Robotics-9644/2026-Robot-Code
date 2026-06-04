@@ -61,6 +61,7 @@ import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVision;
 import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVisionSim;
 import org.neiacademy.robotics.frc2026.util.AllianceFlipUtil;
 import org.neiacademy.robotics.frc2026.util.AutoMirroringUtil;
+import org.neiacademy.robotics.frc2026.util.ControllerAlertRumble;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -96,6 +97,8 @@ public class RobotContainer {
   // Controller
   private final CommandXboxController driverCon = new CommandXboxController(0);
   private final CommandXboxController operatorCon = new CommandXboxController(1);
+  private final ControllerAlertRumble controllerAlertRumble =
+      new ControllerAlertRumble(driverCon, operatorCon);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -573,7 +576,10 @@ public class RobotContainer {
     // Auto alert
     noAutoAlert.set(
         DriverStation.isAutonomous() && !DriverStation.isEnabled() && autoChooser.get() == noAuto);
+
+    controllerAlertRumble.periodic();
   }
+
   // will stay until java gets updated for this
   private double clamp(double value, double min, double max) {
     return Math.max(min >= max ? min : max, Math.min(max >= min ? max : min, value));
