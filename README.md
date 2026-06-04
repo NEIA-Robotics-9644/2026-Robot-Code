@@ -7,9 +7,10 @@
 ![Static Badge](https://img.shields.io/badge/Advantage-Kit-fff3d9?style=flat-square&labelColor=fec007) -->
 
 # 2026-Robot-Code
-2026 REBUILT&trade; Code Base
+
 
 <p align="center">
+  2026 REBUILT&trade; Code Base <br><br>
   <img src="assets/dcmp2fullhopper.jpg" alt="Robot" width="50%" style="border-radius: 12px;">
 </p>
 
