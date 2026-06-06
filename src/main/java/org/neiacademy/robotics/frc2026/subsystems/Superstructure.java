@@ -47,13 +47,13 @@ public class Superstructure extends SubsystemBase {
   private ShooterSetpoint shuttleShootingSetpoint;
 
   @AutoLogOutput(key = "Overrides/ShuttleSpeedFudge")
-  private DoubleSupplier shooterRadFudgeFactorShuttle = () -> 0;
+  private double shooterRadFudgeFactorShuttle = 0;
 
   @AutoLogOutput(key = "Overrides/ShootSpeedFudge")
-  private DoubleSupplier shooterRadFudgeFactorShoot = () -> -3;
+  private double shooterRadFudgeFactorShoot = -3;
 
   @AutoLogOutput(key = "Overrides/ShootAngleFudge")
-  private DoubleSupplier shooterRadFudgeFactorAngle = () -> 0;
+  private double shooterRadFudgeFactorAngle = 0;
 
   @AutoLogOutput(key = "Overrides/ShiftOverride")
   private boolean shiftOverride = false;
@@ -92,10 +92,10 @@ public class Superstructure extends SubsystemBase {
                 new Pose2d(
                     FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)),
             isFixed,
-            shooterRadFudgeFactorShoot.getAsDouble());
+            shooterRadFudgeFactorShoot);
     shuttleShootingSetpoint =
         ShootingUtil.makeShuttleSetpoint(
-            drive, getShuttleTargetPose(), isFixed, shooterRadFudgeFactorShoot.getAsDouble());
+            drive, getShuttleTargetPose(), isFixed, shooterRadFudgeFactorShoot);
 
     hood.setDefaultCommand(hood.tuckCommand(Presets.Hood.TUCK_POSITION));
     leftShooter.setDefaultCommand(leftShooter.stopCommand());
@@ -116,10 +116,10 @@ public class Superstructure extends SubsystemBase {
                 new Pose2d(
                     FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)),
             isFixed,
-            shooterRadFudgeFactorShoot.getAsDouble());
+            shooterRadFudgeFactorShoot);
     shuttleShootingSetpoint =
         ShootingUtil.makeShuttleSetpoint(
-            drive, getShuttleTargetPose(), isFixed, shooterRadFudgeFactorShoot.getAsDouble());
+            drive, getShuttleTargetPose(), isFixed, shooterRadFudgeFactorShoot);
 
     Logger.recordOutput("Shooter/isFixed", isFixed.getAsBoolean());
 
@@ -153,17 +153,17 @@ public class Superstructure extends SubsystemBase {
 
   public Command fudgeShooterSpeedShuttle(double fudgeFactor) {
     return Commands.run(
-        () -> shooterRadFudgeFactorShuttle = () -> shooterRadFudgeFactorShuttle.getAsDouble() + fudgeFactor);
+        () -> shooterRadFudgeFactorShuttle = shooterRadFudgeFactorShuttle + fudgeFactor);
   }
 
   public Command fudgeShooterSpeedShoot(double fudgeFactor) {
     return Commands.run(
-        () -> shooterRadFudgeFactorShoot = () -> shooterRadFudgeFactorShoot.getAsDouble() + fudgeFactor);
+        () -> shooterRadFudgeFactorShoot = shooterRadFudgeFactorShoot + fudgeFactor);
   }
 
   public Command fudgeAngle(double fudgeFactor) {
     return Commands.run(
-        () -> shooterRadFudgeFactorAngle = () -> shooterRadFudgeFactorAngle.getAsDouble() + fudgeFactor);
+        () -> shooterRadFudgeFactorAngle = shooterRadFudgeFactorAngle + fudgeFactor);
   }
 
   public Command hubAimCommand(DoubleSupplier driveXSupplier, DoubleSupplier driveYSupplier) {
@@ -296,7 +296,7 @@ public class Superstructure extends SubsystemBase {
   public Rotation2d getHubShootingSetpointDriveAngle() {
     return hubShootingSetpoint
         .driveAngleRads()
-        .plus(new Rotation2d(Math.toRadians(shooterRadFudgeFactorAngle.getAsDouble())));
+        .plus(new Rotation2d(Math.toRadians(shooterRadFudgeFactorAngle)));
   }
 
   public Rotation2d getHubShootingSetpointDriveVelocity() {
