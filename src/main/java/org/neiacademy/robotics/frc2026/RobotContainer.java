@@ -366,7 +366,10 @@ public class RobotContainer {
         .rightTrigger()
         .and(inAllianceZone)
         .whileTrue(
-            superstructure.hubAimCommand(() -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+            superstructure.hubAimCommand(
+                () -> -driverCon.getLeftY(),
+                () -> -driverCon.getLeftX(),
+                () -> -operatorCon.getRightX()))
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
         .and(DriveCommands::atAngleSetpoint)
@@ -379,7 +382,10 @@ public class RobotContainer {
         .and(driverCon.x())
         .and(inAllianceZone)
         .whileTrue(
-            superstructure.hubAimCommand(() -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+            superstructure.hubAimCommand(
+                () -> -driverCon.getLeftY(),
+                () -> -driverCon.getLeftX(),
+                () -> -operatorCon.getRightX()))
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
         .and(DriveCommands::atAngleSetpoint)
@@ -393,7 +399,9 @@ public class RobotContainer {
         .and(inAllianceZone.negate())
         .whileTrue(
             superstructure.shuttleAimCommand(
-                () -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+                () -> -driverCon.getLeftY(),
+                () -> -driverCon.getLeftX(),
+                () -> -operatorCon.getRightX()))
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
         // .and(DriveCommands::atAngleSetpoint)
