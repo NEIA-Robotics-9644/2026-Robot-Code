@@ -281,7 +281,7 @@ public class Superstructure extends SubsystemBase {
         spindexer.stopCommand(),
         loader.stopCommand(),
         leftShooter.stopCommand(),
-        rightShooter.stopCommand());
+        rightShooter.stopCommand()).withTimeout(0.1);
   }
 
   public Rotation2d getHubShootingSetpointDriveAngle() {

@@ -197,6 +197,12 @@
         {
           "type": "named",
           "data": {
+            "name": "autoShootEndCommand"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "intakeRetract"
           }
         },
