@@ -278,10 +278,11 @@ public class Superstructure extends SubsystemBase {
 
   public Command autoEndShootCommand() {
     return new ParallelCommandGroup(
-        spindexer.stopCommand(),
-        loader.stopCommand(),
-        leftShooter.stopCommand(),
-        rightShooter.stopCommand()).withTimeout(0.1);
+            spindexer.stopCommand(),
+            loader.stopCommand(),
+            leftShooter.stopCommand(),
+            rightShooter.stopCommand())
+        .withTimeout(0.1);
   }
 
   public Rotation2d getHubShootingSetpointDriveAngle() {

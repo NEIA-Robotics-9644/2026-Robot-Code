@@ -277,7 +277,8 @@ public class RobotContainer {
                 spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS))
             .withTimeout(0.25));
 
-    NamedCommands.registerCommand("autoEndShootCommand", new ParallelCommandGroup(superstructure.autoEndShootCommand()));
+    NamedCommands.registerCommand(
+        "autoEndShootCommand", new ParallelCommandGroup(superstructure.autoEndShootCommand()));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
