@@ -475,7 +475,12 @@ public class RobotContainer {
     driverCon.leftBumper().onTrue(superstructure.retractIntake());
 
     operatorCon.a().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
-    operatorCon.y().whileTrue(new ParallelCommandGroup(spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS), loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS)));
+    operatorCon
+        .y()
+        .whileTrue(
+            new ParallelCommandGroup(
+                spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS)));
 
     operatorCon
         .leftBumper()
@@ -549,7 +554,6 @@ public class RobotContainer {
 
     operatorCon.x().onTrue(superstructure.fudgeAngle(-1));
     operatorCon.b().onTrue(superstructure.fudgeAngle(1));
-
 
     operatorCon
         .leftBumper()
