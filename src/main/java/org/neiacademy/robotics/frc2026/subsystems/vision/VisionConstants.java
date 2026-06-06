@@ -29,7 +29,7 @@ public class VisionConstants {
           Units.inchesToMeters(-7.4),
           Units.inchesToMeters(22.66),
           Units.inchesToMeters(17.8 + 2.75 - 1.270 + 0.75),
-          new Rotation3d(Math.toRadians(67), 0, 0));
+          new Rotation3d(0, Math.toRadians(67), 0));
   //   public static Transform3d robotToCamera1 =
   //       new Transform3d(
   //           Units.inchesToMeters(-11.2),
@@ -48,10 +48,7 @@ public class VisionConstants {
 
   // Standard deviation multipliers for each camera
   // (Adjust to trust some cameras more than others)
-  public static double[] cameraStdDevFactors =
-      new double[] {
-        1.0
-      };
+  public static double[] cameraStdDevFactors = new double[] {1.0};
 
   // Multipliers to apply for MegaTag 2 observations
   public static double linearStdDevMegatag2Factor = 0.5; // More stable than full 3D solve
