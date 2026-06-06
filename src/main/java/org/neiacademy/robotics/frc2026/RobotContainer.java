@@ -547,9 +547,6 @@ public class RobotContainer {
 
     operatorCon.rightBumper().and(inAllianceZone).onTrue(superstructure.fudgeShooterSpeedShoot(-1));
 
-    operatorCon.x().onTrue(superstructure.fudgeAngle(-1));
-    operatorCon.b().onTrue(superstructure.fudgeAngle(1));
-
 
     operatorCon
         .leftBumper()
