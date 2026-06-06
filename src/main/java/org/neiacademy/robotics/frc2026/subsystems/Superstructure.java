@@ -46,16 +46,16 @@ public class Superstructure extends SubsystemBase {
   private ShooterSetpoint hubShootingSetpoint;
   private ShooterSetpoint shuttleShootingSetpoint;
 
-  @AutoLogOutput(key = "Overrides/ShuttleSpeedFudge")
+  @AutoLogOutput(key = "Overrides")
   private double shooterRadFudgeFactorShuttle = 0;
 
-  @AutoLogOutput(key = "Overrides/ShootSpeedFudge")
+  @AutoLogOutput(key = "Overrides")
   private double shooterRadFudgeFactorShoot = -3;
 
-  @AutoLogOutput(key = "Overrides/ShootAngleFudge")
+  @AutoLogOutput(key = "Overrides")
   private double shooterRadFudgeFactorAngle = 0;
 
-  @AutoLogOutput(key = "Overrides/ShiftOverride")
+  @AutoLogOutput(key = "Overrides")
   private boolean shiftOverride = false;
 
   private Alert shiftOverrideAlert = new Alert("Shift Override", AlertType.kInfo);
@@ -294,9 +294,7 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Rotation2d getHubShootingSetpointDriveAngle() {
-    return hubShootingSetpoint
-        .driveAngleRads()
-        .plus(new Rotation2d(Math.toRadians(shooterRadFudgeFactorAngle)));
+    return hubShootingSetpoint.driveAngleRads().plus(new Rotation2d(Math.toRadians(shooterRadFudgeFactorAngle)));
   }
 
   public Rotation2d getHubShootingSetpointDriveVelocity() {
