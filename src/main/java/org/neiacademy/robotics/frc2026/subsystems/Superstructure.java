@@ -46,13 +46,13 @@ public class Superstructure extends SubsystemBase {
   private ShooterSetpoint hubShootingSetpoint;
   private ShooterSetpoint shuttleShootingSetpoint;
 
-  @AutoLogOutput(key = "Overrides")
+  @AutoLogOutput(key = "Overrides/ShooterRadFudgeFactorShuttle")
   private double shooterRadFudgeFactorShuttle = 0;
 
-  @AutoLogOutput(key = "Overrides")
+  @AutoLogOutput(key = "Overrides/ShooterRadFudgeFactorShoot")
   private double shooterRadFudgeFactorShoot = -3;
 
-  @AutoLogOutput(key = "Overrides")
+  @AutoLogOutput(key = "Overrides/ShiftOverride")
   private boolean shiftOverride = false;
 
   private Alert shiftOverrideAlert = new Alert("Shift Override", AlertType.kInfo);
@@ -89,10 +89,10 @@ public class Superstructure extends SubsystemBase {
                 new Pose2d(
                     FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)),
             isFixed,
-            shooterRadFudgeFactorShoot);
+            this::getShooterRadFudgeFactorShoot);
     shuttleShootingSetpoint =
         ShootingUtil.makeShuttleSetpoint(
-            drive, getShuttleTargetPose(), isFixed, shooterRadFudgeFactorShoot);
+            drive, getShuttleTargetPose(), isFixed, this::getShooterRadFudgeFactorShuttle);
 
     hood.setDefaultCommand(hood.tuckCommand(Presets.Hood.TUCK_POSITION));
     leftShooter.setDefaultCommand(leftShooter.stopCommand());
@@ -113,10 +113,10 @@ public class Superstructure extends SubsystemBase {
                 new Pose2d(
                     FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)),
             isFixed,
-            shooterRadFudgeFactorShoot);
+            this::getShooterRadFudgeFactorShoot);
     shuttleShootingSetpoint =
         ShootingUtil.makeShuttleSetpoint(
-            drive, getShuttleTargetPose(), isFixed, shooterRadFudgeFactorShoot);
+            drive, getShuttleTargetPose(), isFixed, this::getShooterRadFudgeFactorShuttle);
 
     Logger.recordOutput("Shooter/isFixed", isFixed.getAsBoolean());
 
@@ -149,12 +149,12 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Command fudgeShooterSpeedShuttle(double fudgeFactor) {
-    return Commands.run(
+    return Commands.runOnce(
         () -> shooterRadFudgeFactorShuttle = shooterRadFudgeFactorShuttle + fudgeFactor);
   }
 
   public Command fudgeShooterSpeedShoot(double fudgeFactor) {
-    return Commands.run(
+    return Commands.runOnce(
         () -> shooterRadFudgeFactorShoot = shooterRadFudgeFactorShoot + fudgeFactor);
   }
 
@@ -193,9 +193,9 @@ public class Superstructure extends SubsystemBase {
 
   public Command shuttleSpinFlywheelsCommand() {
     return new ParallelCommandGroup(
-        hood.runTrackedPositionCommand(this::getHubShootingSetpointHoodAngle),
-        leftShooter.runTrackedVelocityCommand(this::getHubShootingSetpointShooterSpeed),
-        rightShooter.runTrackedVelocityCommand(this::getHubShootingSetpointShooterSpeed));
+        hood.runTrackedPositionCommand(this::getShuttleShootingSetpointHoodAngle),
+        leftShooter.runTrackedVelocityCommand(this::getShuttleShootingSetpointShooterSpeed),
+        rightShooter.runTrackedVelocityCommand(this::getShuttleShootingSetpointShooterSpeed));
   }
 
   public Command shootCommand() {
@@ -315,5 +315,13 @@ public class Superstructure extends SubsystemBase {
 
   public double getShuttleShootingSetpointHoodAngle() {
     return shuttleShootingSetpoint.hoodPosition();
+  }
+
+  private double getShooterRadFudgeFactorShoot() {
+    return shooterRadFudgeFactorShoot;
+  }
+
+  private double getShooterRadFudgeFactorShuttle() {
+    return shooterRadFudgeFactorShuttle;
   }
 }

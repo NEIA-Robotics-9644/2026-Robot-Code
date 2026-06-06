@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import org.neiacademy.robotics.frc2026.Constants;
 import org.neiacademy.robotics.frc2026.subsystems.drive.Drive;
@@ -151,7 +152,7 @@ public class ShootingUtil {
   }
 
   public static ShooterSetpoint makeHubSetpoint(
-      Drive drive, Pose2d target, BooleanSupplier isFixed, double fudgeFactor) {
+      Drive drive, Pose2d target, BooleanSupplier isFixed, DoubleSupplier fudgeFactor) {
 
     double driveAngleRads = Double.NaN;
     double hoodPosition = Double.NaN;
@@ -220,12 +221,12 @@ public class ShootingUtil {
         Rotation2d.fromRadians(driveAngleRads),
         hoodPosition,
         Rotation2d.fromRadians(driveVelocityRadsPerSec),
-        shooterSpeedRadsPerSec + fudgeFactor);
+        shooterSpeedRadsPerSec + fudgeFactor.getAsDouble());
   }
 
   // doesn't use SOTM for shuttling
   public static ShooterSetpoint makeShuttleSetpoint(
-      Drive drive, Pose2d target, BooleanSupplier isFixed, double fudgeFactor) {
+      Drive drive, Pose2d target, BooleanSupplier isFixed, DoubleSupplier fudgeFactor) {
     double driveAngleRads = Double.NaN;
     double hoodPosition = Double.NaN;
     double shooterSpeedRadsPerSec;
@@ -273,6 +274,6 @@ public class ShootingUtil {
         Rotation2d.fromRadians(driveAngleRads),
         hoodPosition,
         Rotation2d.fromRadians(driveVelocityRadsPerSec),
-        shooterSpeedRadsPerSec + fudgeFactor);
+        shooterSpeedRadsPerSec + fudgeFactor.getAsDouble());
   }
 }

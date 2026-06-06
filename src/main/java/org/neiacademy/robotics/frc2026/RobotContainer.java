@@ -550,7 +550,7 @@ public class RobotContainer {
         .and(inAllianceZone.negate())
         .onTrue(superstructure.fudgeShooterSpeedShuttle(1));
 
-    operatorCon.rightBumper().and(inAllianceZone).onTrue(superstructure.fudgeShooterSpeedShoot(-1));
+    operatorCon.leftBumper().and(inAllianceZone).onTrue(superstructure.fudgeShooterSpeedShoot(-1));
 
     operatorCon
         .leftBumper()
