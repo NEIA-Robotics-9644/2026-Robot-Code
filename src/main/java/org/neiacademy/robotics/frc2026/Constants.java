@@ -121,7 +121,7 @@ public final class Constants {
 
     public static final LoggedTunableNumber MAX_VELOCITY =
         new LoggedTunableNumber("PID/Intake/MaxVelocity", 4);
-        
+
     public static final LoggedTunableNumber MAX_ACCEL =
         new LoggedTunableNumber("PID/Intake/MaxAccel", 5.8);
 
