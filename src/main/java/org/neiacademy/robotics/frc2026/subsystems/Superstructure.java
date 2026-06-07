@@ -56,7 +56,7 @@ public class Superstructure extends SubsystemBase {
   private double shooterRadFudgeFactorShuttle = 0;
 
   @AutoLogOutput(key = "Overrides/ShooterRadFudgeFactorShoot")
-  private double shooterRadFudgeFactorShoot = -3;
+  private double shooterRadFudgeFactorShoot = -6;
 
   @AutoLogOutput(key = "Overrides/ShiftOverride")
   private boolean shiftOverride = false;

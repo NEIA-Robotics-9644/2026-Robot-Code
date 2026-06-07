@@ -103,7 +103,7 @@ public final class Constants {
     public static final double ENCODER_OFFSET = 0.008;
     public static final double ENCODER_DISCONTINUITY_POINT = 0.5;
 
-    public static final double DEPLOY_STATOR_LIMIT = 80.0;
+    public static final double DEPLOY_STATOR_LIMIT = 60.0;
     public static final double DEPLOY_SUPPLY_LIMIT = 40.0;
 
     public static final double ROLLER_STATOR_LIMIT = 80.0;
@@ -141,7 +141,7 @@ public final class Constants {
     public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
     public static final double STATOR_LIMIT = 80.0;
-    public static final double SUPPLY_LIMIT = 80.0;
+    public static final double SUPPLY_LIMIT = 50.0;
 
     public static final double GEAR_RATIO = 3.0;
   }
@@ -156,7 +156,7 @@ public final class Constants {
     public static final InvertedValue LEFT_INVERTED = InvertedValue.Clockwise_Positive;
     public static final InvertedValue RIGHT_INVERTED = InvertedValue.CounterClockwise_Positive;
 
-    public static final double STATOR_LIMIT = 60.0;
+    public static final double STATOR_LIMIT = 100.0;
     public static final double SUPPLY_LIMIT = 60.0;
 
     public static final LoggedTunableNumber LEFT_kP =
