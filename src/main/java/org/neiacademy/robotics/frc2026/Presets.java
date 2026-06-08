@@ -48,7 +48,7 @@ public final class Presets {
 
   public static class Shooter {
     public static final LoggedTunableNumber CLOSE_HUB_SPEED =
-        new LoggedTunableNumber("Setpoints/Shooter/CloseHubSpeedRadsPerSec", 290.0);
+        new LoggedTunableNumber("Setpoints/Shooter/CloseHubSpeedRadsPerSec", 295.0);
     public static final LoggedTunableNumber TRENCH_SPEED =
         new LoggedTunableNumber("Setpoints/Shooter/TrenchSpeedRadsPerSec", 290.0);
     public static final LoggedTunableNumber CORNER_SPEED =
