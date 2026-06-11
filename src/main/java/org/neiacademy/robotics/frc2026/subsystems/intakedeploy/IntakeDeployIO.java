@@ -28,4 +28,6 @@ public interface IntakeDeployIO {
   public default void setPID(double kP, double kD) {}
 
   public default void setFeedForward(double kS, double kG, double kV, double kA) {}
+
+  public default void setMotionMagicConstraints(double cruiseVelocity, double acceleration) {}
 }
