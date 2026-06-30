@@ -373,7 +373,6 @@ public class RobotContainer {
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
         .and(DriveCommands::atAngleSetpoint)
-        .and(hood::atSetpoint)
         .whileTrue(superstructure.shootCommand())
         .onFalse(superstructure.endShootCommand());
     // x lock shoot
@@ -389,7 +388,6 @@ public class RobotContainer {
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
         .and(DriveCommands::atAngleSetpoint)
-        .and(hood::atSetpoint)
         .whileTrue(superstructure.shootCommand())
         .whileTrue(Commands.run(drive::stopWithX, drive))
         .onFalse(superstructure.endShootCommand());
@@ -404,7 +402,6 @@ public class RobotContainer {
                 () -> -operatorCon.getRightX()))
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
-        // .and(DriveCommands::atAngleSetpoint)
         .whileTrue(superstructure.shootCommand())
         .onFalse(superstructure.endShootCommand());
 
@@ -414,7 +411,6 @@ public class RobotContainer {
         .whileTrue(
             new SequentialCommandGroup(
                 new ParallelCommandGroup(
-                    hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
                     leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
                     rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)),
                 new ParallelCommandGroup(
