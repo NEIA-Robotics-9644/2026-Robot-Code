@@ -32,32 +32,32 @@
     },
     {
       "anchor": {
-        "x": 8.554650499286733,
-        "y": 1.9583452211126975
+        "x": 8.208719762731482,
+        "y": 2.466252170138889
       },
       "prevControl": {
-        "x": 8.449845586766068,
-        "y": 1.1942256406436766
+        "x": 8.203536530671295,
+        "y": 1.7389594184027781
       },
       "nextControl": {
-        "x": 8.731784600048861,
-        "y": 3.2498079159976054
+        "x": 8.218009625718462,
+        "y": 3.7697728183749937
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.901116195070163,
-        "y": 3.1935318385339735
+        "x": 7.003782335069445,
+        "y": 3.9634189091435186
       },
       "prevControl": {
-        "x": 7.46430249048731,
-        "y": 3.548722615860901
+        "x": 7.566968630486593,
+        "y": 4.318609686470446
       },
       "nextControl": {
-        "x": 5.960744704482318,
-        "y": 2.600457604597618
+        "x": 6.0634108444816,
+        "y": 3.3703446752071633
       },
       "isLocked": false,
       "linkedName": null
@@ -115,11 +115,11 @@
     },
     {
       "waypointRelativePos": 1.509594882729202,
-      "rotationDegrees": 90.0
+      "rotationDegrees": 71.92798790728236
     },
     {
       "waypointRelativePos": 1.700836820083683,
-      "rotationDegrees": 90.0
+      "rotationDegrees": 85.07140838383393
     },
     {
       "waypointRelativePos": 2.638287787656904,
@@ -134,7 +134,21 @@
       "rotationDegrees": -179.37206596482702
     }
   ],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.5690634796238245,
+      "maxWaypointRelativePos": 3.764033111285266,
+      "constraints": {
+        "maxVelocity": 2.25,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
