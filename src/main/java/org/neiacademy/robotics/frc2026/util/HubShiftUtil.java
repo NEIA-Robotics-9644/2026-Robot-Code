@@ -1,4 +1,4 @@
-    c// Copyright (c) 2025-2026 Littleton Robotics
+// Copyright (c) 2025-2026 Littleton Robotics
 // http://github.com/Mechanical-Advantage
 //
 // Use of this source code is governed by an MIT-style
