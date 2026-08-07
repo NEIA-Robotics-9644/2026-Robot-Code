@@ -4,8 +4,8 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -13,7 +13,6 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -39,10 +38,10 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
   private final StatusSignal<Current> supplyCurrent;
 
   private final VoltageOut voltageOut = new VoltageOut(0).withEnableFOC(true);
-  private final PositionTorqueCurrentFOC positionTorqueCurrentFOC = new PositionTorqueCurrentFOC(0);
+  private final MotionMagicTorqueCurrentFOC motionMagicTorqueCurrentFOC =
+      new MotionMagicTorqueCurrentFOC(0);
 
-  private TrapezoidProfile.State profileSetpoint = new TrapezoidProfile.State();
-  private boolean profileInitialized = false;
+  private boolean motionMagicActive = false;
   private double positionGoalRotations = 0.0;
 
   public IntakeDeployIOTalonFX() {
@@ -90,6 +89,10 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
     deployConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     deployConfig.Slot0.GravityArmPositionOffset =
         Constants.Intake.GRAVITY_POSTION_OFFSET.getRotations();
+
+    deployConfig.MotionMagic.MotionMagicCruiseVelocity =
+        Constants.Intake.MAX_VELOCITY.getAsDouble();
+    deployConfig.MotionMagic.MotionMagicAcceleration = Constants.Intake.MAX_ACCEL.getAsDouble();
 
     PhoenixUtil.tryUntilOk(5, () -> deploy.getConfigurator().apply(deployConfig, 0.25));
     PhoenixUtil.tryUntilOk(5, () -> cancoder.getConfigurator().apply(cancoderConfig, 0.25));
@@ -143,7 +146,7 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
     inputs.tempCelsius = temp.getValueAsDouble();
     inputs.rotorPositionRads = Units.rotationsToRadians(rotorPosition.getValueAsDouble());
     inputs.positionSetpointRads =
-        profileInitialized
+        motionMagicActive
             ? Units.rotationsToRadians(positionGoalRotations)
             : Units.rotationsToRadians(positionSetpoint.getValueAsDouble());
     inputs.velocityRadsPerSec = Units.rotationsToRadians(velocity.getValueAsDouble());
@@ -154,37 +157,21 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
 
   @Override
   public void runVoltage(double volts) {
-    profileInitialized = false;
+    motionMagicActive = false;
     deploy.setControl(voltageOut.withOutput(volts));
   }
 
   @Override
   public void runPosition(double positionRotations) {
-    if (!profileInitialized) {
-      resetProfileToCurrentState();
-    }
     positionGoalRotations = positionRotations;
+    motionMagicActive = true;
 
-    var positionProfile =
-        new TrapezoidProfile(
-            new TrapezoidProfile.Constraints(
-                Constants.Intake.MAX_VELOCITY.getAsDouble(),
-                Constants.Intake.MAX_ACCEL.getAsDouble()));
-    profileSetpoint =
-        positionProfile.calculate(
-            Constants.loopTime,
-            profileSetpoint,
-            new TrapezoidProfile.State(positionGoalRotations, 0.0));
-
-    deploy.setControl(
-        positionTorqueCurrentFOC
-            .withPosition(profileSetpoint.position)
-            .withVelocity(profileSetpoint.velocity));
+    deploy.setControl(motionMagicTorqueCurrentFOC.withPosition(positionGoalRotations));
   }
 
   @Override
   public void stop() {
-    profileInitialized = false;
+    motionMagicActive = false;
     deploy.setControl(new NeutralOut());
   }
 
@@ -204,9 +191,10 @@ public class IntakeDeployIOTalonFX implements IntakeDeployIO {
     deploy.getConfigurator().apply(deployConfig);
   }
 
-  private void resetProfileToCurrentState() {
-    profileSetpoint =
-        new TrapezoidProfile.State(rotorPosition.getValueAsDouble(), velocity.getValueAsDouble());
-    profileInitialized = true;
+  @Override
+  public void setMotionMagicConstraints(double cruiseVelocity, double acceleration) {
+    deployConfig.MotionMagic.MotionMagicCruiseVelocity = cruiseVelocity;
+    deployConfig.MotionMagic.MotionMagicAcceleration = acceleration;
+    deploy.getConfigurator().apply(deployConfig);
   }
 }

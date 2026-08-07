@@ -47,6 +47,11 @@ public class IntakeDeploy extends SubsystemBase {
           Constants.Intake.kV.get(),
           Constants.Intake.kA.get());
     }
+    if (Constants.Intake.MAX_VELOCITY.hasChanged(hashCode())
+        || Constants.Intake.MAX_ACCEL.hasChanged(hashCode())) {
+      io.setMotionMagicConstraints(
+          Constants.Intake.MAX_VELOCITY.getAsDouble(), Constants.Intake.MAX_ACCEL.getAsDouble());
+    }
   }
 
   public boolean atSetpoint() {
