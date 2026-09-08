@@ -313,7 +313,10 @@ public class RobotContainer {
                 () -> Units.degreesToRotations(Presets.Intake.TUNING_ANGLE_DEG.getAsDouble())),
             leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
             rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED)));
-    hood.runTrackedPositionCommand(Presets.Hood.TUNING_POSITION);
+
+    SmartDashboard.putData("IncreaseSpeedSetpoint", superstructure.increaseDriveSpeedCommand());
+
+    SmartDashboard.putData("DecreaseSpeedSetpoint", superstructure.decreaseDriveSpeedCommand());
 
     SmartDashboard.putBoolean("ManualMode", Constants.manualMode);
     SmartDashboard.putBoolean("TuningMode", Constants.tuningMode);
@@ -328,9 +331,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -driverCon.getLeftY(),
-            () -> -driverCon.getLeftX(),
-            () -> -driverCon.getRightX()));
+            () -> -driverCon.getLeftY() * superstructure.getCurrentDriveSpeed().translationScale,
+            () -> -driverCon.getLeftX() * superstructure.getCurrentDriveSpeed().translationScale,
+            () -> -driverCon.getRightX() * superstructure.getCurrentDriveSpeed().rotationScale));
 
     // Switch to X pattern when X button is pressed
     driverCon.x().whileTrue(Commands.run(drive::stopWithX, drive));

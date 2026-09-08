@@ -52,6 +52,12 @@ public class Superstructure extends SubsystemBase {
   private ShooterSetpoint hubShootingSetpoint;
   private ShooterSetpoint shuttleShootingSetpoint;
 
+  public int currentDriveSpeedIndex = 0;
+
+  public DriveSpeed[] driveSpeeds = {
+    new DriveSpeed(0.5, 0.5), new DriveSpeed(0.75, 0.75), new DriveSpeed(1.0, 1.0)
+  };
+
   @AutoLogOutput(key = "Overrides/ShooterRadFudgeFactorShuttle")
   private double shooterRadFudgeFactorShuttle = 0;
 
@@ -377,5 +383,37 @@ public class Superstructure extends SubsystemBase {
 
   private double getShooterRadFudgeFactorShuttle() {
     return shooterRadFudgeFactorShuttle;
+  }
+
+  public class DriveSpeed {
+    public double translationScale;
+    public double rotationScale;
+
+    public DriveSpeed(double translationScale, double rotationScale) {
+      this.translationScale = translationScale;
+      this.rotationScale = rotationScale;
+    }
+  }
+
+  public DriveSpeed getCurrentDriveSpeed() {
+    return driveSpeeds[currentDriveSpeedIndex];
+  }
+
+  public Command increaseDriveSpeedCommand() {
+    return Commands.runOnce(
+        () -> {
+          if (currentDriveSpeedIndex < driveSpeeds.length - 1) {
+            currentDriveSpeedIndex++;
+          }
+        });
+  }
+
+  public Command decreaseDriveSpeedCommand() {
+    return Commands.runOnce(
+        () -> {
+          if (currentDriveSpeedIndex > 0) {
+            currentDriveSpeedIndex--;
+          }
+        });
   }
 }
