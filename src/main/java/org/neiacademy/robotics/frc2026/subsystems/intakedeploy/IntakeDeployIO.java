@@ -21,7 +21,7 @@ public interface IntakeDeployIO {
 
   public default void runVoltage(double volts) {}
 
-  public default void runPosition(double positionRads) {}
+  public default void runPosition(double positionRotations) {}
 
   public default void stop() {}
 

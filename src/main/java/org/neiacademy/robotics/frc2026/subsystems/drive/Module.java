@@ -17,6 +17,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import org.littletonrobotics.junction.Logger;
+import org.neiacademy.robotics.frc2026.Constants;
+import org.neiacademy.robotics.frc2026.generated.TunerConstants;
+import org.neiacademy.robotics.frc2026.util.LoggedTunableNumber;
 
 public class Module {
   private final ModuleIO io;
@@ -69,6 +72,26 @@ public class Module {
     driveDisconnectedAlert.set(!inputs.driveConnected);
     turnDisconnectedAlert.set(!inputs.turnConnected);
     turnEncoderDisconnectedAlert.set(!inputs.turnEncoderConnected);
+
+    LoggedTunableNumber.ifChanged(
+        hashCode(),
+        () -> io.setDriveGains(TunerConstants.getDriveGains()),
+        Constants.Drive.DRIVE_kP,
+        Constants.Drive.DRIVE_kI,
+        Constants.Drive.DRIVE_kD,
+        Constants.Drive.DRIVE_kS,
+        Constants.Drive.DRIVE_kV,
+        Constants.Drive.DRIVE_kA);
+
+    LoggedTunableNumber.ifChanged(
+        hashCode(),
+        () -> io.setTurnGains(TunerConstants.getSteerGains()),
+        Constants.Drive.STEER_kP,
+        Constants.Drive.STEER_kI,
+        Constants.Drive.STEER_kD,
+        Constants.Drive.STEER_kS,
+        Constants.Drive.STEER_kV,
+        Constants.Drive.STEER_kA);
   }
 
   /** Runs the module with the specified setpoint state. Mutates the state to optimize it. */

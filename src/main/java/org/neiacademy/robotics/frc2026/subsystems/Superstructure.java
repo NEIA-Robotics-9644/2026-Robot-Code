@@ -1,7 +1,9 @@
 package org.neiacademy.robotics.frc2026.subsystems;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,6 +34,9 @@ import org.neiacademy.robotics.frc2026.util.ShootingUtil;
 import org.neiacademy.robotics.frc2026.util.ShootingUtil.ShooterSetpoint;
 
 public class Superstructure extends SubsystemBase {
+  private static final double TURN_ADJUSTMENT_DEADBAND = 0.15;
+  private static final double TURN_ADJUSTMENT_RATE_RAD_PER_SEC = Units.degreesToRadians(3.0);
+
   private final Drive drive;
   private final Spindexer spindexer;
   private final IntakeDeploy intakeDeploy;
@@ -46,11 +51,25 @@ public class Superstructure extends SubsystemBase {
 
   private Trigger inAllianceZone;
 
-  @AutoLogOutput(key = "Overrides")
-  private double shooterRadFudgeFactor;
+  public int currentDriveSpeedIndex = 0;
 
-  @AutoLogOutput(key = "Overrides")
+  public DriveSpeed[] driveSpeeds = {
+    new DriveSpeed(0.5, 0.5), new DriveSpeed(0.75, 0.75), new DriveSpeed(1.0, 1.0)
+  };
+
+  @AutoLogOutput(key = "Overrides/ShooterRadFudgeFactorShuttle")
+  private double shooterRadFudgeFactorShuttle = 0;
+
+  @AutoLogOutput(key = "Overrides/ShooterRadFudgeFactorShoot")
+  private double shooterRadFudgeFactorShoot = -6;
+
+  @AutoLogOutput(key = "Overrides/ShiftOverride")
   private boolean shiftOverride = false;
+
+  @AutoLogOutput(key = "Overrides/AutoShootTurnAdjustmentDeg")
+  private double autoShootTurnAdjustmentDeg = 0.0;
+
+  private Rotation2d autoShootTurnAdjustment = Rotation2d.kZero;
 
   private Alert shiftOverrideAlert = new Alert("Shift Override", AlertType.kInfo);
 
@@ -79,10 +98,13 @@ public class Superstructure extends SubsystemBase {
                 new Pose2d(
                     FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)),
             () -> Constants.fixedShooterMode,
-            shooterRadFudgeFactor);
+            this::getShooterRadFudgeFactorShoot);
     shuttleShootingSetpoint =
         ShootingUtil.makeShuttleSetpoint(
-            drive, getShuttleTargetPose(), () -> Constants.fixedShooterMode, shooterRadFudgeFactor);
+            drive,
+            getShuttleTargetPose(),
+            () -> Constants.fixedShooterMode,
+            this::getShooterRadFudgeFactorShuttle);
 
     inAllianceZone =
         new Trigger(
@@ -127,8 +149,10 @@ public class Superstructure extends SubsystemBase {
             },
             rightShooter));
     SmartDashboard.putData("Overrides/Shift", enableShiftOverride());
-    SmartDashboard.putData("Overrides/ShooterFudgePlus1", fudgeShooterSpeed(1));
-    SmartDashboard.putData("Overrides/ShooterFudgeMinus1", fudgeShooterSpeed(-1));
+    SmartDashboard.putData("Overrides/ShooterFudgePlus1", fudgeShooterSpeedShoot(1));
+    SmartDashboard.putData("Overrides/ShooterFudgeMinus1", fudgeShooterSpeedShoot(-1));
+    SmartDashboard.putData("Overrides/ShuttleFudgePlus1", fudgeShooterSpeedShuttle(1));
+    SmartDashboard.putData("Overrides/ShuttleFudgeMinus1", fudgeShooterSpeedShuttle(-1));
   }
 
   @Override
@@ -140,10 +164,13 @@ public class Superstructure extends SubsystemBase {
                 new Pose2d(
                     FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)),
             () -> Constants.fixedShooterMode,
-            shooterRadFudgeFactor);
+            this::getShooterRadFudgeFactorShoot);
     shuttleShootingSetpoint =
         ShootingUtil.makeShuttleSetpoint(
-            drive, getShuttleTargetPose(), () -> Constants.fixedShooterMode, shooterRadFudgeFactor);
+            drive,
+            getShuttleTargetPose(),
+            () -> Constants.fixedShooterMode,
+            this::getShooterRadFudgeFactorShuttle);
 
     Logger.recordOutput("Shooter/isFixed", Constants.fixedShooterMode);
 
@@ -175,34 +202,60 @@ public class Superstructure extends SubsystemBase {
         .withName("Override Shift");
   }
 
-  public Command fudgeShooterSpeed(double fudgeFactor) {
-    return Commands.run(() -> shooterRadFudgeFactor = shooterRadFudgeFactor + fudgeFactor);
+  public Command fudgeShooterSpeedShuttle(double fudgeFactor) {
+    return Commands.runOnce(
+        () -> shooterRadFudgeFactorShuttle = shooterRadFudgeFactorShuttle + fudgeFactor);
+  }
+
+  public Command fudgeShooterSpeedShoot(double fudgeFactor) {
+    return Commands.runOnce(
+        () -> shooterRadFudgeFactorShoot = shooterRadFudgeFactorShoot + fudgeFactor);
   }
 
   public Command hubAimCommand(DoubleSupplier driveXSupplier, DoubleSupplier driveYSupplier) {
+    return hubAimCommand(driveXSupplier, driveYSupplier, () -> 0.0);
+  }
+
+  public Command hubAimCommand(
+      DoubleSupplier driveXSupplier,
+      DoubleSupplier driveYSupplier,
+      DoubleSupplier turnAdjustmentSupplier) {
     return new ParallelCommandGroup(
-        DriveCommands.joystickDriveAtAngle(
-            drive,
-            driveXSupplier,
-            driveYSupplier,
-            this::getHubShootingSetpointDriveAngle,
-            this::getHubShootingSetpointDriveVelocity),
-        hood.runTrackedPositionCommand(this::getHubShootingSetpointHoodAngle),
-        leftShooter.runTrackedVelocityCommand(this::getHubShootingSetpointShooterSpeed),
-        rightShooter.runTrackedVelocityCommand(this::getHubShootingSetpointShooterSpeed));
+            Commands.run(() -> updateAutoShootTurnAdjustment(turnAdjustmentSupplier)),
+            DriveCommands.joystickDriveAtAngle(
+                drive,
+                driveXSupplier,
+                driveYSupplier,
+                this::getAdjustedHubShootingSetpointDriveAngle,
+                this::getHubShootingSetpointDriveVelocity),
+            hood.runTrackedPositionCommand(this::getHubShootingSetpointHoodAngle),
+            leftShooter.runTrackedVelocityCommand(this::getHubShootingSetpointShooterSpeed),
+            rightShooter.runTrackedVelocityCommand(this::getHubShootingSetpointShooterSpeed))
+        .beforeStarting(this::resetAutoShootTurnAdjustment)
+        .finallyDo(() -> resetAutoShootTurnAdjustment());
   }
 
   public Command shuttleAimCommand(DoubleSupplier driveXSupplier, DoubleSupplier driveYSupplier) {
+    return shuttleAimCommand(driveXSupplier, driveYSupplier, () -> 0.0);
+  }
+
+  public Command shuttleAimCommand(
+      DoubleSupplier driveXSupplier,
+      DoubleSupplier driveYSupplier,
+      DoubleSupplier turnAdjustmentSupplier) {
     return new ParallelCommandGroup(
-        DriveCommands.joystickDriveAtAngle(
-            drive,
-            driveXSupplier,
-            driveYSupplier,
-            this::getShuttleShootingSetpointDriveAngle,
-            this::getShuttleShootingSetpointDriveVelocity),
-        hood.runTrackedPositionCommand(this::getShuttleShootingSetpointHoodAngle),
-        leftShooter.runTrackedVelocityCommand(this::getShuttleShootingSetpointShooterSpeed),
-        rightShooter.runTrackedVelocityCommand(this::getShuttleShootingSetpointShooterSpeed));
+            Commands.run(() -> updateAutoShootTurnAdjustment(turnAdjustmentSupplier)),
+            DriveCommands.joystickDriveAtAngle(
+                drive,
+                driveXSupplier,
+                driveYSupplier,
+                this::getAdjustedShuttleShootingSetpointDriveAngle,
+                this::getShuttleShootingSetpointDriveVelocity),
+            hood.runTrackedPositionCommand(this::getShuttleShootingSetpointHoodAngle),
+            leftShooter.runTrackedVelocityCommand(this::getShuttleShootingSetpointShooterSpeed),
+            rightShooter.runTrackedVelocityCommand(this::getShuttleShootingSetpointShooterSpeed))
+        .beforeStarting(this::resetAutoShootTurnAdjustment)
+        .finallyDo(() -> resetAutoShootTurnAdjustment());
   }
 
   public Command hubSpinFlywheelsCommand() {
@@ -214,9 +267,9 @@ public class Superstructure extends SubsystemBase {
 
   public Command shuttleSpinFlywheelsCommand() {
     return new ParallelCommandGroup(
-        hood.runTrackedPositionCommand(this::getHubShootingSetpointHoodAngle),
-        leftShooter.runTrackedVelocityCommand(this::getHubShootingSetpointShooterSpeed),
-        rightShooter.runTrackedVelocityCommand(this::getHubShootingSetpointShooterSpeed));
+        hood.runTrackedPositionCommand(this::getShuttleShootingSetpointHoodAngle),
+        leftShooter.runTrackedVelocityCommand(this::getShuttleShootingSetpointShooterSpeed),
+        rightShooter.runTrackedVelocityCommand(this::getShuttleShootingSetpointShooterSpeed));
   }
 
   public Command shootCommand() {
@@ -299,14 +352,19 @@ public class Superstructure extends SubsystemBase {
 
   public Command autoEndShootCommand() {
     return new ParallelCommandGroup(
-        spindexer.stopCommand(),
-        loader.stopCommand(),
-        leftShooter.stopCommand(),
-        rightShooter.stopCommand());
+            spindexer.stopCommand(),
+            loader.stopCommand(),
+            leftShooter.stopCommand(),
+            rightShooter.stopCommand())
+        .withTimeout(0.1);
   }
 
   public Rotation2d getHubShootingSetpointDriveAngle() {
     return hubShootingSetpoint.driveAngleRads();
+  }
+
+  public Rotation2d getAdjustedHubShootingSetpointDriveAngle() {
+    return hubShootingSetpoint.driveAngleRads().plus(autoShootTurnAdjustment);
   }
 
   public Rotation2d getHubShootingSetpointDriveVelocity() {
@@ -319,6 +377,10 @@ public class Superstructure extends SubsystemBase {
 
   public Rotation2d getShuttleShootingSetpointDriveAngle() {
     return shuttleShootingSetpoint.driveAngleRads();
+  }
+
+  public Rotation2d getAdjustedShuttleShootingSetpointDriveAngle() {
+    return shuttleShootingSetpoint.driveAngleRads().plus(autoShootTurnAdjustment);
   }
 
   public Rotation2d getShuttleShootingSetpointDriveVelocity() {
@@ -335,5 +397,60 @@ public class Superstructure extends SubsystemBase {
 
   public double getShuttleShootingSetpointHoodAngle() {
     return shuttleShootingSetpoint.hoodPosition();
+  }
+
+  private void updateAutoShootTurnAdjustment(DoubleSupplier turnAdjustmentSupplier) {
+    double turnInput =
+        MathUtil.applyDeadband(turnAdjustmentSupplier.getAsDouble(), TURN_ADJUSTMENT_DEADBAND);
+    autoShootTurnAdjustment =
+        autoShootTurnAdjustment.plus(
+            Rotation2d.fromRadians(
+                turnInput * TURN_ADJUSTMENT_RATE_RAD_PER_SEC * Constants.loopTime));
+    autoShootTurnAdjustmentDeg = autoShootTurnAdjustment.getDegrees();
+  }
+
+  private void resetAutoShootTurnAdjustment() {
+    autoShootTurnAdjustment = Rotation2d.kZero;
+    autoShootTurnAdjustmentDeg = 0.0;
+  }
+
+  private double getShooterRadFudgeFactorShoot() {
+    return shooterRadFudgeFactorShoot;
+  }
+
+  private double getShooterRadFudgeFactorShuttle() {
+    return shooterRadFudgeFactorShuttle;
+  }
+
+  public class DriveSpeed {
+    public double translationScale;
+    public double rotationScale;
+
+    public DriveSpeed(double translationScale, double rotationScale) {
+      this.translationScale = translationScale;
+      this.rotationScale = rotationScale;
+    }
+  }
+
+  public DriveSpeed getCurrentDriveSpeed() {
+    return driveSpeeds[currentDriveSpeedIndex];
+  }
+
+  public Command increaseDriveSpeedCommand() {
+    return Commands.runOnce(
+        () -> {
+          if (currentDriveSpeedIndex < driveSpeeds.length - 1) {
+            currentDriveSpeedIndex++;
+          }
+        });
+  }
+
+  public Command decreaseDriveSpeedCommand() {
+    return Commands.runOnce(
+        () -> {
+          if (currentDriveSpeedIndex > 0) {
+            currentDriveSpeedIndex--;
+          }
+        });
   }
 }

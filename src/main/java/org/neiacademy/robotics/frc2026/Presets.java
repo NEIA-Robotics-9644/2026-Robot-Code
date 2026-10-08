@@ -3,7 +3,6 @@ package org.neiacademy.robotics.frc2026;
 import org.neiacademy.robotics.frc2026.util.LoggedTunableNumber;
 
 public final class Presets {
-
   public static class Spindexer {
     public static final LoggedTunableNumber FEED_VOLTS =
         new LoggedTunableNumber("Setpoints/Spindexer/FeedVolts", 12.0);
@@ -15,16 +14,16 @@ public final class Presets {
 
   public static class Intake {
     public static final LoggedTunableNumber TUCK_ANGLE_DEG =
-        new LoggedTunableNumber("Setpoints/Intake/DeployTuckAngleDeg", 0.4);
+        new LoggedTunableNumber("Setpoints/Intake/DeployTuckAngleDeg", 0.5);
     public static final LoggedTunableNumber EXTEND_ANGLE_DEG =
-        new LoggedTunableNumber("Setpoints/Intake/DeployExtendAngleDeg", -0.2);
+        new LoggedTunableNumber("Setpoints/Intake/DeployExtendAngleDeg", 0);
     public static final LoggedTunableNumber TUNING_ANGLE_DEG =
         new LoggedTunableNumber("Tuning/IntakeDeployTuningAngleDeg", 0.0);
     public static final LoggedTunableNumber PIVOT_MANUAL_MOVEMENT_TOTAL_TIME =
         new LoggedTunableNumber("Setpoints/Intake/PivotManualMovementTotalTime", 1.5);
 
     public static final LoggedTunableNumber INTAKE_VOLTS =
-        new LoggedTunableNumber("Setpoints/Intake/RollerIntakeVolts", 7.5);
+        new LoggedTunableNumber("Setpoints/Intake/RollerIntakeVolts", 12);
     public static final LoggedTunableNumber EXHAUST_VOLTS =
         new LoggedTunableNumber("Setpoints/Intake/RollerExhaustVolts", -6.0);
     public static final LoggedTunableNumber TUNING_VOLTS =
@@ -49,7 +48,7 @@ public final class Presets {
 
   public static class Shooter {
     public static final LoggedTunableNumber CLOSE_HUB_SPEED =
-        new LoggedTunableNumber("Setpoints/Shooter/CloseHubSpeedRadsPerSec", 290.0);
+        new LoggedTunableNumber("Setpoints/Shooter/CloseHubSpeedRadsPerSec", 295.0);
     public static final LoggedTunableNumber TRENCH_SPEED =
         new LoggedTunableNumber("Setpoints/Shooter/TrenchSpeedRadsPerSec", 290.0);
     public static final LoggedTunableNumber CORNER_SPEED =

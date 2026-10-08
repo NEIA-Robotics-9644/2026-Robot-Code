@@ -65,6 +65,34 @@ public final class Constants {
     public static final double GEAR_RATIO = 9.0;
   }
 
+  public static class Drive {
+    public static final LoggedTunableNumber STEER_kP =
+        new LoggedTunableNumber("PID/Drive/Steer/kP", 3600);
+    public static final LoggedTunableNumber STEER_kI =
+        new LoggedTunableNumber("PID/Drive/Steer/kI", 0);
+    public static final LoggedTunableNumber STEER_kD =
+        new LoggedTunableNumber("PID/Drive/Steer/kD", 70);
+    public static final LoggedTunableNumber STEER_kS =
+        new LoggedTunableNumber("PID/Drive/Steer/kS", 0);
+    public static final LoggedTunableNumber STEER_kV =
+        new LoggedTunableNumber("PID/Drive/Steer/kV", 0);
+    public static final LoggedTunableNumber STEER_kA =
+        new LoggedTunableNumber("PID/Drive/Steer/kA", 0);
+
+    public static final LoggedTunableNumber DRIVE_kP =
+        new LoggedTunableNumber("PID/Drive/Propulsion/kP", 40);
+    public static final LoggedTunableNumber DRIVE_kI =
+        new LoggedTunableNumber("PID/Drive/Propulsion/kI", 0);
+    public static final LoggedTunableNumber DRIVE_kD =
+        new LoggedTunableNumber("PID/Drive/Propulsion/kD", 0);
+    public static final LoggedTunableNumber DRIVE_kS =
+        new LoggedTunableNumber("PID/Drive/Propulsion/kS", 8);
+    public static final LoggedTunableNumber DRIVE_kV =
+        new LoggedTunableNumber("PID/Drive/Propulsion/kV", 0.4);
+    public static final LoggedTunableNumber DRIVE_kA =
+        new LoggedTunableNumber("PID/Drive/Propulsion/kA", 0);
+  }
+
   public static class Intake {
     public static final String CANBUS = "Drive";
     public static final CANDeviceID DEPLOY_MOTOR_ID = new CANDeviceID(32, "rio");
@@ -72,33 +100,34 @@ public final class Constants {
     public static final CANDeviceID ROLLER_MOTOR_ID = new CANDeviceID(33, "rio");
 
     public static final InvertedValue DEPLOY_INVERTED = InvertedValue.Clockwise_Positive;
-    public static final InvertedValue ROLLER_INVERTED = InvertedValue.Clockwise_Positive;
+    public static final InvertedValue ROLLER_INVERTED = InvertedValue.CounterClockwise_Positive;
 
     public static final SensorDirectionValue ENCODER_DIRECTION =
         SensorDirectionValue.Clockwise_Positive;
     public static final double ENCODER_OFFSET = 0.008;
     public static final double ENCODER_DISCONTINUITY_POINT = 0.5;
 
-    public static final double DEPLOY_STATOR_LIMIT = 80.0;
+    public static final double DEPLOY_STATOR_LIMIT = 60.0;
     public static final double DEPLOY_SUPPLY_LIMIT = 40.0;
 
     public static final double ROLLER_STATOR_LIMIT = 80.0;
     public static final double ROLLER_SUPPLY_LIMIT = 45.0;
 
     public static final double SOFT_LIMIT_FORWARD = 0.5;
-    public static final double SOFT_LIMIT_REVERSE = -0.2;
+    public static final double SOFT_LIMIT_REVERSE = 0;
 
     public static final LoggedTunableNumber kP = new LoggedTunableNumber("PID/Intake/kP", 80);
-    public static final LoggedTunableNumber kD = new LoggedTunableNumber("PID/Intake/kD", 15);
+    public static final LoggedTunableNumber kD = new LoggedTunableNumber("PID/Intake/kD", 25);
     public static final LoggedTunableNumber kS = new LoggedTunableNumber("PID/Intake/kS", 0.0);
     public static final LoggedTunableNumber kG = new LoggedTunableNumber("PID/Intake/kG", 0);
     public static final LoggedTunableNumber kV = new LoggedTunableNumber("PID/Intake/kV", 0.0);
     public static final LoggedTunableNumber kA = new LoggedTunableNumber("PID/Intake/kA", 0.0);
 
     public static final LoggedTunableNumber MAX_VELOCITY =
-        new LoggedTunableNumber("PID/Intake/MaxVelocity", 80);
+        new LoggedTunableNumber("PID/Intake/MaxVelocity", 7);
+
     public static final LoggedTunableNumber MAX_ACCEL =
-        new LoggedTunableNumber("PID/Intake/MaxAccel", 160);
+        new LoggedTunableNumber("PID/Intake/MaxAccel", 7);
 
     public static final LoggedTunableNumber POSITION_TOLERANCE =
         new LoggedTunableNumber("PID/Intake/DeployToleranceDeg", 3.0);
@@ -116,7 +145,7 @@ public final class Constants {
     public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
     public static final double STATOR_LIMIT = 80.0;
-    public static final double SUPPLY_LIMIT = 80.0;
+    public static final double SUPPLY_LIMIT = 50.0;
 
     public static final double GEAR_RATIO = 3.0;
   }
@@ -131,7 +160,7 @@ public final class Constants {
     public static final InvertedValue LEFT_INVERTED = InvertedValue.Clockwise_Positive;
     public static final InvertedValue RIGHT_INVERTED = InvertedValue.CounterClockwise_Positive;
 
-    public static final double STATOR_LIMIT = 60.0;
+    public static final double STATOR_LIMIT = 100.0;
     public static final double SUPPLY_LIMIT = 60.0;
 
     public static final LoggedTunableNumber LEFT_kP =
@@ -157,7 +186,7 @@ public final class Constants {
         new LoggedTunableNumber("PID/Shooter/Right/kA", 0.0);
 
     public static final LoggedTunableNumber VELOCITY_TOLERANCE =
-        new LoggedTunableNumber("PID/Shooter/ToleranceRadsPerSec", 60.0);
+        new LoggedTunableNumber("PID/Shooter/ToleranceRadsPerSec", 35.0);
 
     public static final double GEAR_RATIO = 1;
   }

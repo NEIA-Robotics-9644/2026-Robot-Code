@@ -46,8 +46,8 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   public ShooterIOTalonFX(
       boolean isLeftShooter, CANDeviceID leader, CANDeviceID follower, boolean opposed) {
-    shooterLeader = new TalonFX(leader.getID(), leader.getBus());
-    shooterFollower = new TalonFX(follower.getID(), follower.getBus());
+    shooterLeader = new TalonFX(leader.getID(), leader.getCANBus());
+    shooterFollower = new TalonFX(follower.getID(), follower.getCANBus());
     if (opposed) {
       shooterFollower.setControl(new Follower(leader.getID(), MotorAlignmentValue.Opposed));
 
