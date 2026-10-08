@@ -277,6 +277,9 @@ public class RobotContainer {
                 spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS))
             .withTimeout(0.25));
 
+    NamedCommands.registerCommand(
+        "autoEndShootCommand", new ParallelCommandGroup(superstructure.autoEndShootCommand()));
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -310,7 +313,10 @@ public class RobotContainer {
                 () -> Units.degreesToRotations(Presets.Intake.TUNING_ANGLE_DEG.getAsDouble())),
             leftShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED),
             rightShooter.runTrackedVelocityCommand(Presets.Shooter.TUNING_SPEED)));
-    hood.runTrackedPositionCommand(Presets.Hood.TUNING_POSITION);
+
+    SmartDashboard.putData("IncreaseSpeedSetpoint", superstructure.increaseDriveSpeedCommand());
+
+    SmartDashboard.putData("DecreaseSpeedSetpoint", superstructure.decreaseDriveSpeedCommand());
 
     SmartDashboard.putBoolean("ManualMode", Constants.manualMode);
     SmartDashboard.putBoolean("TuningMode", Constants.tuningMode);
@@ -325,9 +331,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -driverCon.getLeftY(),
-            () -> -driverCon.getLeftX(),
-            () -> -driverCon.getRightX()));
+            () -> -driverCon.getLeftY() * superstructure.getCurrentDriveSpeed().translationScale,
+            () -> -driverCon.getLeftX() * superstructure.getCurrentDriveSpeed().translationScale,
+            () -> -driverCon.getRightX() * superstructure.getCurrentDriveSpeed().rotationScale));
 
     // Switch to X pattern when X button is pressed
     driverCon.x().whileTrue(Commands.run(drive::stopWithX, drive));
@@ -363,11 +369,13 @@ public class RobotContainer {
         .rightTrigger()
         .and(inAllianceZone)
         .whileTrue(
-            superstructure.hubAimCommand(() -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+            superstructure.hubAimCommand(
+                () -> -driverCon.getLeftY(),
+                () -> -driverCon.getLeftX(),
+                () -> -operatorCon.getRightX()))
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
         .and(DriveCommands::atAngleSetpoint)
-        .and(hood::atSetpoint)
         .whileTrue(superstructure.shootCommand())
         .onFalse(superstructure.endShootCommand());
     // x lock shoot
@@ -376,11 +384,13 @@ public class RobotContainer {
         .and(driverCon.x())
         .and(inAllianceZone)
         .whileTrue(
-            superstructure.hubAimCommand(() -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+            superstructure.hubAimCommand(
+                () -> -driverCon.getLeftY(),
+                () -> -driverCon.getLeftX(),
+                () -> -operatorCon.getRightX()))
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
         .and(DriveCommands::atAngleSetpoint)
-        .and(hood::atSetpoint)
         .whileTrue(superstructure.shootCommand())
         .whileTrue(Commands.run(drive::stopWithX, drive))
         .onFalse(superstructure.endShootCommand());
@@ -390,10 +400,11 @@ public class RobotContainer {
         .and(inAllianceZone.negate())
         .whileTrue(
             superstructure.shuttleAimCommand(
-                () -> -driverCon.getLeftY(), () -> -driverCon.getLeftX()))
+                () -> -driverCon.getLeftY(),
+                () -> -driverCon.getLeftX(),
+                () -> -operatorCon.getRightX()))
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
-        // .and(DriveCommands::atAngleSetpoint)
         .whileTrue(superstructure.shootCommand())
         .onFalse(superstructure.endShootCommand());
 
@@ -403,7 +414,6 @@ public class RobotContainer {
         .whileTrue(
             new SequentialCommandGroup(
                 new ParallelCommandGroup(
-                    hood.positionCommand(Presets.Hood.CLOSE_HUB_POSITION.getAsDouble()),
                     leftShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED),
                     rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED)),
                 new ParallelCommandGroup(
@@ -471,17 +481,13 @@ public class RobotContainer {
 
     driverCon.leftBumper().onTrue(superstructure.retractIntake());
 
+    operatorCon.a().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
     operatorCon
-        .b()
+        .y()
         .whileTrue(
             new ParallelCommandGroup(
-                intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS),
-                loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS),
-                spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS)));
-
-    operatorCon.a().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
-    operatorCon.x().whileTrue(loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS));
-    operatorCon.y().whileTrue(spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS));
+                spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS),
+                loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS)));
 
     operatorCon
         .leftBumper()
@@ -551,7 +557,7 @@ public class RobotContainer {
         .and(inAllianceZone.negate())
         .onTrue(superstructure.fudgeShooterSpeedShuttle(1));
 
-    operatorCon.rightBumper().and(inAllianceZone).onTrue(superstructure.fudgeShooterSpeedShoot(-1));
+    operatorCon.leftBumper().and(inAllianceZone).onTrue(superstructure.fudgeShooterSpeedShoot(-1));
 
     operatorCon
         .leftBumper()

@@ -16,7 +16,7 @@ import edu.wpi.first.math.util.Units;
 public class VisionConstants {
   // AprilTag layout
   public static AprilTagFieldLayout aprilTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+      AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 
   // Camera names, must match names configured on coprocessor
   public static String camera0Name = "frontcam"; // location
@@ -27,9 +27,10 @@ public class VisionConstants {
   public static Transform3d robotToCamera0 =
       new Transform3d(
           Units.inchesToMeters(-7.4),
-          Units.inchesToMeters(22.66),
+          Units.inchesToMeters(-21.66),
           Units.inchesToMeters(17.8 + 2.75 - 1.270 + 0.75),
-          new Rotation3d(Math.toRadians(67), 0, 0));
+          new Rotation3d(0, Math.toRadians(-30), Math.toRadians(2)));
+
   //   public static Transform3d robotToCamera1 =
   //       new Transform3d(
   //           Units.inchesToMeters(-11.2),
@@ -48,11 +49,7 @@ public class VisionConstants {
 
   // Standard deviation multipliers for each camera
   // (Adjust to trust some cameras more than others)
-  public static double[] cameraStdDevFactors =
-      new double[] {
-        1.0, // Camera 0
-        1.0 // Camera 1
-      };
+  public static double[] cameraStdDevFactors = new double[] {1.0};
 
   // Multipliers to apply for MegaTag 2 observations
   public static double linearStdDevMegatag2Factor = 0.5; // More stable than full 3D solve
