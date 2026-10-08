@@ -115,39 +115,11 @@ public class Superstructure extends SubsystemBase {
 
     hood.setDefaultCommand(hood.tuckCommand(Presets.Hood.TUCK_POSITION));
     leftShooter.setDefaultCommand(
-        Commands.run(
-            () -> {
-              if (Constants.constantFlywheelsMode) {
-                leftShooter.runTrackedVelocityCommand(
-                    () -> {
-                      if (inAllianceZone.getAsBoolean()) {
-                        return getHubShootingSetpointShooterSpeed();
-                      } else {
-                        return getShuttleShootingSetpointShooterSpeed();
-                      }
-                    });
-              } else {
-                leftShooter.stop();
-              }
-            },
-            leftShooter));
+        leftShooter.idleVelocityCommand(
+            () -> Constants.constantFlywheelsMode, this::getIdleShooterSpeed));
     rightShooter.setDefaultCommand(
-        Commands.run(
-            () -> {
-              if (Constants.constantFlywheelsMode) {
-                rightShooter.runTrackedVelocityCommand(
-                    () -> {
-                      if (inAllianceZone.getAsBoolean()) {
-                        return getHubShootingSetpointShooterSpeed();
-                      } else {
-                        return getShuttleShootingSetpointShooterSpeed();
-                      }
-                    });
-              } else {
-                rightShooter.stop();
-              }
-            },
-            rightShooter));
+        rightShooter.idleVelocityCommand(
+            () -> Constants.constantFlywheelsMode, this::getIdleShooterSpeed));
     SmartDashboard.putData("Overrides/Shift", enableShiftOverride());
     SmartDashboard.putData("Overrides/ShooterFudgePlus1", fudgeShooterSpeedShoot(1));
     SmartDashboard.putData("Overrides/ShooterFudgeMinus1", fudgeShooterSpeedShoot(-1));
@@ -157,6 +129,11 @@ public class Superstructure extends SubsystemBase {
 
   @Override
   public void periodic() {
+    Constants.constantFlywheelsMode =
+        SmartDashboard.getBoolean("ConstantFlywheelsMode", Constants.constantFlywheelsMode);
+    Constants.fixedShooterMode =
+        SmartDashboard.getBoolean("FixedShooterMode", Constants.fixedShooterMode);
+
     hubShootingSetpoint =
         ShootingUtil.makeHubSetpoint(
             drive,
@@ -186,6 +163,12 @@ public class Superstructure extends SubsystemBase {
 
     Logger.recordOutput(
         "Superstructure/Shift Time", HubShiftUtil.getOfficialShiftInfo().remainingTime());
+  }
+
+  private double getIdleShooterSpeed() {
+    return inAllianceZone.getAsBoolean()
+        ? getHubShootingSetpointShooterSpeed()
+        : getShuttleShootingSetpointShooterSpeed();
   }
 
   public Command enableShiftOverride() {
