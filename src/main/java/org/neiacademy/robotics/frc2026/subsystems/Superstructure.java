@@ -58,11 +58,14 @@ public class Superstructure extends SubsystemBase {
     new DriveSpeed(0.5, 0.5), new DriveSpeed(0.75, 0.75), new DriveSpeed(1.0, 1.0)
   };
 
+  private static final double DEFAULT_SHUTTLE_ADJUSTMENT = 0;
+  private static final double DEFAULT_HUB_ADJUSTMENT = -6;
+
   @AutoLogOutput(key = "Overrides/ShooterRadFudgeFactorShuttle")
-  private double shooterRadFudgeFactorShuttle = 0;
+  private double shooterRadFudgeFactorShuttle = DEFAULT_SHUTTLE_ADJUSTMENT;
 
   @AutoLogOutput(key = "Overrides/ShooterRadFudgeFactorShoot")
-  private double shooterRadFudgeFactorShoot = -6;
+  private double shooterRadFudgeFactorShoot = DEFAULT_HUB_ADJUSTMENT;
 
   @AutoLogOutput(key = "Overrides/ShiftOverride")
   private boolean shiftOverride = false;
@@ -194,6 +197,33 @@ public class Superstructure extends SubsystemBase {
   public Command fudgeShooterSpeedShoot(double fudgeFactor) {
     return Commands.runOnce(
         () -> shooterRadFudgeFactorShoot = shooterRadFudgeFactorShoot + fudgeFactor);
+  }
+
+  /** Resets only the adjustment for the robot's zone when the command runs. */
+  public Command resetShooterSpeedAdjustmentCommand() {
+    return Commands.runOnce(
+        () -> {
+          if (inAllianceZone.getAsBoolean()) {
+            shooterRadFudgeFactorShoot = DEFAULT_HUB_ADJUSTMENT;
+          } else {
+            shooterRadFudgeFactorShuttle = DEFAULT_SHUTTLE_ADJUSTMENT;
+          }
+        });
+  }
+
+  /** Holds all ball-handling motors stopped and rejects competing motor commands. */
+  public Command holdBallHandlingStoppedCommand() {
+    Runnable stop =
+        () -> {
+          intakeRoller.stop();
+          spindexer.stop();
+          loader.stop();
+          leftShooter.stop();
+          rightShooter.stop();
+        };
+    return Commands.runEnd(stop, stop, intakeRoller, spindexer, loader, leftShooter, rightShooter)
+        .beforeStarting(stop)
+        .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming);
   }
 
   public Command hubAimCommand(DoubleSupplier driveXSupplier, DoubleSupplier driveYSupplier) {

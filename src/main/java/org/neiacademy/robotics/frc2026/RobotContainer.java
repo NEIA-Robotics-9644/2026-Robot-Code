@@ -474,6 +474,8 @@ public class RobotContainer {
     driverCon.leftBumper().onTrue(superstructure.retractIntake());
 
     operatorCon.a().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
+    operatorCon.b().whileTrue(superstructure.holdBallHandlingStoppedCommand());
+    operatorCon.x().debounce(0.5).onTrue(superstructure.resetShooterSpeedAdjustmentCommand());
     operatorCon
         .y()
         .whileTrue(
