@@ -4,11 +4,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -16,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -52,17 +50,22 @@ public class Superstructure extends SubsystemBase {
   private ShooterSetpoint hubShootingSetpoint;
   private ShooterSetpoint shuttleShootingSetpoint;
 
-  public int currentDriveSpeedIndex = 0;
+  private Trigger inAllianceZone;
+
+  public int currentDriveSpeedIndex = 2; // Start at full translation and rotation input scale.
 
   public DriveSpeed[] driveSpeeds = {
     new DriveSpeed(0.5, 0.5), new DriveSpeed(0.75, 0.75), new DriveSpeed(1.0, 1.0)
   };
 
+  private static final double DEFAULT_SHUTTLE_ADJUSTMENT = 0;
+  private static final double DEFAULT_HUB_ADJUSTMENT = -6;
+
   @AutoLogOutput(key = "Overrides/ShooterRadFudgeFactorShuttle")
-  private double shooterRadFudgeFactorShuttle = 0;
+  private double shooterRadFudgeFactorShuttle = DEFAULT_SHUTTLE_ADJUSTMENT;
 
   @AutoLogOutput(key = "Overrides/ShooterRadFudgeFactorShoot")
-  private double shooterRadFudgeFactorShoot = -6;
+  private double shooterRadFudgeFactorShoot = DEFAULT_HUB_ADJUSTMENT;
 
   @AutoLogOutput(key = "Overrides/ShiftOverride")
   private boolean shiftOverride = false;
@@ -73,13 +76,6 @@ public class Superstructure extends SubsystemBase {
   private Rotation2d autoShootTurnAdjustment = Rotation2d.kZero;
 
   private Alert shiftOverrideAlert = new Alert("Shift Override", AlertType.kInfo);
-
-  private final GenericEntry isFixedEntry =
-      Shuffleboard.getTab("Shooter")
-          .add("Fixed?", true)
-          .withWidget(BuiltInWidgets.kToggleSwitch)
-          .getEntry();
-  BooleanSupplier isFixed = () -> isFixedEntry.getBoolean(false);
 
   public Superstructure(
       Drive drive,
@@ -105,15 +101,29 @@ public class Superstructure extends SubsystemBase {
             AllianceFlipUtil.apply(
                 new Pose2d(
                     FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)),
-            isFixed,
+            () -> Constants.fixedShooterMode,
             this::getShooterRadFudgeFactorShoot);
     shuttleShootingSetpoint =
         ShootingUtil.makeShuttleSetpoint(
-            drive, getShuttleTargetPose(), isFixed, this::getShooterRadFudgeFactorShuttle);
+            drive,
+            getShuttleTargetPose(),
+            () -> Constants.fixedShooterMode,
+            this::getShooterRadFudgeFactorShuttle);
+
+    inAllianceZone =
+        new Trigger(
+            () -> {
+              Pose2d robotPose = AllianceFlipUtil.apply(drive.getPose());
+              return (robotPose.getX() <= FieldConstants.LinesVertical.allianceZone + 0.40);
+            });
 
     hood.setDefaultCommand(hood.tuckCommand(Presets.Hood.TUCK_POSITION));
-    leftShooter.setDefaultCommand(leftShooter.stopCommand());
-    rightShooter.setDefaultCommand(rightShooter.stopCommand());
+    leftShooter.setDefaultCommand(
+        leftShooter.idleVelocityCommand(
+            () -> Constants.constantFlywheelsMode, this::getIdleShooterSpeed));
+    rightShooter.setDefaultCommand(
+        rightShooter.idleVelocityCommand(
+            () -> Constants.constantFlywheelsMode, this::getIdleShooterSpeed));
     SmartDashboard.putData("Overrides/Shift", enableShiftOverride());
     SmartDashboard.putData("Overrides/ShooterFudgePlus1", fudgeShooterSpeedShoot(1));
     SmartDashboard.putData("Overrides/ShooterFudgeMinus1", fudgeShooterSpeedShoot(-1));
@@ -123,19 +133,27 @@ public class Superstructure extends SubsystemBase {
 
   @Override
   public void periodic() {
+    Constants.constantFlywheelsMode =
+        SmartDashboard.getBoolean("ConstantFlywheelsMode", Constants.constantFlywheelsMode);
+    Constants.fixedShooterMode =
+        SmartDashboard.getBoolean("FixedShooterMode", Constants.fixedShooterMode);
+
     hubShootingSetpoint =
         ShootingUtil.makeHubSetpoint(
             drive,
             AllianceFlipUtil.apply(
                 new Pose2d(
                     FieldConstants.Hub.innerCenterPoint.toTranslation2d(), Rotation2d.kZero)),
-            isFixed,
+            () -> Constants.fixedShooterMode,
             this::getShooterRadFudgeFactorShoot);
     shuttleShootingSetpoint =
         ShootingUtil.makeShuttleSetpoint(
-            drive, getShuttleTargetPose(), isFixed, this::getShooterRadFudgeFactorShuttle);
+            drive,
+            getShuttleTargetPose(),
+            () -> Constants.fixedShooterMode,
+            this::getShooterRadFudgeFactorShuttle);
 
-    Logger.recordOutput("Shooter/isFixed", isFixed.getAsBoolean());
+    Logger.recordOutput("Shooter/isFixed", Constants.fixedShooterMode);
 
     Logger.recordOutput("DriveCommands/atAngleSetpoint", DriveCommands.atAngleSetpoint());
     Logger.recordOutput(
@@ -149,6 +167,10 @@ public class Superstructure extends SubsystemBase {
 
     Logger.recordOutput(
         "Superstructure/Shift Time", HubShiftUtil.getOfficialShiftInfo().remainingTime());
+  }
+
+  private double getIdleShooterSpeed() {
+    return Units.rotationsPerMinuteToRadiansPerSecond(Presets.Shooter.IDLE_SPEED_RPM.get());
   }
 
   public Command enableShiftOverride() {
@@ -175,6 +197,33 @@ public class Superstructure extends SubsystemBase {
         () -> shooterRadFudgeFactorShoot = shooterRadFudgeFactorShoot + fudgeFactor);
   }
 
+  /** Resets only the adjustment for the robot's zone when the command runs. */
+  public Command resetShooterSpeedAdjustmentCommand() {
+    return Commands.runOnce(
+        () -> {
+          if (inAllianceZone.getAsBoolean()) {
+            shooterRadFudgeFactorShoot = DEFAULT_HUB_ADJUSTMENT;
+          } else {
+            shooterRadFudgeFactorShuttle = DEFAULT_SHUTTLE_ADJUSTMENT;
+          }
+        });
+  }
+
+  /** Holds all ball-handling motors stopped and rejects competing motor commands. */
+  public Command holdBallHandlingStoppedCommand() {
+    Runnable stop =
+        () -> {
+          intakeRoller.stop();
+          spindexer.stop();
+          loader.stop();
+          leftShooter.stop();
+          rightShooter.stop();
+        };
+    return Commands.runEnd(stop, stop, intakeRoller, spindexer, loader, leftShooter, rightShooter)
+        .beforeStarting(stop)
+        .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming);
+  }
+
   public Command hubAimCommand(DoubleSupplier driveXSupplier, DoubleSupplier driveYSupplier) {
     return hubAimCommand(driveXSupplier, driveYSupplier, () -> 0.0);
   }
@@ -183,6 +232,14 @@ public class Superstructure extends SubsystemBase {
       DoubleSupplier driveXSupplier,
       DoubleSupplier driveYSupplier,
       DoubleSupplier turnAdjustmentSupplier) {
+    return hubAimCommand(driveXSupplier, driveYSupplier, turnAdjustmentSupplier, () -> false);
+  }
+
+  public Command hubAimCommand(
+      DoubleSupplier driveXSupplier,
+      DoubleSupplier driveYSupplier,
+      DoubleSupplier turnAdjustmentSupplier,
+      BooleanSupplier xLockSupplier) {
     return new ParallelCommandGroup(
             Commands.run(() -> updateAutoShootTurnAdjustment(turnAdjustmentSupplier)),
             DriveCommands.joystickDriveAtAngle(
@@ -190,7 +247,8 @@ public class Superstructure extends SubsystemBase {
                 driveXSupplier,
                 driveYSupplier,
                 this::getAdjustedHubShootingSetpointDriveAngle,
-                this::getHubShootingSetpointDriveVelocity),
+                this::getHubShootingSetpointDriveVelocity,
+                xLockSupplier),
             hood.runTrackedPositionCommand(this::getHubShootingSetpointHoodAngle),
             leftShooter.runTrackedVelocityCommand(this::getHubShootingSetpointShooterSpeed),
             rightShooter.runTrackedVelocityCommand(this::getHubShootingSetpointShooterSpeed))
@@ -206,6 +264,14 @@ public class Superstructure extends SubsystemBase {
       DoubleSupplier driveXSupplier,
       DoubleSupplier driveYSupplier,
       DoubleSupplier turnAdjustmentSupplier) {
+    return shuttleAimCommand(driveXSupplier, driveYSupplier, turnAdjustmentSupplier, () -> false);
+  }
+
+  public Command shuttleAimCommand(
+      DoubleSupplier driveXSupplier,
+      DoubleSupplier driveYSupplier,
+      DoubleSupplier turnAdjustmentSupplier,
+      BooleanSupplier xLockSupplier) {
     return new ParallelCommandGroup(
             Commands.run(() -> updateAutoShootTurnAdjustment(turnAdjustmentSupplier)),
             DriveCommands.joystickDriveAtAngle(
@@ -213,7 +279,8 @@ public class Superstructure extends SubsystemBase {
                 driveXSupplier,
                 driveYSupplier,
                 this::getAdjustedShuttleShootingSetpointDriveAngle,
-                this::getShuttleShootingSetpointDriveVelocity),
+                this::getShuttleShootingSetpointDriveVelocity,
+                xLockSupplier),
             hood.runTrackedPositionCommand(this::getShuttleShootingSetpointHoodAngle),
             leftShooter.runTrackedVelocityCommand(this::getShuttleShootingSetpointShooterSpeed),
             rightShooter.runTrackedVelocityCommand(this::getShuttleShootingSetpointShooterSpeed))

@@ -1,5 +1,6 @@
 package org.neiacademy.robotics.frc2026.subsystems.intakedeploy;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
@@ -71,6 +72,42 @@ public class IntakeDeploy extends SubsystemBase {
 
   public Command runTrackedPositionCommand(DoubleSupplier positionRotations) {
     return run(() -> io.runPosition(positionRotations.getAsDouble()));
+  }
+
+  /** Integrates a bounded target; the motor controller holds the last target on release. */
+  public Command manualPositionCommand(DoubleSupplier joystick) {
+    return new Command() {
+      private double target;
+
+      {
+        addRequirements(IntakeDeploy.this);
+      }
+
+      @Override
+      public void initialize() {
+        target = getPositionRotations();
+      }
+
+      @Override
+      public void execute() {
+        double min =
+            Math.min(Presets.Intake.TUCK_ANGLE_DEG.get(), Presets.Intake.EXTEND_ANGLE_DEG.get());
+        double max =
+            Math.max(Presets.Intake.TUCK_ANGLE_DEG.get(), Presets.Intake.EXTEND_ANGLE_DEG.get());
+        double duration =
+            Math.max(Constants.loopTime, Presets.Intake.PIVOT_MANUAL_MOVEMENT_TOTAL_TIME.get());
+        target =
+            MathUtil.clamp(
+                target
+                    + MathUtil.applyDeadband(joystick.getAsDouble(), 0.1)
+                        * (max - min)
+                        / duration
+                        * Constants.loopTime,
+                min,
+                max);
+        io.runPosition(target);
+      }
+    };
   }
 
   public double getAngleRads() {

@@ -6,6 +6,7 @@ public interface ShooterIO {
 
   @AutoLog
   public static class ShooterIOInputs {
+    public double supplyVoltageVolts = 0.0;
     public boolean leaderConnected = false;
     public double leaderTempCelsius = 0.0;
     public double leaderVelocityRadsPerSec = 0.0;
@@ -27,6 +28,9 @@ public interface ShooterIO {
   public default void runVoltage(double volts) {}
 
   public default void runVelocity(double velocityRadsPerSec) {}
+
+  /** Positive-only idle control; implementations must not apply braking torque above target. */
+  public default void runIdleVelocity(double velocityRadsPerSec) {}
 
   public default void stop() {}
 

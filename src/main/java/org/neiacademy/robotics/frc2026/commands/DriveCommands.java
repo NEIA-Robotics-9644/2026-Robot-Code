@@ -26,6 +26,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -146,6 +147,18 @@ public class DriveCommands {
       DoubleSupplier ySupplier,
       Supplier<Rotation2d> rotationSupplier,
       Supplier<Rotation2d> rotationalVelocitySupplier) {
+    return joystickDriveAtAngle(
+        drive, xSupplier, ySupplier, rotationSupplier, rotationalVelocitySupplier, () -> false);
+  }
+
+  /** Keeps tracking heading readiness while X-lock prevents drivetrain movement. */
+  public static Command joystickDriveAtAngle(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      Supplier<Rotation2d> rotationSupplier,
+      Supplier<Rotation2d> rotationalVelocitySupplier,
+      BooleanSupplier xLockSupplier) {
 
     // Create PID controller
     ProfiledPIDController angleController =
@@ -162,6 +175,15 @@ public class DriveCommands {
               Logger.recordOutput("DriveCommands/AnglePositionSetpoint", rotationSupplier.get());
               Logger.recordOutput(
                   "DriveCommands/AngleVelocitySetpoint", rotationalVelocitySupplier.get());
+
+              atAngleSetpoint =
+                  Math.abs(rotationSupplier.get().minus(drive.getRotation()).getRadians())
+                      <= Units.degreesToRadians(ANGLE_TOLERANCE.get());
+              if (xLockSupplier.getAsBoolean()) {
+                drive.stopWithX();
+                angleController.reset(drive.getRotation().getRadians());
+                return;
+              }
 
               // Get linear velocity
               Translation2d linearVelocity =
@@ -191,12 +213,6 @@ public class DriveCommands {
                       isFlipped
                           ? drive.getRotation().plus(new Rotation2d(Math.PI))
                           : drive.getRotation()));
-
-              atAngleSetpoint =
-                  Util.epsilonEquals(
-                      rotationSupplier.get().getRadians(),
-                      drive.getPose().getRotation().getRadians(),
-                      Units.degreesToRadians(ANGLE_TOLERANCE.get()));
             },
             drive)
 
@@ -205,7 +221,8 @@ public class DriveCommands {
             () -> {
               angleController.reset(drive.getRotation().getRadians());
               atAngleSetpoint = false;
-            });
+            })
+        .finallyDo(() -> atAngleSetpoint = false);
   }
 
   public static Command driveToPose(Drive drive, Supplier<Pose2d> pose) {
