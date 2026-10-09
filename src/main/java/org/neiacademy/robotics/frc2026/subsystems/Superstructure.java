@@ -59,7 +59,7 @@ public class Superstructure extends SubsystemBase {
   };
 
   private static final double DEFAULT_SHUTTLE_ADJUSTMENT = 0;
-  private static final double DEFAULT_HUB_ADJUSTMENT = -6;
+  private static final double DEFAULT_HUB_ADJUSTMENT = -30;
 
   @AutoLogOutput(key = "Overrides/ShooterRadFudgeFactorShuttle")
   private double shooterRadFudgeFactorShuttle = DEFAULT_SHUTTLE_ADJUSTMENT;
