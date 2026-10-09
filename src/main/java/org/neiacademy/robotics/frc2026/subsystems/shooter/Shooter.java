@@ -2,6 +2,7 @@ package org.neiacademy.robotics.frc2026.subsystems.shooter;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,6 +18,11 @@ public class Shooter extends SubsystemBase {
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
   private final boolean isLeftShooter;
+  private boolean idleActive;
+  private boolean idleCoasting;
+  private double idleTargetRadsPerSec;
+  private double supplyEnergyJoules;
+  private double shootingTargetRadsPerSec = Double.NaN;
 
   private final Debouncer motorConnectedDebouncer = new Debouncer(0.5, DebounceType.kFalling);
   private final Alert shooterLeaderDisconnectedAlert;
@@ -40,6 +46,18 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/" + (isLeftShooter ? "Left" : "Right"), inputs);
+    String logKey = "Shooter/" + (isLeftShooter ? "Left" : "Right");
+    double supplyPowerWatts =
+        inputs.supplyVoltageVolts
+            * (inputs.leaderSupplyCurrentAmps + inputs.followerSupplyCurrentAmps);
+    supplyEnergyJoules += supplyPowerWatts * Constants.loopTime;
+    Logger.recordOutput(logKey + "/SupplyPowerWatts", supplyPowerWatts);
+    Logger.recordOutput(logKey + "/SupplyEnergyJoules", supplyEnergyJoules);
+    Logger.recordOutput(logKey + "/IdleActive", idleActive);
+    Logger.recordOutput(logKey + "/IdleCoasting", idleCoasting);
+    Logger.recordOutput(
+        logKey + "/IdleTargetRPM",
+        Units.radiansPerSecondToRotationsPerMinute(idleTargetRadsPerSec));
 
     shooterLeaderDisconnectedAlert.set(!motorConnectedDebouncer.calculate(inputs.leaderConnected));
     shooterFollowerDisconnectedAlert.set(
@@ -77,33 +95,50 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean atSetpoint() {
-    return Util.epsilonEquals(
-        inputs.leaderVelocitySetpointRadsPerSec,
-        inputs.leaderVelocityRadsPerSec,
-        Constants.Shooter.VELOCITY_TOLERANCE.get());
+    return Double.isFinite(shootingTargetRadsPerSec)
+        && shootingTargetRadsPerSec > 0.0
+        && Util.epsilonEquals(
+            shootingTargetRadsPerSec,
+            inputs.leaderVelocityRadsPerSec,
+            Constants.Shooter.VELOCITY_TOLERANCE.get());
   }
 
   public Command runVelocityCommand(DoubleSupplier velocityRadsPerSec) {
-    return run(() -> io.runVelocity(velocityRadsPerSec.getAsDouble())).until(this::atSetpoint);
+    return runTrackedVelocityCommand(velocityRadsPerSec).until(this::atSetpoint);
   }
 
   public Command runTrackedVelocityCommand(DoubleSupplier velocityRadsPerSec) {
-    return run(() -> io.runVelocity(velocityRadsPerSec.getAsDouble()));
+    return run(() -> {
+          shootingTargetRadsPerSec = velocityRadsPerSec.getAsDouble();
+          io.runVelocity(shootingTargetRadsPerSec);
+        })
+        .beforeStarting(() -> shootingTargetRadsPerSec = velocityRadsPerSec.getAsDouble())
+        .finallyDo(() -> shootingTargetRadsPerSec = Double.NaN);
   }
 
-  /** Keeps the idle target current, while allowing shooting commands to take ownership. */
+  /** Coast down to a low-speed floor, then maintain it until a shooting command takes over. */
   public Command idleVelocityCommand(BooleanSupplier enabled, DoubleSupplier velocityRadsPerSec) {
     return run(() -> {
-          if (enabled.getAsBoolean()) {
-            io.runVelocity(velocityRadsPerSec.getAsDouble());
-          } else {
+          double target = velocityRadsPerSec.getAsDouble();
+          idleTargetRadsPerSec = Double.isFinite(target) ? Math.max(0.0, target) : 0.0;
+          idleActive = enabled.getAsBoolean() && idleTargetRadsPerSec > 0.0;
+          idleCoasting = idleActive && inputs.leaderVelocityRadsPerSec > idleTargetRadsPerSec;
+          if (!idleActive || idleCoasting) {
             stop();
+          } else {
+            io.runIdleVelocity(idleTargetRadsPerSec);
           }
         })
-        .finallyDo(this::stop);
+        .finallyDo(
+            () -> {
+              idleActive = false;
+              idleCoasting = false;
+              stop();
+            });
   }
 
   public void stop() {
+    shootingTargetRadsPerSec = Double.NaN;
     io.stop();
   }
 

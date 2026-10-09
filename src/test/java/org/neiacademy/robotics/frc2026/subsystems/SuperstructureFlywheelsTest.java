@@ -6,6 +6,7 @@ import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -14,8 +15,10 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.littletonrobotics.junction.Logger;
 import org.neiacademy.robotics.frc2026.Constants;
 import org.neiacademy.robotics.frc2026.FieldConstants;
+import org.neiacademy.robotics.frc2026.Presets;
 import org.neiacademy.robotics.frc2026.subsystems.drive.*;
 import org.neiacademy.robotics.frc2026.subsystems.hood.*;
 import org.neiacademy.robotics.frc2026.subsystems.intakedeploy.*;
@@ -39,6 +42,9 @@ class SuperstructureFlywheelsTest {
   @BeforeAll
   static void setupRobot() {
     assertTrue(HAL.initialize(500, 0));
+    Logger.AdvancedHooks.disableRobotBaseCheck();
+    Logger.disableConsoleCapture();
+    Logger.start();
     DriverStationSim.setDsAttached(true);
     DriverStationSim.setAllianceStationId(AllianceStationID.Blue1);
     DriverStationSim.notifyNewData();
@@ -105,6 +111,9 @@ class SuperstructureFlywheelsTest {
   @BeforeEach
   void reset() {
     scheduler.cancelAll();
+    Presets.Shooter.IDLE_SPEED_RPM.set(300);
+    leftIO.measuredVelocity = 0;
+    rightIO.measuredVelocity = 0;
     DriverStationSim.setEnabled(true);
     DriverStationSim.notifyNewData();
     SmartDashboard.putBoolean("ConstantFlywheelsMode", false);
@@ -125,6 +134,7 @@ class SuperstructureFlywheelsTest {
     SmartDashboard.putBoolean("FixedShooterMode", true);
     Constants.constantFlywheelsMode = false;
     Constants.fixedShooterMode = true;
+    Logger.end();
   }
 
   @Test
@@ -136,7 +146,7 @@ class SuperstructureFlywheelsTest {
     assertTrue(Constants.constantFlywheelsMode);
     assertTrue(leftIO.velocityCalls > 0);
     assertTrue(rightIO.velocityCalls > 0);
-    assertEquals(284.0, leftIO.target, 1e-6); // 290 rad/s table value, minus 6 adjustment.
+    assertEquals(Units.rotationsPerMinuteToRadiansPerSecond(300), leftIO.target, 1e-6);
     assertEquals(leftIO.target, rightIO.target, 1e-6);
     SmartDashboard.putBoolean("ConstantFlywheelsMode", false);
     runCycles();
@@ -146,36 +156,68 @@ class SuperstructureFlywheelsTest {
   }
 
   @Test
-  void idleTargetTracksDistanceAndSwitchesToShuttleOutsideAllianceZone() {
+  void idleTargetIgnoresDistanceZoneAndShotTrimAndTracksIdlePreset() {
     SmartDashboard.putBoolean("ConstantFlywheelsMode", true);
     runCycles();
-    double closeTarget = leftIO.target;
+    double idle = leftIO.target;
     setHubDistance(3.0);
     runCycles();
-    assertEquals(315.0, leftIO.target, 1e-6);
-    assertNotEquals(closeTarget, leftIO.target);
+    assertEquals(idle, leftIO.target, 1e-6);
     drive.setPose(
         new Pose2d(FieldConstants.LinesVertical.allianceZone + 1.0, 2.0, Rotation2d.kZero));
     runCycles();
-    assertEquals(superstructure.getShuttleShootingSetpointShooterSpeed(), leftIO.target, 1e-6);
+    assertEquals(idle, leftIO.target, 1e-6);
+    scheduler.schedule(superstructure.fudgeShooterSpeedShuttle(9));
+    runCycles();
+    assertEquals(idle, leftIO.target, 1e-6);
+    scheduler.schedule(superstructure.resetShooterSpeedAdjustmentCommand());
+    Presets.Shooter.IDLE_SPEED_RPM.set(500);
+    runCycles();
+    assertEquals(Units.rotationsPerMinuteToRadiansPerSecond(500), leftIO.target, 1e-6);
     assertEquals(leftIO.target, rightIO.target, 1e-6);
+  }
+
+  @Test
+  void idleCoastsAboveFloorAndInvalidOrZeroTargetsStopOutput() {
+    SmartDashboard.putBoolean("ConstantFlywheelsMode", true);
+    leftIO.measuredVelocity = 290;
+    rightIO.measuredVelocity = 290;
+    runCycles();
+    assertTrue(leftIO.stopped);
+    assertTrue(rightIO.stopped);
+    assertEquals(0, leftIO.velocityCalls);
+    leftIO.measuredVelocity = Units.rotationsPerMinuteToRadiansPerSecond(299);
+    rightIO.measuredVelocity = leftIO.measuredVelocity;
+    runCycles();
+    assertFalse(leftIO.stopped);
+    assertTrue(leftIO.idleRequest);
+    assertEquals(Units.rotationsPerMinuteToRadiansPerSecond(300), leftIO.target, 1e-6);
+    Presets.Shooter.IDLE_SPEED_RPM.set(250);
+    runCycles();
+    assertTrue(leftIO.stopped);
+    for (double invalid : new double[] {0, -100, Double.NaN, Double.POSITIVE_INFINITY}) {
+      Presets.Shooter.IDLE_SPEED_RPM.set(invalid);
+      runCycles();
+      assertTrue(leftIO.stopped);
+      assertTrue(rightIO.stopped);
+    }
   }
 
   @Test
   void fixedShooterDashboardToggleChangesTheShotSolution() {
     SmartDashboard.putBoolean("ConstantFlywheelsMode", true);
     runCycles();
-    double fixedTarget = leftIO.target;
+    double fixedTarget = superstructure.getHubShootingSetpointShooterSpeed();
     assertEquals(0.0, superstructure.getHubShootingSetpointHoodAngle(), 1e-6);
     SmartDashboard.putBoolean("FixedShooterMode", false);
     runCycles();
     assertFalse(Constants.fixedShooterMode);
-    assertNotEquals(fixedTarget, leftIO.target);
+    assertNotEquals(fixedTarget, superstructure.getHubShootingSetpointShooterSpeed());
     assertTrue(superstructure.getHubShootingSetpointHoodAngle() > 0.0);
     SmartDashboard.putBoolean("FixedShooterMode", true);
     runCycles();
     assertTrue(Constants.fixedShooterMode);
-    assertEquals(fixedTarget, leftIO.target, 1e-6);
+    assertEquals(fixedTarget, superstructure.getHubShootingSetpointShooterSpeed(), 1e-6);
   }
 
   @Test
@@ -187,9 +229,15 @@ class SuperstructureFlywheelsTest {
     runCycles();
     assertTrue(shot.isScheduled());
     assertEquals(425.0, leftIO.target, 1e-6);
+    assertFalse(leftIO.idleRequest);
+    leftIO.measuredVelocity = 425;
     shot.cancel();
     runCycles();
-    assertEquals(superstructure.getHubShootingSetpointShooterSpeed(), leftIO.target, 1e-6);
+    assertTrue(leftIO.stopped);
+    leftIO.measuredVelocity = 30;
+    runCycles();
+    assertTrue(leftIO.idleRequest);
+    assertEquals(Units.rotationsPerMinuteToRadiansPerSecond(300), leftIO.target, 1e-6);
     DriverStationSim.setEnabled(false);
     DriverStationSim.notifyNewData();
     runCycles();
@@ -308,6 +356,22 @@ class SuperstructureFlywheelsTest {
     assertEquals(hub, superstructure.getHubShootingSetpointShooterSpeed(), 1e-6);
   }
 
+  @Test
+  void idleSpeedCannotSatisfyShootingReadiness() {
+    SmartDashboard.putBoolean("ConstantFlywheelsMode", true);
+    leftIO.measuredVelocity = Units.rotationsPerMinuteToRadiansPerSecond(300);
+    runCycles();
+    assertFalse(left.atSetpoint());
+    Command spinUp = left.runVelocityCommand(() -> 290);
+    scheduler.schedule(spinUp);
+    assertFalse(left.atSetpoint());
+    runCycles();
+    assertTrue(spinUp.isScheduled());
+    leftIO.measuredVelocity = 290;
+    runCycles();
+    assertFalse(spinUp.isScheduled());
+  }
+
   private static void setHubDistance(double distance) {
     drive.setPose(
         new Pose2d(
@@ -317,17 +381,35 @@ class SuperstructureFlywheelsTest {
   }
 
   private static void runCycles() {
-    for (int i = 0; i < 3; i++) scheduler.run();
+    for (int i = 0; i < 3; i++) {
+      Logger.AdvancedHooks.invokePeriodicBeforeUser();
+      scheduler.run();
+    }
   }
 
   private static class RecordingShooterIO implements ShooterIO {
     double target;
+    double measuredVelocity;
+    boolean idleRequest;
     int velocityCalls;
+
+    @Override
+    public void updateInputs(ShooterIOInputs inputs) {
+      inputs.leaderVelocityRadsPerSec = measuredVelocity;
+    }
+
+    @Override
+    public void runIdleVelocity(double velocityRadsPerSec) {
+      runVelocity(velocityRadsPerSec);
+      idleRequest = true;
+    }
+
     boolean stopped = true;
 
     @Override
     public void runVelocity(double velocityRadsPerSec) {
       target = velocityRadsPerSec;
+      idleRequest = false;
       velocityCalls++;
       stopped = false;
     }

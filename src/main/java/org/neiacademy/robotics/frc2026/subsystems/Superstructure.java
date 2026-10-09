@@ -170,9 +170,7 @@ public class Superstructure extends SubsystemBase {
   }
 
   private double getIdleShooterSpeed() {
-    return inAllianceZone.getAsBoolean()
-        ? getHubShootingSetpointShooterSpeed()
-        : getShuttleShootingSetpointShooterSpeed();
+    return Units.rotationsPerMinuteToRadiansPerSecond(Presets.Shooter.IDLE_SPEED_RPM.get());
   }
 
   public Command enableShiftOverride() {

@@ -17,6 +17,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
 import org.neiacademy.robotics.frc2026.Constants;
 import org.neiacademy.robotics.frc2026.util.PhoenixUtil;
 import org.neiacademy.robotics.frc2026.util.drivers.CANDeviceID;
@@ -43,6 +44,11 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   private final VoltageOut voltageOut = new VoltageOut(0).withEnableFOC(true);
   private final VelocityTorqueCurrentFOC velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0);
+  // Keep idle-only limits separate from the full shooting control request.
+  private final VelocityTorqueCurrentFOC idleVelocityTorqueCurrentFOC =
+      new VelocityTorqueCurrentFOC(0)
+          .withLimitReverseMotion(true)
+          .withOverrideCoastDurNeutral(true);
 
   public ShooterIOTalonFX(
       boolean isLeftShooter, CANDeviceID leader, CANDeviceID follower, boolean opposed) {
@@ -135,6 +141,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
+    inputs.supplyVoltageVolts = RobotController.getBatteryVoltage();
     BaseStatusSignal.refreshAll(
         leaderTemp,
         leaderVelocity,
@@ -189,6 +196,12 @@ public class ShooterIOTalonFX implements ShooterIO {
   public void runVelocity(double velocityRadsPerSec) {
     shooterLeader.setControl(
         velocityTorqueCurrentFOC.withVelocity(Units.radiansToRotations(velocityRadsPerSec)));
+  }
+
+  @Override
+  public void runIdleVelocity(double velocityRadsPerSec) {
+    shooterLeader.setControl(
+        idleVelocityTorqueCurrentFOC.withVelocity(Units.radiansToRotations(velocityRadsPerSec)));
   }
 
   @Override

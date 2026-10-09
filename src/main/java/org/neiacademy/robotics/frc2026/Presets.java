@@ -47,6 +47,10 @@ public final class Presets {
   }
 
   public static class Shooter {
+    /** Low-speed idle floor, in RPM (shooting presets below use radians per second). */
+    public static final LoggedTunableNumber IDLE_SPEED_RPM =
+        new LoggedTunableNumber("Setpoints/Shooter/IdleSpeedRPM", 300.0);
+
     public static final LoggedTunableNumber CLOSE_HUB_SPEED =
         new LoggedTunableNumber("Setpoints/Shooter/CloseHubSpeedRadsPerSec", 290.0);
     public static final LoggedTunableNumber TRENCH_SPEED =
