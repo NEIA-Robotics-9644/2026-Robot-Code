@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -51,7 +52,7 @@ public class Superstructure extends SubsystemBase {
 
   private Trigger inAllianceZone;
 
-  public int currentDriveSpeedIndex = 0;
+  public int currentDriveSpeedIndex = 2; // Start at full translation and rotation input scale.
 
   public DriveSpeed[] driveSpeeds = {
     new DriveSpeed(0.5, 0.5), new DriveSpeed(0.75, 0.75), new DriveSpeed(1.0, 1.0)
@@ -203,6 +204,14 @@ public class Superstructure extends SubsystemBase {
       DoubleSupplier driveXSupplier,
       DoubleSupplier driveYSupplier,
       DoubleSupplier turnAdjustmentSupplier) {
+    return hubAimCommand(driveXSupplier, driveYSupplier, turnAdjustmentSupplier, () -> false);
+  }
+
+  public Command hubAimCommand(
+      DoubleSupplier driveXSupplier,
+      DoubleSupplier driveYSupplier,
+      DoubleSupplier turnAdjustmentSupplier,
+      BooleanSupplier xLockSupplier) {
     return new ParallelCommandGroup(
             Commands.run(() -> updateAutoShootTurnAdjustment(turnAdjustmentSupplier)),
             DriveCommands.joystickDriveAtAngle(
@@ -210,7 +219,8 @@ public class Superstructure extends SubsystemBase {
                 driveXSupplier,
                 driveYSupplier,
                 this::getAdjustedHubShootingSetpointDriveAngle,
-                this::getHubShootingSetpointDriveVelocity),
+                this::getHubShootingSetpointDriveVelocity,
+                xLockSupplier),
             hood.runTrackedPositionCommand(this::getHubShootingSetpointHoodAngle),
             leftShooter.runTrackedVelocityCommand(this::getHubShootingSetpointShooterSpeed),
             rightShooter.runTrackedVelocityCommand(this::getHubShootingSetpointShooterSpeed))
@@ -226,6 +236,14 @@ public class Superstructure extends SubsystemBase {
       DoubleSupplier driveXSupplier,
       DoubleSupplier driveYSupplier,
       DoubleSupplier turnAdjustmentSupplier) {
+    return shuttleAimCommand(driveXSupplier, driveYSupplier, turnAdjustmentSupplier, () -> false);
+  }
+
+  public Command shuttleAimCommand(
+      DoubleSupplier driveXSupplier,
+      DoubleSupplier driveYSupplier,
+      DoubleSupplier turnAdjustmentSupplier,
+      BooleanSupplier xLockSupplier) {
     return new ParallelCommandGroup(
             Commands.run(() -> updateAutoShootTurnAdjustment(turnAdjustmentSupplier)),
             DriveCommands.joystickDriveAtAngle(
@@ -233,7 +251,8 @@ public class Superstructure extends SubsystemBase {
                 driveXSupplier,
                 driveYSupplier,
                 this::getAdjustedShuttleShootingSetpointDriveAngle,
-                this::getShuttleShootingSetpointDriveVelocity),
+                this::getShuttleShootingSetpointDriveVelocity,
+                xLockSupplier),
             hood.runTrackedPositionCommand(this::getShuttleShootingSetpointHoodAngle),
             leftShooter.runTrackedVelocityCommand(this::getShuttleShootingSetpointShooterSpeed),
             rightShooter.runTrackedVelocityCommand(this::getShuttleShootingSetpointShooterSpeed))

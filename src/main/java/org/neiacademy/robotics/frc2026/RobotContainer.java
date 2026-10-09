@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
@@ -28,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.neiacademy.robotics.frc2026.Constants.*;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
+import org.neiacademy.robotics.frc2026.commands.ManualPivotBumperCommand;
 import org.neiacademy.robotics.frc2026.generated.TunerConstants;
 import org.neiacademy.robotics.frc2026.subsystems.Superstructure;
 import org.neiacademy.robotics.frc2026.subsystems.drive.Drive;
@@ -330,7 +332,10 @@ public class RobotContainer {
             () -> -driverCon.getRightX() * superstructure.getCurrentDriveSpeed().rotationScale));
 
     // Switch to X pattern when X button is pressed
-    driverCon.x().whileTrue(Commands.run(drive::stopWithX, drive));
+    driverCon
+        .x()
+        .and(driverCon.rightTrigger().negate())
+        .whileTrue(Commands.run(drive::stopWithX, drive));
 
     // force shoot even if the tolerances aren't being met
     driverCon
@@ -351,6 +356,8 @@ public class RobotContainer {
     // Lock to a parallel angle to shove balls
     driverCon
         .a()
+        .and(driverCon.rightTrigger().negate())
+        .and(driverCon.x().negate())
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
@@ -366,27 +373,14 @@ public class RobotContainer {
             superstructure.hubAimCommand(
                 () -> -driverCon.getLeftY(),
                 () -> -driverCon.getLeftX(),
-                () -> -operatorCon.getRightX()))
+                () -> -operatorCon.getRightX(),
+                driverCon.x()))
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
         .and(DriveCommands::atAngleSetpoint)
+        .and(hood::atSetpoint)
+        .debounce(0.04)
         .whileTrue(superstructure.shootCommand())
-        .onFalse(superstructure.endShootCommand());
-    // x lock shoot
-    driverCon
-        .rightTrigger()
-        .and(driverCon.x())
-        .and(inAllianceZone)
-        .whileTrue(
-            superstructure.hubAimCommand(
-                () -> -driverCon.getLeftY(),
-                () -> -driverCon.getLeftX(),
-                () -> -operatorCon.getRightX()))
-        .and(leftShooter::atSetpoint)
-        .and(rightShooter::atSetpoint)
-        .and(DriveCommands::atAngleSetpoint)
-        .whileTrue(superstructure.shootCommand())
-        .whileTrue(Commands.run(drive::stopWithX, drive))
         .onFalse(superstructure.endShootCommand());
     // shuttle
     driverCon
@@ -396,9 +390,13 @@ public class RobotContainer {
             superstructure.shuttleAimCommand(
                 () -> -driverCon.getLeftY(),
                 () -> -driverCon.getLeftX(),
-                () -> -operatorCon.getRightX()))
+                () -> -operatorCon.getRightX(),
+                driverCon.x()))
         .and(leftShooter::atSetpoint)
         .and(rightShooter::atSetpoint)
+        .and(DriveCommands::atAngleSetpoint)
+        .and(hood::atSetpoint)
+        .debounce(0.04)
         .whileTrue(superstructure.shootCommand())
         .onFalse(superstructure.endShootCommand());
 
@@ -483,20 +481,27 @@ public class RobotContainer {
                 spindexer.runVoltageCommand(Presets.Spindexer.EXHAUST_VOLTS),
                 loader.runVoltageCommand(Presets.Loader.EXHAUST_VOLTS)));
 
+    // A bumper press used for manual pivot must never also change shooter speed.
     operatorCon
         .leftBumper()
-        .and(operatorCon.leftStick())
         .whileTrue(
-            intakeDeploy.runTrackedPositionCommand(
-                () ->
-                    clamp(
-                        intakeDeploy.getPositionRotations()
-                            + (((Math.abs(Presets.Intake.TUCK_ANGLE_DEG.get())
-                                        + Math.abs(Presets.Intake.EXTEND_ANGLE_DEG.get()))
-                                    / (Presets.Intake.PIVOT_MANUAL_MOVEMENT_TOTAL_TIME.get() * 50))
-                                * operatorCon.getLeftY()),
-                        Presets.Intake.TUCK_ANGLE_DEG.get(),
-                        Presets.Intake.EXTEND_ANGLE_DEG.get())));
+            new ManualPivotBumperCommand(
+                operatorCon.leftBumper(),
+                operatorCon.leftStick(),
+                () -> {
+                  if (inAllianceZone.getAsBoolean()) {
+                    CommandScheduler.getInstance()
+                        .schedule(superstructure.fudgeShooterSpeedShoot(-1));
+                  } else {
+                    CommandScheduler.getInstance()
+                        .schedule(superstructure.fudgeShooterSpeedShuttle(-1));
+                  }
+                }));
+    Trigger manualPivot = operatorCon.leftBumper().and(operatorCon.leftStick());
+    // Continue commanding the held target so the software motion profile can finish.
+    manualPivot.onTrue(
+        intakeDeploy.manualPositionCommand(
+            () -> manualPivot.getAsBoolean() ? operatorCon.getLeftY() : 0.0));
 
     // fall back
     operatorCon
@@ -550,13 +555,6 @@ public class RobotContainer {
         .rightBumper()
         .and(inAllianceZone.negate())
         .onTrue(superstructure.fudgeShooterSpeedShuttle(1));
-
-    operatorCon.leftBumper().and(inAllianceZone).onTrue(superstructure.fudgeShooterSpeedShoot(-1));
-
-    operatorCon
-        .leftBumper()
-        .and(inAllianceZone.negate())
-        .onTrue(superstructure.fudgeShooterSpeedShuttle(-1));
   }
 
   /**
@@ -578,10 +576,5 @@ public class RobotContainer {
         DriverStation.isAutonomous() && !DriverStation.isEnabled() && autoChooser.get() == noAuto);
 
     controllerAlertRumble.periodic();
-  }
-
-  // will stay until java gets updated for this
-  private double clamp(double value, double min, double max) {
-    return Math.max(min >= max ? min : max, Math.min(max >= min ? max : min, value));
   }
 }

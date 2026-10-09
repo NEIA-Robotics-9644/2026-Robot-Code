@@ -154,6 +154,53 @@ class SuperstructureFlywheelsTest {
     assertTrue(rightIO.stopped);
   }
 
+  @Test
+  void xLockDoesNotCancelHubOrShuttleShooterTracking() {
+    boolean[] locked = {false};
+    for (boolean shuttle : new boolean[] {false, true}) {
+      Command aim =
+          shuttle
+              ? superstructure.shuttleAimCommand(() -> 0.0, () -> 0.0, () -> 0.0, () -> locked[0])
+              : superstructure.hubAimCommand(() -> 0.0, () -> 0.0, () -> 0.0, () -> locked[0]);
+      scheduler.schedule(aim);
+      runCycles();
+      assertTrue(aim.isScheduled());
+      for (boolean lock : new boolean[] {true, false, true}) {
+        int calls = leftIO.velocityCalls;
+        locked[0] = lock;
+        runCycles();
+        assertTrue(aim.isScheduled());
+        assertSame(aim, drive.getCurrentCommand());
+        assertSame(aim, left.getCurrentCommand());
+        assertTrue(leftIO.velocityCalls > calls);
+        assertEquals(
+            shuttle
+                ? superstructure.getShuttleShootingSetpointShooterSpeed()
+                : superstructure.getHubShootingSetpointShooterSpeed(),
+            leftIO.target,
+            1e-6);
+      }
+      aim.cancel();
+      assertFalse(org.neiacademy.robotics.frc2026.commands.DriveCommands.atAngleSetpoint());
+    }
+  }
+
+  @Test
+  void lockedHeadingReadinessUsesLiveWrappedError() {
+    var target = Rotation2d.fromDegrees(-179);
+    Command aim =
+        org.neiacademy.robotics.frc2026.commands.DriveCommands.joystickDriveAtAngle(
+            drive, () -> 1.0, () -> 1.0, () -> target, () -> Rotation2d.kZero, () -> true);
+    drive.setPose(new Pose2d(drive.getPose().getTranslation(), Rotation2d.fromDegrees(179)));
+    scheduler.schedule(aim);
+    runCycles();
+    assertTrue(org.neiacademy.robotics.frc2026.commands.DriveCommands.atAngleSetpoint());
+    drive.setPose(new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero));
+    runCycles();
+    assertFalse(org.neiacademy.robotics.frc2026.commands.DriveCommands.atAngleSetpoint());
+    aim.cancel();
+  }
+
   private static void setHubDistance(double distance) {
     drive.setPose(
         new Pose2d(
