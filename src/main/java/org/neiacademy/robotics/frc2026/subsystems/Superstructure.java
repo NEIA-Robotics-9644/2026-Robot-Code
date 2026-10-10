@@ -322,8 +322,10 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Command deployIntake() {
-    return intakeDeploy.runTrackedPositionCommand(
-        () -> Presets.Intake.EXTEND_ANGLE_DEG.getAsDouble());
+    return new SequentialCommandGroup(
+        intakeDeploy.runPositionCommandWithTimeout(
+        () -> Presets.Intake.EXTEND_ANGLE_DEG.getAsDouble()),
+        intakeDeploy.runVoltageCommand(() -> 0.40));
   }
 
   public Command retractIntake() {
