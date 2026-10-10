@@ -322,8 +322,10 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Command deployIntake() {
-    return intakeDeploy.runTrackedPositionCommand(
-        () -> Presets.Intake.EXTEND_ANGLE_DEG.getAsDouble());
+    return new SequentialCommandGroup(
+        intakeDeploy.runPositionCommandWithTimeout(
+            () -> Presets.Intake.EXTEND_ANGLE_DEG.getAsDouble()),
+        intakeDeploy.runVoltageCommand(() -> 0.40));
   }
 
   public Command retractIntake() {
@@ -332,11 +334,22 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Command toggleIntake() {
+    return toggleIntake(2.25);
+  }
+
+  public Command toggleIntake(double durationSeconds) {
+    return agitateIntake()
+        .withTimeout(durationSeconds)
+        .andThen(retractIntake().until(intakeDeploy::atSetpoint).withTimeout(0.75));
+  }
+
+  public Command agitateIntake() {
     return new SequentialCommandGroup(
-            retractIntake().withTimeout(0.25), deployIntake().withTimeout(0.25))
-        .repeatedly()
-        .withTimeout(2.25)
-        .andThen(retractIntake());
+            retractIntake().withTimeout(0.25),
+            intakeDeploy
+                .runTrackedPositionCommand(() -> Presets.Intake.EXTEND_ANGLE_DEG.getAsDouble())
+                .withTimeout(0.25))
+        .repeatedly();
   }
 
   public Command stopAllRollersCommand() {
@@ -368,6 +381,16 @@ public class Superstructure extends SubsystemBase {
                     spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS))))
         .withTimeout(6)
         .andThen(autoEndShootCommand());
+  }
+
+  /** Synchronous cleanup also runs when auto is interrupted by disable or teleop. */
+  public void stopAutoFuelHandling() {
+    intakeDeploy.stop();
+    intakeRoller.stop();
+    loader.stop();
+    spindexer.stop();
+    leftShooter.stop();
+    rightShooter.stop();
   }
 
   public Command closeHubShoot() {

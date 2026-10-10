@@ -75,7 +75,6 @@ task(replayWatch, type: JavaExec) {
 }
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
-// Also defines JUnit 4.
 dependencies {
     //annotationProcessor wpi.java.deps.wpilibAnnotations() - removing due to conflicts with AdvantageKit annotations
     implementation wpi.java.deps.wpilib()
@@ -95,8 +94,6 @@ dependencies {
     nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
     simulationRelease wpi.sim.enableRelease()
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     def akitJson = new groovy.json.JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
     annotationProcessor "org.littletonrobotics.akit:akit-autolog:$akitJson.version"
@@ -104,13 +101,6 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")
 
-    testCompileOnly("org.projectlombok:lombok:1.18.42")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
-}
-
-test {
-    useJUnitPlatform()
-    systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
 }
 
 // Simulation configuration (e.g. environment variables).
@@ -135,10 +125,10 @@ jar {
 // Configure jar and deploy tasks
 deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)
-wpi.java.configureTestTasks(test)
 
 // Configure string concat to always inline compile
 tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
     options.compilerArgs.add '-XDstringConcat=inline'
 }
 

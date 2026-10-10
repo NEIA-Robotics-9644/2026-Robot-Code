@@ -63,7 +63,7 @@ public class Drive extends SubsystemBase {
               Math.hypot(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)));
 
   // PathPlanner config constants
-  private static final double ROBOT_MASS_KG = 18;
+  private static final double ROBOT_MASS_KG = 45;
   private static final double ROBOT_MOI = 6.883;
   private static final double WHEEL_COF = 1.2;
   private static final RobotConfig PP_CONFIG =
@@ -272,9 +272,9 @@ public class Drive extends SubsystemBase {
     return run(() -> runCharacterization(0.0)).withTimeout(1.0).andThen(sysId.dynamic(direction));
   }
 
-  /** Returns the module states (turn angles and drive velocities) for all of the modules. */
+  /** Returns measured module states in front-left, front-right, back-left, back-right order. */
   @AutoLogOutput(key = "SwerveStates/Measured")
-  private SwerveModuleState[] getModuleStates() {
+  public SwerveModuleState[] getModuleStates() {
     SwerveModuleState[] states = new SwerveModuleState[4];
     for (int i = 0; i < 4; i++) {
       states[i] = modules[i].getState();

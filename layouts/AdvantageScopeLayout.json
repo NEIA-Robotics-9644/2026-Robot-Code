@@ -2,32 +2,156 @@
   "hubs": [
     {
       "x": 0,
-      "y": 34,
+      "y": 33,
       "width": 1728,
-      "height": 984,
+      "height": 988,
       "state": {
         "sidebar": {
-          "width": 300,
+          "width": 320,
           "expanded": [
+            "/AdvantageKit/RealOutputs",
             "/AdvantageKit/RealOutputs/Odometry",
-            "/Tuning",
-            "/AdvantageKit/Vision/Camera1",
+            "/TunableNumbers/Setpoints",
+            "/TunableNumbers/Setpoints/Hood",
+            "/PowerDistribution/ChannelCurrent",
+            "/RealOutputs",
+            "/RealOutputs/Odometry",
+            "/DS",
+            "/Phoenix6",
+            "/Log1",
+            "/Log1/Phoenix6",
+            "/Log1/Phoenix6/TalonFX-25",
+            "/Log1/Phoenix6/TalonFX-1",
+            "/Log1/Phoenix6/TalonFX-2",
+            "/TunableNumbers/PID",
+            "/TunableNumbers/PID/Intake",
+            "/TunableNumbers/Setpoints/Shooter",
+            "/TunableNumbers/Setpoints/Spindexer",
+            "/Phoenix6/TalonFX-20",
+            "/Shooter",
+            "/Shooter/Left",
+            "/Shooter/Right",
+            "/Spindexer",
+            "/RealOutputs/Vision",
+            "/RealOutputs/Vision/Camera0",
+            "/TunableNumbers/PID/Drive",
+            "/AdvantageKit/RealOutputs/ZeroedComponentPoses",
+            "/AdvantageKit",
             "/AdvantageKit/RealOutputs/Vision",
-            "/AdvantageKit/RealOutputs/Vision/Summary",
-            "/AdvantageKit/SystemStats",
-            "/PathPlanner"
+            "/AdvantageKit/RealOutputs/Vision/Camera0",
+            "/AdvantageKit/RealOutputs/Vision/Camera0/TagPoses",
+            "/AdvantageKit/RealOutputs/FuelSim",
+            "/FuelSim",
+            "/AdvantageKit/DriverStation",
+            "/AdvantageKit/RealOutputs/SwerveStates",
+            "/AdvantageKit/RealOutputs/SwerveChassisSpeeds"
           ]
         },
         "tabs": {
-          "selected": 2,
+          "selected": 3,
           "tabs": [
             {
               "type": 0,
               "title": "",
               "controller": null,
-              "controllerUUID": "owq39by0m3wcn9iu7hk9a9wkn6frce2n",
-              "renderer": "#/",
+              "controllerUUID": "33knxb0jcilkhfniweanmrvcgj6y98e9",
+              "renderer": "",
               "controlsHeight": 0
+            },
+            {
+              "type": 2,
+              "title": "2D Field",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Odometry/Robot",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "bumpers": ""
+                    }
+                  },
+                  {
+                    "type": "vision",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Vision/Camera0/TagPoses",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "field": "FRC:2026 Field",
+                "orientation": 0,
+                "size": "large"
+              },
+              "controllerUUID": "8trqu2t7bo2edfccj0cz934msj3hb1mv",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 3,
+              "title": "3D Field",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FuelSim/Robot",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "model": "Phoebe_2026"
+                    }
+                  },
+                  {
+                    "type": "gamePiece",
+                    "logKey": "NT:FuelSim/Fuels",
+                    "logType": "Translation3d[]",
+                    "visible": true,
+                    "options": {
+                      "variant": "Fuel"
+                    }
+                  },
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Odometry/Robot",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "Phoebe_2026"
+                    }
+                  },
+                  {
+                    "type": "vision",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Vision/Camera0/TagPoses",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "game": "FRC:2026 Field"
+              },
+              "controllerUUID": "ee1a3v1pwrchawuufsr8ddqq8ltv4niq",
+              "renderer": {
+                "cameraIndex": -1,
+                "orbitFov": 50,
+                "cameraPosition": [
+                  -5.305916256862417,
+                  10.672450433636422,
+                  -9.216611576473959
+                ],
+                "cameraTarget": [
+                  0,
+                  0.5,
+                  0
+                ]
+              },
+              "controlsHeight": 200
             },
             {
               "type": 1,
@@ -39,59 +163,17 @@
                 "leftLockedRange": null,
                 "rightLockedRange": null,
                 "leftUnitConversion": {
-                  "type": null,
-                  "factor": 1
+                  "autoTarget": null,
+                  "preset": null
                 },
                 "rightUnitConversion": {
-                  "type": null,
-                  "factor": 1
+                  "autoTarget": null,
+                  "preset": null
                 },
                 "leftFilter": 0,
                 "rightFilter": 0
               },
-              "controllerUUID": "srngrqnyeuw0pygtx222c2f7swfi42af",
-              "renderer": null,
-              "controlsHeight": 200
-            },
-            {
-              "type": 2,
-              "title": "Odometry",
-              "controller": {
-                "sources": [
-                  {
-                    "type": "robot",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/Odometry/Robot",
-                    "logType": "Pose2d",
-                    "visible": true,
-                    "options": {}
-                  },
-                  {
-                    "type": "vision",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/Vision/Summary/TagPoses",
-                    "logType": "Pose3d[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#00ff00",
-                      "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "ghost",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/Vision/Summary/RobotPosesAccepted",
-                    "logType": "Pose3d[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#00ff00"
-                    }
-                  }
-                ],
-                "game": "2025 Field (Welded)",
-                "bumpers": "auto",
-                "origin": "blue",
-                "orientation": 0,
-                "size": 30
-              },
-              "controllerUUID": "il2rv5lcdx4mpy12tyxtjfmyt8q06xsa",
+              "controllerUUID": "tqcy5m5lmizeb9dwbdtnbvokpgx73yah",
               "renderer": null,
               "controlsHeight": 200
             },
@@ -99,60 +181,14 @@
               "type": 9,
               "title": "Swerve",
               "controller": {
-                "sources": [
-                  {
-                    "type": "states",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured",
-                    "logType": "SwerveModuleState[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#ff0000",
-                      "arrangement": "0,1,2,3"
-                    }
-                  },
-                  {
-                    "type": "states",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/SwerveStates/Setpoints",
-                    "logType": "SwerveModuleState[]",
-                    "visible": true,
-                    "options": {
-                      "color": "#0000ff",
-                      "arrangement": "0,1,2,3"
-                    }
-                  }
-                ],
+                "sources": [],
                 "maxSpeed": 5,
                 "sizeX": 0.65,
                 "sizeY": 0.65,
                 "orientation": 1
               },
-              "controllerUUID": "o3t4kzvh2qcubs7pahf0al8nb5wyvfel",
+              "controllerUUID": "1dbzxhfxjz037kr7eyp5g1ls7cyzldzo",
               "renderer": null,
-              "controlsHeight": 200
-            },
-            {
-              "type": 3,
-              "title": "3D Field",
-              "controller": {
-                "sources": [],
-                "game": "2025 Field (Welded)",
-                "origin": "blue"
-              },
-              "controllerUUID": "3ygvsjseypha85gx8cdhwx1h6p9gwfkd",
-              "renderer": {
-                "cameraIndex": -1,
-                "orbitFov": 50,
-                "cameraPosition": [
-                  0,
-                  0,
-                  0
-                ],
-                "cameraTarget": [
-                  0,
-                  0,
-                  0
-                ]
-              },
               "controlsHeight": 200
             }
           ]
@@ -161,5 +197,5 @@
     }
   ],
   "satellites": [],
-  "version": "4.1.1"
+  "version": "26.0.0"
 }

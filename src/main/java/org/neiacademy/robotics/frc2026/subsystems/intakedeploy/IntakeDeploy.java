@@ -61,12 +61,12 @@ public class IntakeDeploy extends SubsystemBase {
     return inputs.rotorPositionRads >= Units.degreesToRadians(45);
   }
 
-  public Command runPositionCommand(double positionRotations) {
-    return run(() -> io.runPosition(positionRotations)).until(this::atSetpoint);
+  public Command runPositionCommand(DoubleSupplier positionRotations) {
+    return run(() -> io.runPosition(positionRotations.getAsDouble())).until(this::atSetpoint);
   }
 
-  public Command runPositionCommandWithTimeout(double positionRotations) {
-    return run(() -> io.runPosition(positionRotations))
+  public Command runPositionCommandWithTimeout(DoubleSupplier positionRotations) {
+    return run(() -> io.runPosition(positionRotations.getAsDouble()))
         .withTimeout(Presets.Intake.SHOOTING_TOGGLE_TIMEOUT_SPEED_SEC.getAsDouble());
   }
 
@@ -116,6 +116,10 @@ public class IntakeDeploy extends SubsystemBase {
 
   public double getPositionRotations() {
     return Units.radiansToRotations(inputs.rotorPositionRads);
+  }
+
+  public Command runVoltageCommand(DoubleSupplier volts) {
+    return run(() -> io.runVoltage(volts.getAsDouble())).finallyDo(io::stop);
   }
 
   public void stop() {
