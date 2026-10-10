@@ -9,6 +9,7 @@
       "/SmartDashboard/Auto Choices": "String Chooser",
       "/SmartDashboard/ControllerRumble/ResetShiftRumbleTimer": "Command",
       "/SmartDashboard/DecreaseSpeedSetpoint": "Command",
+      "/SmartDashboard/FuelSim/Reset field": "Command",
       "/SmartDashboard/IncreaseSpeedSetpoint": "Command",
       "/SmartDashboard/Overrides/Shift": "Command",
       "/SmartDashboard/Overrides/ShooterFudgeMinus1": "Command",

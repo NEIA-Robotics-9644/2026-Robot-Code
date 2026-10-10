@@ -31,6 +31,58 @@
               "period": 0.06,
               "sort_options": false
             }
+          },
+          {
+            "title": "Swerve Drive",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 384.0,
+            "type": "SwerveDrive",
+            "properties": {
+              "topic": "/SmartDashboard/Swerve Drive",
+              "period": 0.06,
+              "rotation_unit": "Radians",
+              "show_robot_rotation": true
+            }
+          },
+          {
+            "title": "Field",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 1024.0,
+            "height": 512.0,
+            "type": "Field",
+            "properties": {
+              "topic": "/SmartDashboard/Field",
+              "period": 0.06,
+              "field_game": "Rebuilt"
+            }
+          },
+          {
+            "title": "Match Time",
+            "x": 128.0,
+            "y": 256.0,
+            "width": 512.0,
+            "height": 128.0,
+            "type": "Match Time",
+            "properties": {
+              "topic": "/SmartDashboard/Match Time",
+              "period": 0.06,
+              "time_display_mode": "Minutes and Seconds"
+            }
+          },
+          {
+            "title": "FMS Info",
+            "x": 1024.0,
+            "y": 384.0,
+            "width": 384.0,
+            "height": 256.0,
+            "type": "FMSInfo",
+            "properties": {
+              "topic": "/FMSInfo",
+              "period": 0.06
+            }
           }
         ]
       }
