@@ -383,6 +383,16 @@ public class Superstructure extends SubsystemBase {
         .andThen(autoEndShootCommand());
   }
 
+  /** Synchronous cleanup also runs when auto is interrupted by disable or teleop. */
+  public void stopAutoFuelHandling() {
+    intakeDeploy.stop();
+    intakeRoller.stop();
+    loader.stop();
+    spindexer.stop();
+    leftShooter.stop();
+    rightShooter.stop();
+  }
+
   public Command closeHubShoot() {
     return new ParallelCommandGroup(
             new SequentialCommandGroup(

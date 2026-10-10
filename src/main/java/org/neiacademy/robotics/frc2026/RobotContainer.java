@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.neiacademy.robotics.frc2026.Constants.*;
+import org.neiacademy.robotics.frc2026.autos.NerdBumpAutos;
 import org.neiacademy.robotics.frc2026.commands.DriveCommands;
 import org.neiacademy.robotics.frc2026.commands.ManualPivotBumperCommand;
 import org.neiacademy.robotics.frc2026.generated.TunerConstants;
@@ -278,6 +279,8 @@ public class RobotContainer {
         "autoEndShootCommand", new ParallelCommandGroup(superstructure.autoEndShootCommand()));
 
     // Set up auto routines
+    NerdBumpAutos.registerCommands(drive, superstructure);
+
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     autoChooser.addDefaultOption("No Auto!", noAuto);
