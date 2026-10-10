@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -105,6 +104,11 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    this(new IntakeDeployIO() {});
+  }
+
+  /** Allows simulation tests to observe intake requests through the real controller bindings. */
+  RobotContainer(IntakeDeployIO simulatedIntakeDeployIO) {
 
     RobotController.setBrownoutVoltage(6.0);
 
@@ -167,7 +171,7 @@ public class RobotContainer {
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose));
 
         spindexer = new Spindexer(new SpindexerIO() {});
-        intakeDeploy = new IntakeDeploy(new IntakeDeployIO() {});
+        intakeDeploy = new IntakeDeploy(simulatedIntakeDeployIO);
         intakeRoller = new IntakeRoller(new IntakeRollerIO() {});
         loader = new Loader(new LoaderIO() {});
         leftShooter = new Shooter(new ShooterIO() {}, true);
@@ -250,8 +254,7 @@ public class RobotContainer {
               rightShooter.runVelocityCommand(Presets.Shooter.CLOSE_HUB_SPEED);
             }));
 
-    NamedCommands.registerCommand(
-        "toggleIntakeDeploy", new RepeatCommand(superstructure.toggleIntake()).withTimeout(6));
+    NamedCommands.registerCommand("toggleIntakeDeploy", superstructure.toggleIntake(6));
 
     NamedCommands.registerCommand(
         "xLock", new ParallelCommandGroup(Commands.run(drive::stopWithX, drive)));
@@ -468,10 +471,16 @@ public class RobotContainer {
                 spindexer.runVoltageCommand(Presets.Spindexer.FEED_VOLTS),
                 loader.runVoltageCommand(Presets.Loader.FEED_VOLTS)));
 
-    driverCon.leftTrigger().onTrue(superstructure.deployIntake());
+    Trigger intakeAgitationButton = driverCon.leftBumper();
+    driverCon
+        .leftTrigger()
+        .and(intakeAgitationButton.negate())
+        .onTrue(superstructure.deployIntake());
     driverCon.leftTrigger().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.INTAKE_VOLTS));
 
-    driverCon.leftBumper().onTrue(superstructure.retractIntake());
+    // Hold to agitate; use the raw release so a short tap still deploys the intake.
+    intakeAgitationButton.debounce(0.5).whileTrue(superstructure.agitateIntake());
+    intakeAgitationButton.onFalse(superstructure.deployIntake());
 
     operatorCon.a().whileTrue(intakeRoller.runVoltageCommand(Presets.Intake.EXHAUST_VOLTS));
     operatorCon.b().whileTrue(superstructure.holdBallHandlingStoppedCommand());
@@ -493,10 +502,10 @@ public class RobotContainer {
                 () -> {
                   if (inAllianceZone.getAsBoolean()) {
                     CommandScheduler.getInstance()
-                        .schedule(superstructure.fudgeShooterSpeedShoot(-1));
+                        .schedule(superstructure.fudgeShooterSpeedShoot(-3));
                   } else {
                     CommandScheduler.getInstance()
-                        .schedule(superstructure.fudgeShooterSpeedShuttle(-1));
+                        .schedule(superstructure.fudgeShooterSpeedShuttle(-3));
                   }
                 }));
     Trigger manualPivot = operatorCon.leftBumper().and(operatorCon.leftStick());
@@ -551,12 +560,12 @@ public class RobotContainer {
         .onFalse(superstructure.endShootCommand());
 
     // force shoot even if the tolerances aren't being met
-    operatorCon.rightBumper().and(inAllianceZone).onTrue(superstructure.fudgeShooterSpeedShoot(1));
+    operatorCon.rightBumper().and(inAllianceZone).onTrue(superstructure.fudgeShooterSpeedShoot(3));
 
     operatorCon
         .rightBumper()
         .and(inAllianceZone.negate())
-        .onTrue(superstructure.fudgeShooterSpeedShuttle(1));
+        .onTrue(superstructure.fudgeShooterSpeedShuttle(3));
   }
 
   /**

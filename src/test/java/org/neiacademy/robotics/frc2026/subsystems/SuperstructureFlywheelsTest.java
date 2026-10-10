@@ -7,10 +7,14 @@ import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
+import edu.wpi.first.wpilibj.simulation.SimHooks;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +42,8 @@ class SuperstructureFlywheelsTest {
   private static Drive drive;
   private static Shooter left;
   private static Superstructure superstructure;
+  private static double pivotTarget;
+  private static int pivotVoltageCalls;
 
   @BeforeAll
   static void setupRobot() {
@@ -100,7 +106,25 @@ class SuperstructureFlywheelsTest {
         new Superstructure(
             drive,
             spindexer,
-            new IntakeDeploy(new IntakeDeployIO() {}),
+            new IntakeDeploy(
+                new IntakeDeployIO() {
+                  @Override
+                  public void updateInputs(IntakeDeployIOInputs inputs) {
+                    // A stalled pivot exercises the final retraction timeout.
+                    inputs.rotorPositionRads = Units.rotationsToRadians(0.25);
+                    inputs.positionSetpointRads = Units.rotationsToRadians(pivotTarget);
+                  }
+
+                  @Override
+                  public void runPosition(double position) {
+                    pivotTarget = position;
+                  }
+
+                  @Override
+                  public void runVoltage(double volts) {
+                    pivotVoltageCalls++;
+                  }
+                }),
             intake,
             loader,
             left,
@@ -135,6 +159,116 @@ class SuperstructureFlywheelsTest {
     Constants.constantFlywheelsMode = false;
     Constants.fixedShooterMode = true;
     Logger.end();
+  }
+
+  @Test
+  void agitationContinuesForRequestedDurationAndFinishesEvenIfRetractionStalls() {
+    SimHooks.pauseTiming();
+    RobotController.setTimeSource(RobotController::getFPGATime);
+    try {
+      for (double duration : new double[] {2.25, 6.0}) {
+        pivotVoltageCalls = 0;
+        Command agitation =
+            duration == 2.25
+                ? superstructure.toggleIntake()
+                : superstructure.toggleIntake(duration);
+        scheduler.schedule(agitation);
+        boolean extendedNearEnd = false;
+        for (int tick = 0; tick < (duration - 0.1) / 0.02; tick++) {
+          SimHooks.stepTiming(0.02);
+          scheduler.run();
+          assertTrue(agitation.isScheduled());
+          if (tick * 0.02 > duration - 0.8
+              && pivotTarget == Presets.Intake.EXTEND_ANGLE_DEG.get()) {
+            extendedNearEnd = true;
+          }
+        }
+        assertTrue(extendedNearEnd, "Agitation must still extend late in the requested burst");
+        for (int tick = 0; tick < 60; tick++) {
+          SimHooks.stepTiming(0.02);
+          scheduler.run();
+        }
+        assertFalse(agitation.isScheduled(), "A stalled final retract must not hang the command");
+        assertEquals(Presets.Intake.TUCK_ANGLE_DEG.get(), pivotTarget, 1e-9);
+        assertEquals(
+            0, pivotVoltageCalls, "Agitation must use position targets, not holding voltage");
+      }
+    } finally {
+      scheduler.cancelAll();
+      RobotController.setTimeSource(Logger::getTimestamp);
+      SimHooks.resumeTiming();
+    }
+  }
+
+  @Test
+  void agitationRequiresHalfSecondHoldAndShortTapStillDeploys() {
+    var loop = new EventLoop();
+    boolean[] held = {false};
+    Command agitation = superstructure.agitateIntake();
+    SimHooks.pauseTiming();
+    RobotController.setTimeSource(RobotController::getFPGATime);
+    Trigger button = new Trigger(loop, () -> held[0]);
+    button.debounce(0.5).whileTrue(agitation);
+    button.onFalse(superstructure.deployIntake());
+    try {
+      loop.poll();
+      pivotTarget = Double.NaN;
+      held[0] = true;
+      for (int tick = 0; tick < 10; tick++) {
+        SimHooks.stepTiming(0.02);
+        loop.poll();
+        scheduler.run();
+        assertFalse(agitation.isScheduled());
+        assertTrue(Double.isNaN(pivotTarget), "A short tap must not start retracting");
+      }
+      held[0] = false;
+      loop.poll();
+      scheduler.run();
+      assertEquals(Presets.Intake.EXTEND_ANGLE_DEG.get(), pivotTarget, 1e-9);
+      held[0] = true;
+      boolean extendedAfterSixSeconds = false;
+      for (int tick = 0; tick < 400; tick++) {
+        SimHooks.stepTiming(0.02);
+        loop.poll();
+        scheduler.run();
+        if (tick < 24) {
+          assertFalse(agitation.isScheduled());
+        } else if (tick > 26) {
+          assertTrue(agitation.isScheduled());
+        }
+        if (tick > 300 && pivotTarget == Presets.Intake.EXTEND_ANGLE_DEG.get()) {
+          extendedAfterSixSeconds = true;
+        }
+      }
+      assertTrue(extendedAfterSixSeconds);
+      held[0] = false;
+      loop.poll();
+      scheduler.run();
+      assertFalse(agitation.isScheduled());
+      assertEquals(Presets.Intake.EXTEND_ANGLE_DEG.get(), pivotTarget, 1e-9);
+      int voltageCallsBeforeHold = pivotVoltageCalls;
+      for (int tick = 0; tick < 30; tick++) {
+        SimHooks.stepTiming(0.02);
+        loop.poll();
+        scheduler.run();
+      }
+      assertTrue(pivotVoltageCalls > voltageCallsBeforeHold);
+      held[0] = true;
+      loop.poll();
+      scheduler.run();
+      assertFalse(agitation.isScheduled(), "Every press must wait through the hold threshold");
+      for (int tick = 0; tick < 27; tick++) {
+        SimHooks.stepTiming(0.02);
+        loop.poll();
+        scheduler.run();
+      }
+      assertTrue(agitation.isScheduled(), "Holding again must restart agitation");
+    } finally {
+      scheduler.cancelAll();
+      loop.clear();
+      RobotController.setTimeSource(Logger::getTimestamp);
+      SimHooks.resumeTiming();
+    }
   }
 
   @Test
