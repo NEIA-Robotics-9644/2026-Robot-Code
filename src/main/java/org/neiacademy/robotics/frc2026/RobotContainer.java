@@ -64,6 +64,7 @@ import org.neiacademy.robotics.frc2026.subsystems.vision.VisionIOPhotonVisionSim
 import org.neiacademy.robotics.frc2026.util.AllianceFlipUtil;
 import org.neiacademy.robotics.frc2026.util.AutoMirroringUtil;
 import org.neiacademy.robotics.frc2026.util.ControllerAlertRumble;
+import org.neiacademy.robotics.frc2026.util.RobotDashboard;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -72,6 +73,12 @@ import org.neiacademy.robotics.frc2026.util.ControllerAlertRumble;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  private org.neiacademy.robotics.frc2026.sim.PhoebeSim phoebeSim;
+
+  public void simulationPeriodic() {
+    if (phoebeSim != null) phoebeSim.update();
+  }
+
   // Subsystems
   private final Drive drive;
   private final Vision vision;
@@ -102,10 +109,11 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+  private final RobotDashboard dashboard;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    this(new IntakeDeployIO() {});
+    this(null);
   }
 
   /** Allows simulation tests to observe intake requests through the real controller bindings. */
@@ -171,13 +179,20 @@ public class RobotContainer {
                 new VisionIOPhotonVisionSim(
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose));
 
-        spindexer = new Spindexer(new SpindexerIO() {});
-        intakeDeploy = new IntakeDeploy(simulatedIntakeDeployIO);
-        intakeRoller = new IntakeRoller(new IntakeRollerIO() {});
-        loader = new Loader(new LoaderIO() {});
-        leftShooter = new Shooter(new ShooterIO() {}, true);
-        rightShooter = new Shooter(new ShooterIO() {}, false);
-        hood = new Hood(new HoodIO() {});
+        phoebeSim =
+            new org.neiacademy.robotics.frc2026.sim.PhoebeSim(
+                drive::getPose, drive::getChassisSpeeds);
+        spindexer = new Spindexer(phoebeSim.spindexer);
+        intakeDeploy =
+            new IntakeDeploy(
+                simulatedIntakeDeployIO != null ? simulatedIntakeDeployIO : phoebeSim.intakeDeploy);
+        intakeRoller = new IntakeRoller(phoebeSim.intakeRoller);
+        loader = new Loader(phoebeSim.loader);
+        leftShooter = new Shooter(phoebeSim.leftShooter, true);
+        rightShooter = new Shooter(phoebeSim.rightShooter, false);
+        hood = new Hood(phoebeSim.hoodIO);
+        SmartDashboard.putData(
+            "FuelSim/Reset field", Commands.runOnce(phoebeSim::reset).ignoringDisable(true));
 
         break;
 
@@ -322,6 +337,8 @@ public class RobotContainer {
     SmartDashboard.putBoolean("TuningMode", Constants.tuningMode);
     SmartDashboard.putBoolean("ConstantFlywheelsMode", Constants.constantFlywheelsMode);
     SmartDashboard.putBoolean("FixedShooterMode", Constants.fixedShooterMode);
+
+    dashboard = new RobotDashboard(drive);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -578,6 +595,10 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  public void updateDashboard() {
+    dashboard.update();
   }
 
   public void updateAlerts() {

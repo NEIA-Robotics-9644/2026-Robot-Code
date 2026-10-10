@@ -19,6 +19,7 @@ import org.neiacademy.robotics.frc2026.subsystems.intakedeploy.IntakeDeployIO;
 class IntakeBindingSimulationTest {
   private static final int LEFT_BUMPER_BUTTON = 5;
   private final CommandScheduler scheduler = CommandScheduler.getInstance();
+  private RobotContainer container;
   private final RecordingIntakeIO io = new RecordingIntakeIO();
 
   private void cycles(int count) {
@@ -26,6 +27,7 @@ class IntakeBindingSimulationTest {
       SimHooks.stepTiming(0.02);
       DriverStationSim.notifyNewData();
       scheduler.run();
+      if (container != null) container.simulationPeriodic();
     }
   }
 
@@ -46,7 +48,7 @@ class IntakeBindingSimulationTest {
     DriverStationSim.notifyNewData();
     try {
       assertEquals(Constants.Mode.SIM, Constants.currentMode);
-      new RobotContainer(io);
+      container = new RobotContainer(io);
       cycles(5);
       DriverStationSim.setEnabled(true);
       cycles(2);

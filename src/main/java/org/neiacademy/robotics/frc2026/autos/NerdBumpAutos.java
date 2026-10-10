@@ -11,6 +11,9 @@ public final class NerdBumpAutos {
   private NerdBumpAutos() {}
 
   public static void registerCommands(Drive drive, Superstructure superstructure) {
+    // Path marker starts mechanism-only preparation once the robot lands and begins turning.
+    // PathPlanner keeps ownership of chassis rotation and cancels this at path completion.
+    NamedCommands.registerCommand("Bump Spin up", superstructure.hubSpinFlywheelsCommand());
     // Only one autonomous routine runs at a time. Restart on every scheduling, including reruns.
     Timer elapsed = new Timer();
     NamedCommands.registerCommand("Bump Start clock", Commands.runOnce(elapsed::restart));

@@ -25,7 +25,6 @@ import java.nio.file.Path;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.neiacademy.robotics.frc2026.Presets;
-import org.neiacademy.robotics.frc2026.commands.DriveCommands;
 import org.neiacademy.robotics.frc2026.subsystems.Superstructure;
 import org.neiacademy.robotics.frc2026.subsystems.drive.*;
 import org.neiacademy.robotics.frc2026.subsystems.hood.*;
@@ -210,6 +209,7 @@ class NerdBumpAutosTest {
               Set<Integer> shotWindows = new HashSet<>();
               Set<String> findings = new HashSet<>();
               Set<Integer> unjamWindows = new HashSet<>();
+              Set<Integer> spinupWindows = new HashSet<>();
               Set<Integer> fastCrossings = new HashSet<>();
               Set<Integer> movingDepartures = new HashSet<>();
               Rotation2d crossingHeading;
@@ -269,6 +269,10 @@ class NerdBumpAutosTest {
                   Pose2d bluePose =
                       red ? FlippingUtil.flipFieldPose(drive.getPose()) : drive.getPose();
                   double x = bluePose.getX();
+                  if (x < 3.04 && left.target > 100 && right.target > 100) {
+                    spinupWindows.add(paths.size());
+                    assertEquals(0, volts[2], 1e-9, "Spin-up must not feed while turning");
+                  }
                   // Includes the bumper footprint, from first contact through complete landing.
                   if (x < 5.8 && x > 3.5) {
                     assertEquals(
@@ -309,7 +313,14 @@ class NerdBumpAutosTest {
                 if (volts[2] == Presets.Loader.EXHAUST_VOLTS.get()) unjamWindows.add(paths.size());
                 if (volts[2] == Presets.Loader.FEED_VOLTS.get()) {
                   if (mass != 50.0)
-                    assertTrue(DriveCommands.atAngleSetpoint(), "Never feed facing away from hub");
+                    assertEquals(
+                        0,
+                        mechanisms
+                            .getHubShootingSetpointDriveAngle()
+                            .minus(drive.getRotation())
+                            .getRadians(),
+                        Math.toRadians(7),
+                        "Never feed facing away from hub");
                   shotWindows.add(paths.size());
                 }
               }
@@ -338,7 +349,8 @@ class NerdBumpAutosTest {
               if (mass != 50.0)
                 assertEquals(Set.of(2, 4), shotWindows, name + " must shoot in both windows");
               if (mass != 50.0)
-                assertEquals(Set.of(2, 4), unjamWindows, name + " must unjam before each shot");
+                assertTrue(unjamWindows.isEmpty(), name + " must not unjam during bump auto");
+              assertEquals(Set.of(2, 4), spinupWindows, "Spin up during both landing turns");
               assertEquals(Set.of(2, 4), fastCrossings, name + " fast bump entry on both returns");
               if (mass != 50.0)
                 assertEquals(

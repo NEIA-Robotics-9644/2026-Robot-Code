@@ -143,12 +143,6 @@
                                         "data": {
                                           "commands": [
                                             {
-                                              "type": "named",
-                                              "data": {
-                                                "name": "unjam"
-                                              }
-                                            },
-                                            {
                                               "type": "parallel",
                                               "data": {
                                                 "commands": [
@@ -332,12 +326,6 @@
                                         "type": "sequential",
                                         "data": {
                                           "commands": [
-                                            {
-                                              "type": "named",
-                                              "data": {
-                                                "name": "unjam"
-                                              }
-                                            },
                                             {
                                               "type": "parallel",
                                               "data": {

@@ -125,6 +125,7 @@ public class Robot extends LoggedRobot {
     Threads.setCurrentThreadPriority(false, 10);
 
     // Robot container periodic methods
+    robotContainer.updateDashboard();
     robotContainer.updateAlerts();
   }
 
@@ -188,5 +189,7 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    robotContainer.simulationPeriodic();
+  }
 }
